@@ -1,93 +1,96 @@
 --=====================================================================
 --                            SECUENCIAS
 --=====================================================================
-CREATE SEQUENCE seq_instituciones START WITH 1 INCREMENT BY 1;
-CREATE SEQUENCE seq_idiomas START WITH 1 INCREMENT BY 1;
-CREATE SEQUENCE seq_paises START WITH 1 INCREMENT BY 1;
-CREATE SEQUENCE seq_autores START WITH 1 INCREMENT BY 1;
-CREATE SEQUENCE seq_ciudades START WITH 1 INCREMENT BY 1;
-CREATE SEQUENCE seq_clubes START WITH 1 INCREMENT BY 1;
-CREATE SEQUENCE seq_lectores START WITH 1 INCREMENT BY 1;
-CREATE SEQUENCE seq_representantes START WITH 1 INCREMENT BY 1;
-CREATE SEQUENCE seq_hablan START WITH 1 INCREMENT BY 1;
-CREATE SEQUENCE seq_obras START WITH 1 INCREMENT BY 1;
-CREATE SEQUENCE seq_pagos_membresias START WITH 1 INCREMENT BY 1;
-CREATE SEQUENCE seq_grupos START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE MEA_seq_instituciones START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE MEA_seq_idiomas START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE MEA_seq_paises START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE MEA_seq_autores START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE MEA_seq_ciudades START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE MEA_seq_clubes START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE MEA_seq_lectores START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE MEA_seq_representantes START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE MEA_seq_hablan START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE MEA_seq_obras START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE MEA_seq_pagos_membresias START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE MEA_seq_grupos START WITH 1 INCREMENT BY 1;
 
 --=====================================================================
 --                      TABLAS INDEPENDIENTES
 --=====================================================================
 
-CREATE TABLE INSTITUCIONES (
-    id_inst Number(3,0) PRIMARY KEY,
+CREATE TABLE MEA_INSTITUCIONES (
+    id_inst number(3,0) PRIMARY KEY,
     nom_inst varchar2(20) NOT NULL,
     tipo_inst varchar2(20) NOT NULL
     CONSTRAINT chk_tipo_inst CHECK (tipo_inst IN ('colegio', 'biblioteca', 'universidad')
 )
 
-CREATE TABLE IDIOMAS (
+CREATE TABLE MEA_IDIOMAS (
     id_idioma number(3,0) PRIMARY KEY,
     nom_idioma varchar2(20) NOT NULL
 )
 
-CREATE TABLE PAISES (
+CREATE TABLE MEA_PAISES (
     id_pais number(3,0) PRIMARY KEY,
     nom_pais varchar2(20) NOT NULL,
-    moneda varchar2(20) NOT NULL,
+    moneda varchar2(3) NOT NULL,
     nacionalidad varchar2(20) NOT NULL) 
 
-CREATE TABLE AUTORES (
+CREATE TABLE MEA_AUTORES (
     id_autor number(3,0) PRIMARY KEY,
-    p_nombre  varchar2(20) NOT NULL,
-    s_nombre  varchar2(20),
-    p_apellido varchar2(20) NOT NULL,
-    s_apellido varchar2(20) NOT NULL
+    p_nombre  varchar2(15) NOT NULL,
+    s_nombre  varchar2(15),
+    p_apellido varchar2(15) NOT NULL,
+    s_apellido varchar2(15) NOT NULL
 )
 
 --=====================================================================
 --                      TABLAS DEPENDIENTES
 --=====================================================================
+-- Si el constraint es aparte para ambos (PK y FK) primero el Fk, luego la PK
+-- el nombre del PK deba estar en plural con el nombre de la entidad a la que pertenezca
+-- el nombre de la efecta debe nombrar la entidadn en la que se encuentra (4 primeras letras), seguido del nombre de entidad que está referenciando
 
-
-CREATE TABLE CIUDADES (
+CREATE TABLE MEA_CIUDADES (
     id_pais number(3,0) NOT NULL,
-    id_ciudad number(3,0) PRIMARY KEY,
+    id_ciudad number(3,0) NOT NULL,
     nom_ciudad varchar2(20) NOT NULL,
-    CONSTRAINT fk_pais FOREIGN KEY (id_pais) REFERENCES PAISES(id_pais)
+    CONSTRAINT fk_ciud_pais FOREIGN KEY (id_pais) REFERENCES MEA_PAISES(id_pais),
+    CONSTRAINT pk_ciudades PRIMARY KEY (id_pais, id_ciudad)
 )
 
-CREATE TABLE CLUBES (
+CREATE TABLE MEA_CLUBES (
     id_club number (3,0) PRIMARY KEY,
     nombre_club carchar2(20) NOT NULL,
-    fech_creacion date('DD/''MM/YYYY') NOT NULL,
+    fech_creacion date NOT NULL,
     direccion vachar2(30) NOT NULL,
     codigo_postal number(5,0) NOT NULL,
     cuota_membresia number (5,0) NOT NULL,
     id_inst number(3,0) NOT NULL,
-    CONSTRAINT fk_inst FOREIGN KEY (id_inst) REFERENCES INSTITUCIONES(id_inst)
+    CONSTRAINT fk_club_inst FOREIGN KEY (id_inst) REFERENCES MEA_INSTITUCIONES(id_inst)
 )
 
-CREATE TABLE LECTORES (
-    id_lector number(3,0) PRIMARY KEY,
-    doc_identidad number(8,0) NOT NULL UNIQUE,
-    p_nombre varchar2(20) NOT NULL,
-    s_nombre varchar2(20) NOT NULL,
-    p_apellido varchar2(20) NOT NULL,
-    s_apellido varchar2(20) NOT NULL,
+CREATE TABLE MEA_LECTORES (
+    id_lector number(5,0) PRIMARY KEY,
+    doc_identidad number(9,0) NOT NULL UNIQUE,
+    p_nombre varchar2(15) NOT NULL,
+    s_nombre varchar2(15) NOT NULL,
+    p_apellido varchar2(15) NOT NULL,
+    s_apellido varchar2(15) NOT NULL,
     f_nacimiento date NOT NULL,
     email varchar2(30) NOT NULL,
-    id_lector_representante number(3,0),
-    CONSTRAINT fk_lector_representante FOREIGN KEY (id_lector_representante) REFERENCES LECTORES(id_lector)
+    id_lector_repre number(3,0),
+    CONSTRAINT fk_lect_repre FOREIGN KEY (id_lector_repre) REFERENCES LECTORES(id_lector)
 )
 
 CREATE TABLE REPRESENTANTES (
-    id_lector number(3,0),
+    id_lector number(5,0),
     id_representante number(3,0),
-    doc_identidad number(8,0) NOT NULL,
-    p_nombre varchar2(20) NOT NULL,
-    p_apellido varchar2(20) NOT NULL,
-    s_apellido varchar2(20) NOT NULL,
-    CONSTRAINT fk_lector FOREIGN KEY (id_lector) REFERENCES LECTORES(id_lector),
+    doc_identidad number(9,0) NOT NULL,
+    p_nombre varchar2(15) NOT NULL,
+    p_apellido varchar2(15) NOT NULL,
+    s_apellido varchar2(15) NOT NULL,
+    CONSTRAINT fk_repr_lector FOREIGN KEY (id_lector) REFERENCES LECTORES(id_lector),
     CONSTRAINT pk_representantes PRIMARY KEY (id_lector, id_representante),
 )
 
@@ -96,10 +99,10 @@ CREATE TABLE HABLAN (
     id_habla number (3,0) NOT NULL,
     id_club number (3,0),
     id_lector number (3,0),
+    CONSTRAINT fk_habla_idioma FOREIGN KEY (id_idioma) REFERENCES IDIOMAS(id_idioma),
+    CONSTRAINT fk_habla_lector FOREIGN KEY (id_lector) REFERENCES LECTORES(id_lector),
+    CONSTRAINT fk_habla_club FOREIGN KEY (id_club) REFERENCES CLUBES(id_club),
     CONSTRAINT pk_hablan PRIMARY KEY (id_idioma, id_habla)
-    CONSTRAINT fk_idioma FOREIGN KEY (id_idioma) REFERENCES IDIOMAS(id_idioma),
-    CONSTRAINT fk_lector FOREIGN KEY (id_lector) REFERENCES LECTORES(id_lector),
-    CONSTRAINT fk_club FOREIGN KEY (id_club) REFERENCES CLUBES(id_club),
     --IMPLEMENTACIÖN DE ARCO EXCLUSIVO
     CONSTRAINT chk_club_lector CHECK (id_club IS NOT NULL AND id_lector IS NULL) OR (id_lector IS NOT NULL AND id_club IS NULL)
 )
@@ -110,20 +113,20 @@ CREATE TABLE TELEFONOS (
     num_tlf number(7,0) NOT NULL,
     id_club number(3,0),
     id_lector number(3,0),
+    CONSTRAINT fk_tele_club FOREIGN KEY (id_club) REFERENCES CLUBES(id_club),
+    CONSTRAINT fk_tele_lector FOREIGN KEY (id_lector) REFERENCES LECTORES(id_lector)
     CONSTRAINT pk_telefonos PRIMARY KEY (cod_local, cod_area, num_tlf),
-    CONSTRAINT fk_club FOREIGN KEY (id_club) REFERENCES CLUBES(id_club),
-    CONSTRAINT fk_lector FOREIGN KEY (id_lector) REFERENCES LECTORES(id_lector)
     --IMPLEMENTACIÖN DE ARCO EXCLUSIVO
-    CONSTRAINT chk_club_lector CHECK (id_club IS NOT NULL AND id_lector IS NULL) OR (id_lector IS NOT NULL AND id_club IS NULL
+    CONSTRAINT chk_club_lector CHECK (id_club IS NOT NULL AND id_lector IS NULL) OR (id_lector IS NOT NULL AND id_club IS NULL)
 )
 
 CREATE TABLE OBRAS (
-    id_obra number(3,0) PRIMARY KEY,
-    nombre_obra varchar2(20) NOT NULL,
-    status_obra varchar2(20) NOT NULL,
+    id_obra number(4,0) PRIMARY KEY,
+    nombre_obra varchar2(30) NOT NULL,
+    status_obra varchar2(10) NOT NULL,
     id_club number(3,0) NOT NULL,
     precio number(10,2),
-    CONSTRAINT fk_club FOREIGN KEY (id_club) REFERENCES CLUBES(id_club),
+    CONSTRAINT fk_obra_club FOREIGN KEY (id_club) REFERENCES CLUBES(id_club),
     CONSTRAINT chk_status_obra CHECK (status_obra IN ('activa', 'inactiva')
 )
 
