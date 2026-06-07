@@ -1,0 +1,81 @@
+-- 1. Vista: V_DETALLE_LECTORES 
+-- Muestra la información de los lectores junto con el nombre de su representante (usando un self-join).
+
+CREATE OR REPLACE VIEW v_detalle_lectores AS
+SELECT 
+    l.id_lector, 
+    l.p_nombre || ' ' || l.p_apellido AS nombre_lector, 
+    l.email,
+    r.p_nombre || ' ' || r.p_apellido AS nombre_representante
+FROM lectores l, representantes r
+WHERE l.id_lector = r.id_lector (+); 
+
+-- 2. Vista: V_CLUBES_INSTITUCIONES 
+-- Combina los clubes con el nombre y tipo de la institución a la que pertenecen
+
+CREATE OR REPLACE VIEW v_clubes_instituciones AS
+SELECT 
+    c.id_club, 
+    c.nombre_club, 
+    c.cuota_membresia,
+    i.nom_inst AS nombre_institucion, 
+    i.tipo_inst
+FROM clubes c, instituciones i
+WHERE c.id_institucion = i.id_inst;
+
+-- 3. Vista: V_SOCIOS_ACTIVOS 
+-- Filtra únicamente a los socios con estatus 'activo', mostrando sus nombres y el club asociado.
+
+CREATE OR REPLACE VIEW v_socios_activos AS
+SELECT 
+    s.id_club, 
+    c.nombre_club, 
+    l.p_nombre || ' ' || l.p_apellido AS nombre_socio, 
+    s.fech_i_soc AS fecha_ingreso
+FROM socios s, clubes c, lectores l
+WHERE s.status = 'activo'
+  AND s.id_club = c.id_club
+  AND s.id_lector = l.id_lector;
+
+-- 4. Vista: V_CATALOGO_LIBROS 
+-- Presenta un resumen de los libros, incluyendo el autor y el país de origen.
+
+CREATE OR REPLACE VIEW v_catalogo_libros AS
+SELECT 
+    b.isbn, 
+    b.titulo_libro, 
+    a.p_nombre || ' ' || a.p_apellido AS autor,
+    p.nom_pais AS pais_origen,
+    b.tipo_narrativa
+FROM libros b, a_l al, autores a, paises p
+WHERE b.isbn = al.isbn
+  AND al.id_autor = a.id_autor
+  AND b.id_pais = p.id_pais;
+
+-- 5. Vista: V_HISTORIAL_PAGOS 
+-- Utiliza la tabla corregida con la columna 'fech_emision_pago' para listar los pagos de membresías.
+
+CREATE OR REPLACE VIEW v_historial_pago_socios AS
+SELECT 
+    l.p_nombre || ' ' || l.p_apellido AS lector,
+    c.nombre_club,
+    p.id_pago_mem AS recibo,
+    p.fech_emision_pago AS fecha_pago
+FROM pagos_membresias p, lectores l, clubes c
+WHERE p.id_lector = l.id_lector
+  AND p.id_club = c.id_club;
+
+-- 6. Vista: V_AGENDA_REUNIONES
+-- Detalla las reuniones programadas, el libro a discutir y el grupo correspondiente.
+
+CREATE OR REPLACE VIEW v_agenda_reuniones AS
+SELECT 
+    r.fecha_reunion, 
+    c.nombre_club, 
+    g.tipo AS tipo_grupo, 
+    b.titulo_libro,
+    r.realizada
+FROM reuniones_calendario r, clubes c, grupos g, libros b
+WHERE r.id_club_grupo = c.id_club
+  AND r.id_grupo = g.id_grupo
+  AND r.id_libro = b.isbn;
