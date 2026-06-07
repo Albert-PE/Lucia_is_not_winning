@@ -40,7 +40,13 @@ BEGIN
     RETURN (ROUND(((SYSDATE - v_fecha) / 365), 0)); 
 END;
 
+SELECT 
+    p_nombre AS "Nombre", 
+    f_nacimiento AS "Fecha Nacimiento",
+    Antigüedad_en_club_miembro(f_nacimiento) AS "Edad Calculada"
+FROM MEA_LECTORES;
 
+--=========================================================================
 CREATE OR REPLACE FUNCTION %participacion_bimestre_miembro (id_part_lector number)
 RETURN NUMBER IS
     v_inasistencias NUMBER;
