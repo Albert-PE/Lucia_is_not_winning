@@ -1,5 +1,5 @@
 -- 1. Vista: V_DETALLE_LECTORES 
--- Muestra la información de los lectores junto con el nombre de su representante (usando un self-join).
+-- Muestra la información de los lectores junto con el nombre de su representante (usando un outer-join).
 
 CREATE OR REPLACE VIEW v_detalle_lectores AS
 SELECT 
