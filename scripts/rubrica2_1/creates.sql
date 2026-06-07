@@ -61,9 +61,9 @@ CREATE TABLE MEA_CIUDADES (
 
 CREATE TABLE MEA_CLUBES (
     id_club number (3,0) PRIMARY KEY,
-    nombre_club carchar2(20) NOT NULL,
+    nombre_club varchar2(20) NOT NULL,
     fech_creacion date NOT NULL,
-    direccion vachar2(30) NOT NULL,
+    direccion varchar2(30) NOT NULL,
     codigo_postal number(5,0) NOT NULL,
     cuota_membresia number (5,0) NOT NULL,
     id_inst number(3,0) NOT NULL,
@@ -91,7 +91,7 @@ CREATE TABLE MEA_REPRESENTANTES (
     p_apellido varchar2(15) NOT NULL,
     s_apellido varchar2(15) NOT NULL,
     CONSTRAINT MEA_fk_repr_lector FOREIGN KEY (id_lector) REFERENCES MEA_LECTORES(id_lector),
-    CONSTRAINT MEA_pk_representantes PRIMARY KEY (id_lector, id_representante),
+    CONSTRAINT MEA_pk_representantes PRIMARY KEY (id_lector, id_representante)
 )
 
 CREATE TABLE MEA_HABLAN (
@@ -102,9 +102,9 @@ CREATE TABLE MEA_HABLAN (
     CONSTRAINT MEA_fk_habl_idioma FOREIGN KEY (id_idioma) REFERENCES MEA_IDIOMAS(id_idioma),
     CONSTRAINT MEA_fk_habl_lector FOREIGN KEY (id_lector) REFERENCES MEA_LECTORES(id_lector),
     CONSTRAINT MEA_fk_habl_club FOREIGN KEY (id_club) REFERENCES MEA_CLUBES(id_club),
-    CONSTRAINT MEA_pk_hablan PRIMARY KEY (id_idioma, id_habla)
+    CONSTRAINT MEA_pk_hablan PRIMARY KEY (id_idioma, id_habla),
     --IMPLEMENTACIÖN DE ARCO EXCLUSIVO
-    CONSTRAINT MEA_chk_club_lector CHECK (id_club IS NOT NULL AND id_lector IS NULL) OR (id_lector IS NOT NULL AND id_club IS NULL)
+    CONSTRAINT MEA_chk_club_lector CHECK ((id_club IS NOT NULL AND id_lector IS NULL) OR (id_lector IS NOT NULL AND id_club IS NULL))
 )
 
 CREATE TABLE MEA_TELEFONOS (
@@ -114,10 +114,10 @@ CREATE TABLE MEA_TELEFONOS (
     id_club number(3,0),
     id_lector number(5,0),
     CONSTRAINT MEA_fk_tele_club FOREIGN KEY (id_club) REFERENCES MEA_CLUBES(id_club),
-    CONSTRAINT MEA_fk_tele_lector FOREIGN KEY (id_lector) REFERENCES MEA_LECTORES(id_lector)
+    CONSTRAINT MEA_fk_tele_lector FOREIGN KEY (id_lector) REFERENCES MEA_LECTORES(id_lector),
     CONSTRAINT MEA_pk_telefonos PRIMARY KEY (cod_local, cod_area, num_tlf),
     --IMPLEMENTACIÖN DE ARCO EXCLUSIVO
-    CONSTRAINT MEA_chk_club_lector CHECK (id_club IS NOT NULL AND id_lector IS NULL) OR (id_lector IS NOT NULL AND id_club IS NULL)
+    CONSTRAINT MEA_chk_club_tele_lector CHECK ((id_club IS NOT NULL AND id_lector IS NULL) OR (id_lector IS NOT NULL AND id_club IS NULL))
 )
 
 CREATE TABLE MEA_OBRAS (
@@ -127,7 +127,7 @@ CREATE TABLE MEA_OBRAS (
     id_club number(3,0) NOT NULL,
     precio number(10,2),
     CONSTRAINT MEA_fk_obra_club FOREIGN KEY (id_club) REFERENCES MEA_CLUBES(id_club),
-    CONSTRAINT MEA_chk_status_obra CHECK (status_obra IN ('activa', 'inactiva')
+    CONSTRAINT MEA_chk_status_obra CHECK (status_obra IN ('activa', 'inactiva'))
 )
 
 CREATE TABLE MEA_SOCIOS (
@@ -141,7 +141,7 @@ CREATE TABLE MEA_SOCIOS (
     CONSTRAINT MEA_fk_soci_lector FOREIGN KEY (id_lector) REFERENCES MEA_LECTORES(id_lector),
     CONSTRAINT MEA_pk_socios PRIMARY KEY (id_club, id_lector, fech_i_socio),
     CONSTRAINT MEA_chk_status_socio CHECK (status_socio IN ('activo', 'inactivo')),
-    CONSTRAINT MEA_chk_motivo CHECK (motivo_retiro IN ('deuda', 'inasistencia', 'otro')) OR motivo_retiro IS NULL) --> SE PERMITE NULL PARA LOS SOCIOS ACTIVOS
+    CONSTRAINT MEA_chk_motivo CHECK (motivo_retiro IN ('deuda', 'inasistencia', 'otro') OR motivo_retiro IS NULL) --> SE PERMITE NULL PARA LOS SOCIOS ACTIVOS
 )
 
 CREATE TABLE MEA_PAGOS_MEMBRESIAS (
@@ -150,8 +150,8 @@ CREATE TABLE MEA_PAGOS_MEMBRESIAS (
     fech_i_socio date NOT NULL,
     id_pago_membresia number(3,0) NOT NULL,
     fech_emision date NOT NULL,
-    CONSTRAINT MEA_fk_pago_memb_socios FOREIGN KEY (id_club, id_lector, fech_i_socio) REFERENCES MEA_SOCIOS (id_club, id_lector, fech_i_socio) 
-    CONSTRAINT MEA_pk_pagos_memb PRIMARY KEY (id_club, id_lector, fech_i_socio, id_pago_membresia),
+    CONSTRAINT MEA_fk_pago_memb_socios FOREIGN KEY (id_club, id_lector, fech_i_socio) REFERENCES MEA_SOCIOS (id_club, id_lector, fech_i_socio), 
+    CONSTRAINT MEA_pk_pagos_memb PRIMARY KEY (id_club, id_lector, fech_i_socio, id_pago_membresia)
 )
 
 CREATE TABLE MEA_PRESENTACIONES(
@@ -159,8 +159,8 @@ CREATE TABLE MEA_PRESENTACIONES(
     fech_presentacion date NOT NULL,
     valoracion number(2,1) NOT NULL,
     cantidad_asistentes number(5,0) NOT NULL,
-    CONSTRAINT MEA_fk_pres_obra FOREIGN KEY (id_obra) REFERENCES MEA_OBRAS(id_obra)
-    CONSTRAINT MEA_pk_presentaciones PRIMARY KEY (id_obra, fech_presentacion),
+    CONSTRAINT MEA_fk_pres_obra FOREIGN KEY (id_obra) REFERENCES MEA_OBRAS(id_obra),
+    CONSTRAINT MEA_pk_presentaciones PRIMARY KEY (id_obra, fech_presentacion)
 ) 
 
 CREATE TABLE MEA_GRUPOS (
@@ -247,7 +247,7 @@ CREATE TABLE MEA_REUNIONES_CALENDARIO (
     conclusion varchar2(500),
     valoracion number(1,1), -- Valoración de 0.0 a 5.0
     ult_discusion varchar2(2), -- 'SI' o 'NO'
-    CONSTRAINT MEA_fk_reun_grupo FOREIGN KEY (id_grupo, id_club) REFERENCES MEA_GRUPOS(id_grupo, id_eclub),
+    CONSTRAINT MEA_fk_reun_grupo FOREIGN KEY (id_grupo, id_club) REFERENCES MEA_GRUPOS(id_grupo, id_club),
     CONSTRAINT MEA_fk_reun_libro FOREIGN KEY (isbn) REFERENCES MEA_LIBROS(isbn),
     CONSTRAINT MEA_fk_reun_historico_grupo FOREIGN KEY (id_club_hist, id_grupo_hist, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo) REFERENCES MEA_HISTORICO_GRUPOS(id_club_grupo, id_grupo, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo),
     CONSTRAINT MEA_pk_reuniones_calendario PRIMARY KEY (id_club, id_grupo, isbn, fech_reunion),
