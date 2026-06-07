@@ -18,6 +18,7 @@ CREATE SEQUENCE MEA_seq_grupos START WITH 1 INCREMENT BY 1;
 --                      TABLAS INDEPENDIENTES
 --=====================================================================
 
+-- ENTRADA
 CREATE TABLE MEA_INSTITUCIONES (
     id_inst number(3,0) PRIMARY KEY,
     nom_inst varchar2(20) NOT NULL,
@@ -25,17 +26,20 @@ CREATE TABLE MEA_INSTITUCIONES (
     CONSTRAINT MEA_chk_tipo_inst CHECK (tipo_inst IN ('colegio', 'biblioteca', 'universidad'))
 )
 
+-- ENTRADA
 CREATE TABLE MEA_IDIOMAS (
     id_idioma number(3,0) PRIMARY KEY,
     nom_idioma varchar2(20) NOT NULL
 )
 
+-- ENTRADA
 CREATE TABLE MEA_PAISES (
     id_pais number(3,0) PRIMARY KEY,
     nom_pais varchar2(20) NOT NULL,
     moneda varchar2(3) NOT NULL,
     nacionalidad varchar2(20) NOT NULL) 
 
+-- ENTRADA
 CREATE TABLE MEA_AUTORES (
     id_autor number(3,0) PRIMARY KEY,
     p_nombre  varchar2(15) NOT NULL,
@@ -51,6 +55,7 @@ CREATE TABLE MEA_AUTORES (
 -- el nombre del PK deba estar en plural con el nombre de la entidad a la que pertenezca
 -- el nombre de la FK debe nombrar la entidad en la que se encuentra (4 primeras letras), seguido del nombre de entidad que está referenciando
 
+-- ENTRADA
 CREATE TABLE MEA_CIUDADES (
     id_pais number(3,0) NOT NULL,
     id_ciudad number(3,0) NOT NULL,
@@ -59,6 +64,7 @@ CREATE TABLE MEA_CIUDADES (
     CONSTRAINT MEA_pk_ciudades PRIMARY KEY (id_pais, id_ciudad)
 )
 
+-- ENTRADA
 CREATE TABLE MEA_CLUBES (
     id_club number (3,0) PRIMARY KEY,
     nombre_club varchar2(20) NOT NULL,
@@ -70,6 +76,7 @@ CREATE TABLE MEA_CLUBES (
     CONSTRAINT MEA_fk_club_inst FOREIGN KEY (id_inst) REFERENCES MEA_INSTITUCIONES(id_inst)
 )
 
+-- ENTRADA
 CREATE TABLE MEA_LECTORES (
     id_lector number(5,0) PRIMARY KEY,
     doc_identidad number(9,0) NOT NULL UNIQUE,
@@ -83,6 +90,7 @@ CREATE TABLE MEA_LECTORES (
     CONSTRAINT MEA_fk_lect_repre FOREIGN KEY (id_lector_repre) REFERENCES MEA_LECTORES(id_lector)
 )
 
+-- ENTRADA
 CREATE TABLE MEA_REPRESENTANTES (
     id_lector number(5,0),
     id_representante number(3,0),
@@ -94,6 +102,7 @@ CREATE TABLE MEA_REPRESENTANTES (
     CONSTRAINT MEA_pk_representantes PRIMARY KEY (id_lector, id_representante)
 )
 
+-- ENTRADA
 CREATE TABLE MEA_HABLAN (
     id_idioma number(3,0) NOT NULL,
     id_habla number(3,0) NOT NULL,
@@ -107,6 +116,7 @@ CREATE TABLE MEA_HABLAN (
     CONSTRAINT MEA_chk_club_lector CHECK ((id_club IS NOT NULL AND id_lector IS NULL) OR (id_lector IS NOT NULL AND id_club IS NULL))
 )
 
+-- ENTRADA
 CREATE TABLE MEA_TELEFONOS (
     cod_local number(3,0) NOT NULL,
     cod_area number(3,0) NOT NULL,
@@ -120,6 +130,7 @@ CREATE TABLE MEA_TELEFONOS (
     CONSTRAINT MEA_chk_club_tele_lector CHECK ((id_club IS NOT NULL AND id_lector IS NULL) OR (id_lector IS NOT NULL AND id_club IS NULL))
 )
 
+-- ENTRADA
 CREATE TABLE MEA_OBRAS (
     id_obra number(4,0) PRIMARY KEY,
     nombre_obra varchar2(30) NOT NULL,
@@ -130,6 +141,7 @@ CREATE TABLE MEA_OBRAS (
     CONSTRAINT MEA_chk_status_obra CHECK (status_obra IN ('activa', 'inactiva'))
 )
 
+-- ENTRADA / SALIDA
 CREATE TABLE MEA_SOCIOS (
     id_club number(3,0) NOT NULL,
     id_lector number(5,0) NOT NULL,
@@ -144,6 +156,7 @@ CREATE TABLE MEA_SOCIOS (
     CONSTRAINT MEA_chk_motivo CHECK (motivo_retiro IN ('deuda', 'inasistencia', 'otro') OR motivo_retiro IS NULL) --> SE PERMITE NULL PARA LOS SOCIOS ACTIVOS
 )
 
+-- SALIDA
 CREATE TABLE MEA_PAGOS_MEMBRESIAS (
     id_club number(3,0) NOT NULL,
     id_lector number(5,0) NOT NULL,
@@ -154,6 +167,7 @@ CREATE TABLE MEA_PAGOS_MEMBRESIAS (
     CONSTRAINT MEA_pk_pagos_memb PRIMARY KEY (id_club, id_lector, fech_i_socio, id_pago_membresia)
 )
 
+-- SALIDA
 CREATE TABLE MEA_PRESENTACIONES(
     id_obra number(3,0) NOT NULL,
     fech_presentacion date NOT NULL,
@@ -163,6 +177,7 @@ CREATE TABLE MEA_PRESENTACIONES(
     CONSTRAINT MEA_pk_presentaciones PRIMARY KEY (id_obra, fech_presentacion)
 ) 
 
+-- ENTRADA / SALIDA
 CREATE TABLE MEA_GRUPOS (
     id_club number(3,0) NOT NULL,
     id_grupo number(3,0) NOT NULL,
@@ -177,6 +192,7 @@ CREATE TABLE MEA_GRUPOS (
     CONSTRAINT MEA_chk_hora_i_reunion CHECK (hora_i_reunion >= 17.00 and hora_i_reunion <= 19.00)
 )
 
+-- ENTRADA
 CREATE TABLE MEA_ELENCOS (
     id_obra number(3,0) NOT NULL,
     id_lector number(5,0) NOT NULL,
@@ -185,6 +201,7 @@ CREATE TABLE MEA_ELENCOS (
     CONSTRAINT MEA_pk_elencos PRIMARY KEY (id_obra, id_lector)
 )
 
+-- ENTRADA
 CREATE TABLE MEA_MEJORES_ACTORES (
     id_obra_presentacion number(3,0) NOT NULL,
     id_fech_presentacion date NOT NULL,
@@ -195,7 +212,7 @@ CREATE TABLE MEA_MEJORES_ACTORES (
     CONSTRAINT MEA_pk_mejor_actores PRIMARY KEY (id_obra_presentacion, id_fech_presentacion, id_obra_elenco, id_lector)
 )
 
-
+-- ENTRADA / SALIDA
 CREATE TABLE MEA_HISTORICO_GRUPOS (
     id_club_grupo number(3,0) NOT NULL,
     id_grupo number(3,0) NOT NULL,
@@ -209,6 +226,7 @@ CREATE TABLE MEA_HISTORICO_GRUPOS (
     CONSTRAINT MEA_pk_historico_grupos PRIMARY KEY (id_club_grupo, id_grupo, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo)
 )
 
+-- ENTRADA
 CREATE TABLE MEA_ASOCIACIONES (
     id_club1 number(3,0) NOT NULL,
     id_club2 number (3,0) NOT NULL,
@@ -217,6 +235,7 @@ CREATE TABLE MEA_ASOCIACIONES (
     CONSTRAINT MEA_pk_asociaciones PRIMARY KEY (id_club1, id_club2)
 )
 
+-- ENTRADA
 CREATE TABLE MEA_LIBROS (
     isbn number(13,0) PRIMARY KEY,
     titulo_libro varchar2(30) NOT NULL,
@@ -232,6 +251,7 @@ CREATE TABLE MEA_LIBROS (
     CONSTRAINT MEA_fk_libr_anterior FOREIGN KEY (isbn_lib_anterior) REFERENCES MEA_LIBROS(isbn)
 )
 
+-- ENTRADA / SALIDA
 CREATE TABLE MEA_REUNIONES_CALENDARIO (
     id_club number(3,0) NOT NULL,
     id_grupo number(3,0) NOT NULL,
@@ -256,6 +276,7 @@ CREATE TABLE MEA_REUNIONES_CALENDARIO (
     CONSTRAINT MEA_chk_valoracion CHECK (valoracion >= 0.0 AND valoracion <= 5.0)   
 )
 
+-- ENTRADA
 CREATE TABLE MEA_A_L (
     id_autor number(3,0) NOT NULL,
     isbn number(13,0) NOT NULL,
@@ -264,6 +285,7 @@ CREATE TABLE MEA_A_L (
     CONSTRAINT MEA_pk_a_l PRIMARY KEY (id_autor, isbn)
 )
 
+-- ENTRADA
 CREATE TABLE MEA_REFERENCIAS(
     id_obra number(3,0) NOT NULL,
     isbn number(13,0) NOT NULL,
@@ -272,6 +294,7 @@ CREATE TABLE MEA_REFERENCIAS(
     CONSTRAINT MEA_pk_referencias PRIMARY KEY (id_obra, isbn)
 )
 
+-- SALIDA
 CREATE TABLE MEA_INASISTENTES(
     id_club_reu number(3,0) NOT NULL,
     id_grupo_reu number(3,0) NOT NULL,
@@ -288,6 +311,7 @@ CREATE TABLE MEA_INASISTENTES(
     CONSTRAINT MEA_pk_inasistentes PRIMARY KEY (id_club_reu, id_grupo_reu, isbn, fech_reunion, id_club_hist, id_grupo_hist, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo)
 )
 
+-- ENTRADA
 CREATE TABLE MEA_FAVORITOS (
     id_lector number(5,0) NOT NULL,
     isbn number(13,0) NOT NULL,
