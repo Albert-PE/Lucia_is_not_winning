@@ -1,0 +1,56 @@
+Tablas Independientes
+
+-- 1. Tabla: INSTITUCIONES (id_inst)
+CREATE SEQUENCE seq_id_inst START WITH 1 INCREMENT BY 1;
+SELECT seq_id_inst.NEXTVAL FROM DUAL;
+
+-- 2. Tabla: IDIOMAS (id_idioma)
+CREATE SEQUENCE seq_id_idioma START WITH 1 INCREMENT BY 1;
+SELECT seq_id_idioma.NEXTVAL FROM DUAL;
+
+-- 3. Tabla: PAISES (id_pais)
+CREATE SEQUENCE seq_id_pais START WITH 1 INCREMENT BY 1;
+SELECT seq_id_pais.NEXTVAL FROM DUAL;
+
+-- 4. Tabla: AUTORES (id_autor)
+CREATE SEQUENCE seq_id_autor START WITH 1 INCREMENT BY 1;
+SELECT seq_id_autor.NEXTVAL FROM DUAL;
+
+--------------------------------------------------------------------------------
+Tablas Dependientes
+
+-- 5. Tabla: CIUDADES (id_ciudad)
+CREATE SEQUENCE seq_id_ciudad START WITH 1 INCREMENT BY 1;
+SELECT seq_id_ciudad.NEXTVAL FROM DUAL;
+
+-- 6. Tabla: CLUBES (id_club)
+CREATE SEQUENCE seq_id_club START WITH 1 INCREMENT BY 1;
+SELECT seq_id_club.NEXTVAL FROM DUAL;
+
+-- 7. Tabla: LECTORES (id_lector)
+CREATE SEQUENCE seq_id_lector START WITH 1 INCREMENT BY 1;
+SELECT seq_id_lector.NEXTVAL FROM DUAL;
+
+-- 8. Tabla: REPRESENTANTES (id_represent)
+CREATE SEQUENCE seq_id_represent START WITH 1 INCREMENT BY 1;
+SELECT seq_id_represent.NEXTVAL FROM DUAL;
+
+-- 9. Tabla: HABLAN (id_habla)
+CREATE SEQUENCE seq_id_habla START WITH 1 INCREMENT BY 1;
+SELECT seq_id_habla.NEXTVAL FROM DUAL;
+
+-- 10. Tabla: OBRAS (id_obra)
+CREATE SEQUENCE seq_id_obra START WITH 1 INCREMENT BY 1;
+SELECT seq_id_obra.NEXTVAL FROM DUAL;
+
+-- 11. Tabla: PAGOS_MEMBRESIAS (id_pago_mem)
+CREATE SEQUENCE seq_id_pago_mem START WITH 1 INCREMENT BY 1;
+SELECT seq_id_pago_mem.NEXTVAL FROM DUAL;
+
+-- 12. Tabla: GRUPOS (id_grupo)
+CREATE SEQUENCE seq_id_grupo START WITH 1 INCREMENT BY 1;
+SELECT seq_id_grupo.NEXTVAL FROM DUAL;
+
+-- 13. Tabla: Favoritos
+CREATE SEQUENCE seq_id_orden START WITH 1 INCREMENT BY 1;
+SELECT seq_id_orden.NEXTVAL FROM DUAL;
