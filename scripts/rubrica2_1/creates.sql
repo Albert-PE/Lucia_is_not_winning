@@ -49,7 +49,7 @@ CREATE TABLE MEA_AUTORES (
 --=====================================================================
 -- Si el constraint es aparte para ambos (PK y FK) primero el Fk, luego la PK
 -- el nombre del PK deba estar en plural con el nombre de la entidad a la que pertenezca
--- el nombre de la efecta debe nombrar la entidadn en la que se encuentra (4 primeras letras), seguido del nombre de entidad que está referenciando
+-- el nombre de la FK debe nombrar la entidad en la que se encuentra (4 primeras letras), seguido del nombre de entidad que está referenciando
 
 CREATE TABLE MEA_CIUDADES (
     id_pais number(3,0) NOT NULL,
@@ -95,13 +95,13 @@ CREATE TABLE REPRESENTANTES (
 )
 
 CREATE TABLE HABLAN (
-    id_idioma number (3,0) NOT NULL,
-    id_habla number (3,0) NOT NULL,
-    id_club number (3,0),
-    id_lector number (3,0),
-    CONSTRAINT fk_habla_idioma FOREIGN KEY (id_idioma) REFERENCES IDIOMAS(id_idioma),
-    CONSTRAINT fk_habla_lector FOREIGN KEY (id_lector) REFERENCES LECTORES(id_lector),
-    CONSTRAINT fk_habla_club FOREIGN KEY (id_club) REFERENCES CLUBES(id_club),
+    id_idioma number(3,0) NOT NULL,
+    id_habla number(3,0) NOT NULL,
+    id_club number(3,0),
+    id_lector number(3,0),
+    CONSTRAINT fk_habl_idioma FOREIGN KEY (id_idioma) REFERENCES IDIOMAS(id_idioma),
+    CONSTRAINT fk_habl_lector FOREIGN KEY (id_lector) REFERENCES LECTORES(id_lector),
+    CONSTRAINT fk_habl_club FOREIGN KEY (id_club) REFERENCES CLUBES(id_club),
     CONSTRAINT pk_hablan PRIMARY KEY (id_idioma, id_habla)
     --IMPLEMENTACIÖN DE ARCO EXCLUSIVO
     CONSTRAINT chk_club_lector CHECK (id_club IS NOT NULL AND id_lector IS NULL) OR (id_lector IS NOT NULL AND id_club IS NULL)
@@ -112,7 +112,7 @@ CREATE TABLE TELEFONOS (
     cod_area number(3,0) NOT NULL,
     num_tlf number(7,0) NOT NULL,
     id_club number(3,0),
-    id_lector number(3,0),
+    id_lector number(5,0),
     CONSTRAINT fk_tele_club FOREIGN KEY (id_club) REFERENCES CLUBES(id_club),
     CONSTRAINT fk_tele_lector FOREIGN KEY (id_lector) REFERENCES LECTORES(id_lector)
     CONSTRAINT pk_telefonos PRIMARY KEY (cod_local, cod_area, num_tlf),
@@ -132,67 +132,67 @@ CREATE TABLE OBRAS (
 
 CREATE TABLE SOCIOS (
     id_club number(3,0) NOT NULL,
-    id_lector number(3,0) NOT NULL,
-    fech_in_socio date('DD/MM/YYYY') NOT NULL,
-    status_socio varchar2(20) NOT NULL,
-    fech_f_socio date('DD/MM/YYYY'),
-    motivo_retiro varchar2(20),
-    CONSTRAINT pk_socios PRIMARY KEY (id_club, id_lector, fech_in_socio),
-    CONSTRAINT fk_club FOREIGN KEY (id_club) REFERENCES CLUBES(id_club),
-    CONSTRAINT fk_lector FOREIGN KEY (id_lector) REFERENCES LECTORES(id_lector),
+    id_lector number(5,0) NOT NULL,
+    fech_i_socio date NOT NULL,
+    status_socio varchar2(8) NOT NULL,
+    fech_f_socio date,
+    motivo_retiro varchar2(15),
+    CONSTRAINT fk_soci_club FOREIGN KEY (id_club) REFERENCES CLUBES(id_club),
+    CONSTRAINT fk_soci_lector FOREIGN KEY (id_lector) REFERENCES LECTORES(id_lector),
+    CONSTRAINT pk_socios PRIMARY KEY (id_club, id_lector, fech_i_socio),
     CONSTRAINT chk_status_socio CHECK (status_socio IN ('activo', 'inactivo')),
     CONSTRAINT chk_motivo CHECK (motivo_retiro IN ('deuda', 'inasistencia', 'otro')) OR motivo_retiro IS NULL) --> SE PERMITE NULL PARA LOS SOCIOS ACTIVOS
 )
 
 CREATE TABLE PAGOS_MEMBRESIAS (
     id_club number(3,0) NOT NULL,
-    id_lector number(3,0) NOT NULL,
-    fech_in_socio date('DD/MM/YYYY') NOT NULL,
+    id_lector number(5,0) NOT NULL,
+    fech_i_socio date NOT NULL,
     id_pago_membresia number(3,0) NOT NULL,
-    fech_emision date('DD/MM/YYYY') NOT NULL,
-    CONSTRAINT pk_pagos PRIMARY KEY (id_club, id_lector, fech_in_socio, id_pago_membresia),
-    CONSTRAINT fk_socios FOREIGN KEY (id_club, id_lector, fech_in_socio) REFERENCES SOCIOS (id_club, id_lector, fech_in_socio) 
+    fech_emision date NOT NULL,
+    CONSTRAINT fk_pago_memb_socios FOREIGN KEY (id_club, id_lector, fech_i_socio) REFERENCES SOCIOS (id_club, id_lector, fech_i_socio) 
+    CONSTRAINT pk_pagos_memb PRIMARY KEY (id_club, id_lector, fech_i_socio, id_pago_membresia),
 )
 
 CREATE TABLE PRESENTACIONES(
     id_obra number(3,0) NOT NULL,
-    fech_presentacion date('DD/MM/YYYY') NOT NULL,
+    fech_presentacion date NOT NULL,
     valoracion number(2,1) NOT NULL,
     cantidad_asistentes number(5,0) NOT NULL,
+    CONSTRAINT fk_pres_obra FOREIGN KEY (id_obra) REFERENCES OBRAS(id_obra)
     CONSTRAINT pk_presentaciones PRIMARY KEY (id_obra, fech_presentacion),
-    CONSTRAINT fk_obra FOREIGN KEY (id_obra) REFERENCES OBRAS(id_obra)
 ) 
 
 CREATE TABLE GRUPOS (
     id_club number(3,0) NOT NULL,
     id_grupo number(3,0) NOT NULL,
-    fech_creacion date('DD/MM/YYYY') NOT NULL,
-    tipo varchar2(20) NOT NULL,
+    fech_creacion date NOT NULL,
+    tipo varchar2(10) NOT NULL,
     dia_reunion number(1,0) NOT NULL,
-    hora_i number(2,0) NOT NULL,
-    Constraint pk_grupos PRIMARY KEY (id_club, id_grupo),
+    hora_i_reunion number(2,0) NOT NULL,
     CONSTRAINT fk_club FOREIGN KEY (id_club) REFERENCES CLUBES(id_club),
+    Constraint pk_grupos PRIMARY KEY (id_club, id_grupo),
     CONSTRAINT chk_tipo CHECK (tipo IN ('joven', 'adulto', 'infantil')),
     CONSTRAINT chk_dia_reunion CHECK (dia_reunion IN (2,3,4,5,6)),
-    CONSTRAINT chk_hora_i CHECK (hora_i >= 17.00 and hora_i <= 19.00)
+    CONSTRAINT chk_hora_i_reunion CHECK (hora_i_reunion >= 17.00 and hora_i_reunion <= 19.00)
 )
 
 CREATE TABLE ELENCOS (
     id_obra number(3,0) NOT NULL,
-    id_lector number(3,0) NOT NULL,
-    CONSTRAINT pk_elencos PRIMARY KEY (id_obra, id_lector),
-    CONSTRAINT fk_obra FOREIGN KEY (id_obra) REFERENCES OBRAS(id_obra),
-    CONSTRAINT fk_lector FOREIGN KEY (id_lector) REFERENCES LECTORES(id_lector)
+    id_lector number(5,0) NOT NULL,
+    CONSTRAINT fk_elen_obra FOREIGN KEY (id_obra) REFERENCES OBRAS(id_obra),
+    CONSTRAINT fk_elen_lector FOREIGN KEY (id_lector) REFERENCES LECTORES(id_lector),
+    CONSTRAINT pk_elencos PRIMARY KEY (id_obra, id_lector)
 )
 
 CREATE TABLE MEJORES_ACTORES (
     id_obra_presentacion number(3,0) NOT NULL,
-    id_fech_presentacion number NOT NULL,
+    id_fech_presentacion date NOT NULL,
     id_obra_elenco number(3,0) NOT NULL,
-    id_lector number(3,0) NOT NULL,
-    CONSTRAINT pk_mejor_actores PRIMARY KEY (id_obra_presentacion, id_fech_presentacion, id_obra_elenco, id_lector),
-    CONSTRAINT fk_presentacion FOREIGN KEY (id_obra_presentacion, id_fech_presentacion) REFERENCES PRESENTACIONES(id_obra, fech_presentacion),
-    CONSTRAINT fk_elenco FOREIGN KEY (id_obra_elenco, id_lector) REFERENCES ELENCOS(id_obra, id_lector)
+    id_lector number(5,0) NOT NULL,
+    CONSTRAINT fk_mej_act_presentacion FOREIGN KEY (id_obra_presentacion, id_fech_presentacion) REFERENCES PRESENTACIONES(id_obra, fech_presentacion),
+    CONSTRAINT fk_mej_act_elenco FOREIGN KEY (id_obra_elenco, id_lector) REFERENCES ELENCOS(id_obra, id_lector),
+    CONSTRAINT pk_mejor_actores PRIMARY KEY (id_obra_presentacion, id_fech_presentacion, id_obra_elenco, id_lector)
 )
 
 
@@ -200,21 +200,21 @@ CREATE TABLE HISTORICO_GRUPOS (
     id_club_grupo number(3,0) NOT NULL,
     id_grupo number(3,0) NOT NULL,
     id_club_soc number(3,0) NOT NULL,
-    id_lector number(3,0) NOT NULL,
-    fech_in_socio date('DD/MM/YYYY') NOT NULL,
-    fech_in_hist_grupo date('DD/MM/YYYY') NOT NULL, 
-    fech_f_hist_grupo date('DD/MM/YYYY'),
-    CONSTRAINT pk_historico_grupos PRIMARY KEY (id_club_grupo, id_grupo, id_club_soc, id_lector, fech_in_socio, fech_in_hist_grupo),
-    CONSTRAINT fk_club_grupo FOREIGN KEY (id_club_grupo, id_grupo) REFERENCES GRUPOS(id_club, id_grupo),
-    CONSTRAINT fk_socios FOREIGN KEY (id_club_soc, id_lector, fech_in_socio) REFERENCES SOCIOS(id_club, id_lector, fech_in_socio)
+    id_lector number(5,0) NOT NULL,
+    fech_i_socio date NOT NULL,
+    fech_i_hist_grupo date NOT NULL, 
+    fech_f_hist_grupo date,
+    CONSTRAINT fk_hist_grup_grupo FOREIGN KEY (id_club_grupo, id_grupo) REFERENCES GRUPOS(id_club, id_grupo),
+    CONSTRAINT fk_hist_grup_socio FOREIGN KEY (id_club_soc, id_lector, fech_i_socio) REFERENCES SOCIOS(id_club, id_lector, fech_i_socio),
+    CONSTRAINT pk_historico_grupos PRIMARY KEY (id_club_grupo, id_grupo, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo)
 )
 
 CREATE TABLE ASOCIACIONES (
     id_club1 number(3,0) NOT NULL,
     id_club2 number (3,0) NOT NULL,
-    CONSTRAINT pk_asociaciones PRIMARY KEY (id_club1, id_club2),
-    CONSTRAINT fk_club1 FOREIGN KEY (id_club1) REFERENCES CLUBES(id_club),
-    CONSTRAINT fk_club2 FOREIGN KEY (id_club2) REFERENCES CLUBES(id_club)
+    CONSTRAINT fk_asoc_club1 FOREIGN KEY (id_club1) REFERENCES CLUBES(id_club),
+    CONSTRAINT fk_asoc_club2 FOREIGN KEY (id_club2) REFERENCES CLUBES(id_club),
+    CONSTRAINT pk_asociaciones PRIMARY KEY (id_club1, id_club2)
 )
 
 CREATE TABLE LIBROS (
@@ -228,29 +228,29 @@ CREATE TABLE LIBROS (
     tipo_narrativa varchar2(7) NOT NULL,
     id_pais number(3,0) NOT NULL,
     isbn_lib_anterior number(13,0),
-    CONSTRAINT fk_pais FOREIGN KEY (id_pais) REFERENCES PAISES(id_pais),
-    CONSTRAINT fk_isbn_anterior FOREIGN KEY (isbn_lib_anterior) REFERENCES LIBROS(isbn)
+    CONSTRAINT fk_libr_pais FOREIGN KEY (id_pais) REFERENCES PAISES(id_pais),
+    CONSTRAINT fk_libr_anterior FOREIGN KEY (isbn_lib_anterior) REFERENCES LIBROS(isbn)
 )
 
 CREATE TABLE REUNIONES_CALENDARIO (
     id_club number(3,0) NOT NULL,
     id_grupo number(3,0) NOT NULL,
     isbn number(13,0) NOT NULL,
-    fech_reunion date('DD/MM/YYYY') NOT NULL,
+    fech_reunion date NOT NULL,
     realizada varchar2(2) NOT NULL, -- 'SI' o 'NO'
     id_club_hist number(3,0) NOT NULL,
     id_grupo_hist number(3,0) NOT NULL,
     id_club_soc number(3,0) NOT NULL,
-    id_lector number(3,0) NOT NULL,
-    fech_in_socio date('DD/MM/YYYY') NOT NULL,
-    fech_in_hist_grupo date('DD/MM/YYYY') NOT NULL,
+    id_lector number(5,0) NOT NULL,
+    fech_i_socio date NOT NULL,
+    fech_i_hist_grupo date NOT NULL,
     conclusion varchar2(500),
     valoracion number(1,1), -- Valoración de 0.0 a 5.0
-    ult_discusion varchar2(2) , -- 'SI' o 'NO'
+    ult_discusion varchar2(2), -- 'SI' o 'NO'
+    CONSTRAINT fk_reun_grupo FOREIGN KEY (id_grupo, id_club) REFERENCES GRUPOS(id_grupo, id_eclub),
+    CONSTRAINT fk_reun_libro FOREIGN KEY (isbn) REFERENCES LIBROS(isbn),
+    CONSTRAINT fk_reun_historico_grupo FOREIGN KEY (id_club_hist, id_grupo_hist, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo) REFERENCES HISTORICO_GRUPOS(id_club_grupo, id_grupo, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo),
     CONSTRAINT pk_reuniones_calendario PRIMARY KEY (id_club, id_grupo, isbn, fech_reunion),
-    CONSTRAINT fk_grupo FOREIGN KEY (id_grupo, id_club) REFERENCES GRUPOS(id_grupo, id_eclub),
-    CONSTRAINT fk_libro FOREIGN KEY (isbn) REFERENCES LIBROS(isbn),
-    CONSTRAINT fk_historico FOREIGN KEY (id_club_hist, id_grupo_hist, id_club_soc, id_lector, fech_in_socio, fech_in_hist_grupo) REFERENCES HISTORICO_GRUPOS(id_club_grupo, id_grupo, id_club_soc, id_lector, fech_in_socio, fech_in_hist_grupo),
     CONSTRAINT chk_realizada CHECK (realizada IN ('SI', 'NO')),
     CONSTRAINT chk_ult_discusion CHECK (ult_discusion IN ('SI', 'NO') OR ult_discusion IS NULL),
     CONSTRAINT chk_valoracion CHECK (valoracion >= 0.0 AND valoracion <= 5.0)   
@@ -258,41 +258,41 @@ CREATE TABLE REUNIONES_CALENDARIO (
 
 CREATE TABLE A_L (
     id_autor number(3,0) NOT NULL,
-    id_libro number(13,0) NOT NULL,
-    CONSTRAINT pk_a_l PRIMARY KEY (id_autor, id_libro),
-    CONSTRAINT fk_autor FOREIGN KEY (id_autor) REFERENCES AUTORES(id_autor),
-    CONSTRAINT fk_libro FOREIGN KEY (id_libro) REFERENCES LIBROS(isbn)
+    isbn number(13,0) NOT NULL,
+    CONSTRAINT fk_a_l_autor FOREIGN KEY (id_autor) REFERENCES AUTORES(id_autor),
+    CONSTRAINT fk_a_l_libro FOREIGN KEY (isbn) REFERENCES LIBROS(isbn),
+    CONSTRAINT pk_a_l PRIMARY KEY (id_autor, isbn)
 )
 
 CREATE TABLE REFERENCIAS(
     id_obra number(3,0) NOT NULL,
     isbn number(13,0) NOT NULL,
-    CONSTRAINT pk_referencias PRIMARY KEY (id_obra, isbn),
-    CONSTRAINT fk_obra FOREIGN KEY (id_obra) REFERENCES OBRAS(id_obra),
-    CONSTRAINT fk_libro FOREIGN KEY (isbn) REFERENCES LIBROS(isbn)
+    CONSTRAINT fk_refe_obra FOREIGN KEY (id_obra) REFERENCES OBRAS(id_obra),
+    CONSTRAINT fk_refe_libro FOREIGN KEY (isbn) REFERENCES LIBROS(isbn),
+    CONSTRAINT pk_referencias PRIMARY KEY (id_obra, isbn)
 )
 
 CREATE TABLE INASISTENTES(
     id_club_reu number(3,0) NOT NULL,
     id_grupo_reu number(3,0) NOT NULL,
     isbn number(13,0) NOT NULL,
-    fech_reunion date('DD/MM/YYYY') NOT NULL, 
+    fech_reunion date NOT NULL, 
     id_club_hist number(3,0) NOT NULL,
     id_grupo_hist number(3,0) NOT NULL,
     id_club_soc number(3,0) NOT NULL,
-    id_lector number(3,0) NOT NULL,
-    fech_in_socio date('DD/MM/YYYY') NOT NULL, 
-    fech_in_hist_grupo date('''DD/MM/YYYY') NOT NULL, 
-    CONSTRAINT pk_inasistentes PRIMARY KEY (id_club_reu, id_grupo_reu, isbn, fech_reunion, id_club_hist, id_grupo_hist, id_club_soc, id_lector, fech_in_socio, fech_in_hist_grupo),
-    CONSTRAINT fk_reunion FOREIGN KEY (id_club_reu, id_grupo_reu, isbn, fech_reunion) REFERENCES REUNIONES_CALENDARIO(id_club, id_grupo, isbn, fech_reunion),
-    CONSTRAINT fk_historico FOREIGN KEY (id_club_hist, id_grupo_hist, id_club_soc, id_lector, fech_in_socio, fech_in_hist_grupo) REFERENCES HISTORICO_GRUPOS(id_club_grupo, id_grupo, id_club_soc, id_lector, fech_in_socio, fech_in_hist_grupo)
+    id_lector number(5,0) NOT NULL,
+    fech_i_socio date NOT NULL, 
+    fech_i_hist_grupo date NOT NULL, 
+    CONSTRAINT fk_inas_reunion FOREIGN KEY (id_club_reu, id_grupo_reu, isbn, fech_reunion) REFERENCES REUNIONES_CALENDARIO(id_club, id_grupo, isbn, fech_reunion),
+    CONSTRAINT fk_inas_historico FOREIGN KEY (id_club_hist, id_grupo_hist, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo) REFERENCES HISTORICO_GRUPOS(id_club_grupo, id_grupo, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo),
+    CONSTRAINT pk_inasistentes PRIMARY KEY (id_club_reu, id_grupo_reu, isbn, fech_reunion, id_club_hist, id_grupo_hist, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo)
 )
 
 CREATE TABLE FAVORITOS (
-    id_lector number(3,0) NOT NULL,
+    id_lector number(5,0) NOT NULL,
     isbn number(13,0) NOT NULL,
-    orden number(2,0) NOT NULL,
-    CONSTRAINT pk_favoritos PRIMARY KEY (id_lector, isbn, orden),
-    CONSTRAINT fk_lector FOREIGN KEY (id_lector) REFERENCES LECTORES(id_lector),
-    CONSTRAINT fk_libro FOREIGN KEY (isbn) REFERENCES LIBROS(isbn)
+    orden number(1,0) NOT NULL,
+    CONSTRAINT fk_favo_lector FOREIGN KEY (id_lector) REFERENCES LECTORES(id_lector),
+    CONSTRAINT fk_favo_libro FOREIGN KEY (isbn) REFERENCES LIBROS(isbn),
+    CONSTRAINT pk_favoritos PRIMARY KEY (id_lector, isbn, orden)
 )
