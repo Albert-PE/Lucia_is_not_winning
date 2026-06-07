@@ -1,4 +1,37 @@
---insertar aquí el code de las funciones
+CREATE OR REPLACE FUNCTION Conversion_Monetaria(
+    p_id_pais IN PAISES.id_pais%TYPE,
+    p_monto IN NUMBER,
+    p_tasa_cambio IN NUMBER
+) RETURN NUMBER IS
+    v_monto_usd NUMBER;
+    v_nom_moneda PAISES.moneda%TYPE;
+BEGIN
+    -- Buscamos el nombre de la moneda basado en el ID del país
+    SELECT moneda 
+    INTO v_nom_moneda
+    FROM PAISES
+    WHERE id_pais = p_id_pais;
+
+    -- Realizamos la conversión
+    v_monto_usd := p_monto / p_tasa_cambio;
+    
+    -- Feedback para el usuario con la moneda recuperada de la tabla
+    DBMS_OUTPUT.PUT_LINE(p_monto || ' ' || v_nom_moneda || ' cambiados a ' || v_monto_usd || ' dolares');
+
+    RETURN (v_monto_usd);
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        raise_application_error(-20007, 'El ID de país proporcionado no existe.');
+        RETURN NULL;
+    WHEN ZERO_DIVIDE THEN
+        raise_application_error(-20005, 'La tasa de cambio no puede ser cero.');
+        RETURN NULL;
+    WHEN OTHERS THEN
+        raise_application_error(-20006, 'Error en la conversión monetaria: ' || SQLERRM);
+        RETURN NULL;
+END;
+
+--=========================================================================
 
 CREATE OR REPLACE FUNCTION Antigüedad_en_club_miembro (v_fecha DATE) 
 RETURN NUMBER IS 
