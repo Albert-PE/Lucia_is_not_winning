@@ -40,6 +40,7 @@ BEGIN
     RETURN (ROUND(((SYSDATE - v_fecha) / 365), 0)); 
 END;
 
+-- Query de prueba para Antigüedad_en_club_miembro
 SELECT 
     p_nombre AS "Nombre", 
     f_nacimiento AS "Fecha Nacimiento",
@@ -47,7 +48,8 @@ SELECT
 FROM MEA_LECTORES;
 
 --=========================================================================
-create or replace NONEDITIONABLE FUNCTION participacion_bimestre_miembro (id_part_lector number)
+
+CREATE OR REPLACE FUNCTION participacion_bimestre_miembro (id_part_lector number)
 RETURN NUMBER IS
     v_inasistencias NUMBER;
     v_total_reuniones NUMBER;
