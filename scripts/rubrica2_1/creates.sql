@@ -42,10 +42,10 @@ CREATE TABLE MEA_PAISES (
 -- ENTRADA
 CREATE TABLE MEA_AUTORES (
     id_autor number(3,0) PRIMARY KEY,
-    p_nombre  varchar2(15) NOT NULL,
+    p_nombre  varchar2(15) DEFAULT 'DESCONOCIDO' NOT NULL,
     s_nombre  varchar2(15),
-    p_apellido varchar2(15) NOT NULL,
-    s_apellido varchar2(15) NOT NULL
+    p_apellido varchar2(15),
+    s_apellido varchar2(15)
 )
 
 --=====================================================================
@@ -70,10 +70,13 @@ CREATE TABLE MEA_CLUBES (
     nombre_club varchar2(20) NOT NULL,
     fech_creacion date NOT NULL,
     direccion varchar2(30) NOT NULL,
-    codigo_postal number(5,0) NOT NULL,
-    cuota_membresia number (5,0) NOT NULL,
-    id_inst number(3,0) NOT NULL,
-    CONSTRAINT MEA_fk_club_inst FOREIGN KEY (id_inst) REFERENCES MEA_INSTITUCIONES(id_inst)
+    codigo_postal varchar2(5) NOT NULL,
+    id_pais number(3,0) NOT NULL,
+    id_ciudad number(3,0) NOT NULL,
+    cuota_membresia number (5,0),
+    id_inst number(3,0),
+    CONSTRAINT MEA_fk_club_ciudad FOREIGN KEY (id_pais, id_ciudad) REFERENCES MEA_CIUDADES(id_pais, id_ciudad),
+    CONSTRAINT MEA_fk_club_institucion FOREIGN KEY (id_inst) REFERENCES MEA_INSTITUCIONES(id_inst)
 )
 
 -- ENTRADA
