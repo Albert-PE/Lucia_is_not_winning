@@ -241,7 +241,7 @@ CREATE TABLE MEA_ASOCIACIONES (
 -- ENTRADA
 CREATE TABLE MEA_LIBROS (
     isbn number(13,0) PRIMARY KEY,
-    titulo_libro varchar2(30) NOT NULL,
+    titulo_libro varchar2(35) NOT NULL,
     año_publicacion number(4,0) NOT NULL,
     cant_paginas number(4,0) NOT NULL,
     resumen varchar2(500) NOT NULL,
