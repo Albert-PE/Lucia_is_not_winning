@@ -40,121 +40,136 @@ Libros
 
 -- 1. Tabla: INSTITUCIONES
     INSERT INTO instituciones (id_inst, nom_inst, tipo_inst) 
-    VALUES (seq_id_inst.NEXTVAL, 'Biblioteca Central de la Ciudad', 'biblioteca');
+    VALUES (MEA_seq_instituciones.NEXTVAL, 'Biblioteca Central de la Ciudad', 'biblioteca');
 
     INSERT INTO instituciones (id_inst, nom_inst, tipo_inst) 
-    VALUES (seq_id_inst.NEXTVAL, 'Universidad de las Artes', 'universidad');
+    VALUES (MEA_seq_instituciones.NEXTVAL, 'Universidad de las Artes', 'universidad');
 
 
 
 -- 2. Tabla: IDIOMAS
     INSERT INTO MEA_IDIOMAS (id_idioma, nom_idioma) 
-    VALUES (seq_id_idioma.NEXTVAL, 'Español');
+    VALUES (MEA_seq_idiomas.NEXTVAL, 'Español');
 
     INSERT INTO MEA_IDIOMAS (id_idioma, nom_idioma) 
-    VALUES (seq_id_idioma.NEXTVAL, 'Inglés');
+    VALUES (MEA_seq_idiomas.NEXTVAL, 'Inglés');
 
     INSERT INTO MEA_IDIOMAS (id_idioma, nom_idioma) 
-    VALUES (seq_id_idioma.NEXTVAL, 'Islandés');
+    VALUES (MEA_seq_idiomas.NEXTVAL, 'Islandés');
 
     INSERT INTO MEA_IDIOMAS (id_idioma, nom_idioma) 
-    VALUES (seq_id_idioma.NEXTVAL, 'Irlandés');
+    VALUES (MEA_seq_idiomas.NEXTVAL, 'Irlandés');
 
     INSERT INTO MEA_IDIOMAS (id_idioma, nom_idioma) 
-    VALUES (seq_id_idioma.NEXTVAL, 'Turco');
+    VALUES (MEA_seq_idiomas.NEXTVAL, 'Turco');
 
     INSERT INTO MEA_IDIOMAS (id_idioma, nom_idioma) 
-    VALUES (seq_id_idioma.NEXTVAL, 'Checo');
+    VALUES (MEA_seq_idiomas.NEXTVAL, 'Checo');
 
     INSERT INTO MEA_IDIOMAS (id_idioma, nom_idioma) 
-    VALUES (seq_id_idioma.NEXTVAL, 'Portugués');
+    VALUES (MEA_seq_idiomas.NEXTVAL, 'Portugués');
 
     INSERT INTO MEA_IDIOMAS (id_idioma, nom_idioma) 
-    VALUES (seq_id_idioma.NEXTVAL, 'Neerlandés');
+    VALUES (MEA_seq_idiomas.NEXTVAL, 'Neerlandés');
 
     INSERT INTO MEA_IDIOMAS (id_idioma, nom_idioma) 
-    VALUES (seq_id_idioma.NEXTVAL, 'Afrikáans');
+    VALUES (MEA_seq_idiomas.NEXTVAL, 'Afrikáans');
 
     INSERT INTO MEA_IDIOMAS (id_idioma, nom_idioma) 
-    VALUES (seq_id_idioma.NEXTVAL, 'Francés');
+    VALUES (MEA_seq_idiomas.NEXTVAL, 'Francés');
 
 
 
 -- 3. Tabla: PAISES
     INSERT INTO MEA_PAISES (id_pais, nom_pais, moneda, nacionalidad) 
-    VALUES (seq_id_pais.NEXTVAL, 'Venezuela', 'VED', 'Venezolana');
+    VALUES (MEA_seq_paises.NEXTVAL, 'Venezuela', 'VED', 'Venezolana');
 
     INSERT INTO MEA_PAISES (id_pais, nom_pais, moneda, nacionalidad) 
-    VALUES (seq_id_pais.NEXTVAL, 'España', 'EUR', 'Española');
+    VALUES (MEA_seq_paises.NEXTVAL, 'España', 'EUR', 'Española');
 
     INSERT INTO MEA_PAISES (id_pais, nom_pais, moneda, nacionalidad) 
-    VALUES (seq_id_pais.NEXTVAL, 'Islandia', 'ISK', 'Islandesa');
+    VALUES (MEA_seq_paises.NEXTVAL, 'Islandia', 'ISK', 'Islandesa');
 
     INSERT INTO MEA_PAISES (id_pais, nom_pais, moneda, nacionalidad) 
-    VALUES (seq_id_pais.NEXTVAL, 'Irlanda', 'EUR', 'Irlandesa');
+    VALUES (MEA_seq_paises.NEXTVAL, 'Irlanda', 'EUR', 'Irlandesa');
 
     INSERT INTO MEA_PAISES (id_pais, nom_pais, moneda, nacionalidad) 
-    VALUES (seq_id_pais.NEXTVAL, 'Turquía', 'TRY', 'Turca');
+    VALUES (MEA_seq_paises.NEXTVAL, 'Turquía', 'TRY', 'Turca');
 
     INSERT INTO MEA_PAISES (id_pais, nom_pais, moneda, nacionalidad) 
-    VALUES (seq_id_pais.NEXTVAL, 'Países Bajos', 'EUR', 'Neerlandesa');
+    VALUES (MEA_seq_paises.NEXTVAL, 'Países Bajos', 'EUR', 'Neerlandesa');
 
     INSERT INTO MEA_PAISES (id_pais, nom_pais, moneda, nacionalidad) 
-    VALUES (seq_id_pais.NEXTVAL, 'Sudáfrica', 'ZAR', 'Sudafricana');
+    VALUES (MEA_seq_paises.NEXTVAL, 'Sudáfrica', 'ZAR', 'Sudafricana');
 
     INSERT INTO MEA_PAISES (id_pais, nom_pais, moneda, nacionalidad) 
-    VALUES (seq_id_pais.NEXTVAL, 'Portugal', 'EUR', 'Portuguesa');
+    VALUES (MEA_seq_paises.NEXTVAL, 'Portugal', 'EUR', 'Portuguesa');
 
     INSERT INTO MEA_PAISES (id_pais, nom_pais, moneda, nacionalidad) 
-    VALUES (seq_id_pais.NEXTVAL, 'Canadá', 'CAD', 'Canadiense');
+    VALUES (MEA_seq_paises.NEXTVAL, 'Canadá', 'CAD', 'Canadiense');
 
     INSERT INTO MEA_PAISES (id_pais, nom_pais, moneda, nacionalidad) 
-    VALUES (seq_id_pais.NEXTVAL, 'República Checa', 'CZK', 'Checa');
+    VALUES (MEA_seq_paises.NEXTVAL, 'República Checa', 'CZK', 'Checa');
+
+    INSERT INTO MEA_PAISES (id_pais, nom_pais, moneda, nacionalidad) 
+    VALUES (MEA_seq_paises.NEXTVAL, 'Argentina', 'ARS', 'Argentina');
+
+    INSERT INTO MEA_PAISES (id_pais, nom_pais, moneda, nacionalidad) 
+    VALUES (MEA_seq_paises.NEXTVAL, 'Uruguay', 'UYU', 'Uruguaya');
+
+    INSERT INTO MEA_PAISES (id_pais, nom_pais, moneda, nacionalidad) 
+    VALUES (MEA_seq_paises.NEXTVAL, 'Francia', 'EUR', 'Francesa');
+
+    INSERT INTO MEA_PAISES (id_pais, nom_pais, moneda, nacionalidad) 
+    VALUES (MEA_seq_paises.NEXTVAL, 'Estados Unidos', 'USD', 'Estadounidense');
+
+    INSERT INTO MEA_PAISES (id_pais, nom_pais, moneda, nacionalidad) 
+    VALUES (MEA_seq_paises.NEXTVAL, 'Reino Unido', 'GBP', 'Británica');
 
 
 
 -- 4. Tabla: AUTORES
     INSERT INTO MEA_AUTORES (id_autor) 
-    VALUES (seq_id_autor.NEXTVAL);
+    VALUES (MEA_seq_autores.NEXTVAL);
 
     INSERT INTO MEA_AUTORES (id_autor, p_nombre, s_nombre, p_apellido, s_apellido) 
-    VALUES (seq_id_autor.NEXTVAL, 'Jorge', 'Luis', 'Borges', 'Acevedo');
+    VALUES (MEA_seq_autores.NEXTVAL, 'Jorge', 'Luis', 'Borges', 'Acevedo');
 
-    INSERT INTO MEA_AUTORES (id_autor, p_nombre, p_apellido,) 
-    VALUES (seq_id_autor.NEXTVAL, 'Mario', 'Benedetti');
+    INSERT INTO MEA_AUTORES (id_autor, p_nombre, p_apellido) 
+    VALUES (MEA_seq_autores.NEXTVAL, 'Mario', 'Benedetti');
 
     INSERT INTO MEA_AUTORES (id_autor, p_nombre, p_apellido, s_apellido) 
-    VALUES (seq_id_autor.NEXTVAL, 'Manuel', 'Puig', 'Beltran');
+    VALUES (MEA_seq_autores.NEXTVAL, 'Manuel', 'Puig', 'Beltran');
 
     INSERT INTO MEA_AUTORES (id_autor, p_nombre, p_apellido, s_apellido) 
-    VALUES (seq_id_autor.NEXTVAL, 'Julio', 'Verne', 'Gaignon');
+    VALUES (MEA_seq_autores.NEXTVAL, 'Julio', 'Verne', 'Gaignon');
 
     INSERT INTO MEA_AUTORES (id_autor, p_nombre, p_apellido, s_apellido) 
-    VALUES (seq_id_autor.NEXTVAL, 'Herman', 'Melville', 'Philer');
+    VALUES (MEA_seq_autores.NEXTVAL, 'Herman', 'Melville', 'Philer');
 
     INSERT INTO MEA_AUTORES (id_autor, p_nombre, p_apellido) 
-    VALUES (seq_id_autor.NEXTVAL, 'Neil', 'Gaiman');
+    VALUES (MEA_seq_autores.NEXTVAL, 'Neil', 'Gaiman');
 
     INSERT INTO MEA_AUTORES (id_autor, p_nombre, p_apellido) 
-    VALUES (seq_id_autor.NEXTVAL, 'Stephen', 'Chbosky');
+    VALUES (MEA_seq_autores.NEXTVAL, 'Stephen', 'Chbosky');
 
     INSERT INTO MEA_AUTORES (id_autor, p_nombre, p_apellido) 
-    VALUES (seq_id_autor.NEXTVAL, 'Rainbow', 'Rowell');
+    VALUES (MEA_seq_autores.NEXTVAL, 'Rainbow', 'Rowell');
 
     INSERT INTO MEA_AUTORES (id_autor, p_nombre, p_apellido) 
-    VALUES (seq_id_autor.NEXTVAL, 'Ernest', 'Cline');
+    VALUES (MEA_seq_autores.NEXTVAL, 'Ernest', 'Cline');
 
     INSERT INTO MEA_AUTORES (id_autor, p_nombre, p_apellido) 
-    VALUES (seq_id_autor.NEXTVAL, 'Andy', 'Weir');
+    VALUES (MEA_seq_autores.NEXTVAL, 'Andy', 'Weir');
 
     INSERT INTO MEA_AUTORES (id_autor, p_nombre, p_apellido) 
-    VALUES (seq_id_autor.NEXTVAL, 'Matt', 'Haig');
+    VALUES (MEA_seq_autores.NEXTVAL, 'Matt', 'Haig');
 
     INSERT INTO MEA_AUTORES (id_autor, p_nombre, p_apellido, s_apellido) 
-    VALUES (seq_id_autor.NEXTVAL, 'Taylor', 'Jenkins', 'Reid');
+    VALUES (MEA_seq_autores.NEXTVAL, 'Taylor', 'Jenkins', 'Reid');
 
     INSERT INTO MEA_AUTORES (id_autor, p_nombre, p_apellido, s_apellido) 
-    VALUES (seq_id_autor.NEXTVAL, 'Laura', 'Gallego', 'García');
+    VALUES (MEA_seq_autores.NEXTVAL, 'Laura', 'Gallego', 'García');
 COMMIT;
 
 --------------------------------------------------------------------------------
@@ -164,52 +179,52 @@ COMMIT;
 
 -- 5. Tabla: CIUDADES 
     INSERT INTO MEA_CIUDADES (id_ciudad, id_pais, nom_ciudad) --1
-    VALUES (seq_id_ciudad.NEXTVAL, 1, 'Caracas');
+    VALUES (MEA_seq_ciudades.NEXTVAL, 1, 'Caracas');
 
     INSERT INTO MEA_CIUDADES (id_ciudad, id_pais, nom_ciudad) --2
-    VALUES (seq_id_ciudad.NEXTVAL, 2, 'Madrid');
+    VALUES (MEA_seq_ciudades.NEXTVAL, 2, 'Madrid');
 
     INSERT INTO MEA_CIUDADES (id_ciudad, id_pais, nom_ciudad) --3
-    VALUES (seq_id_ciudad.NEXTVAL, 3, 'Reikiavik');
+    VALUES (MEA_seq_ciudades.NEXTVAL, 3, 'Reikiavik');
 
     INSERT INTO MEA_CIUDADES (id_ciudad, id_pais, nom_ciudad) --4
-    VALUES (seq_id_ciudad.NEXTVAL, 3, 'Akureyri');
+    VALUES (MEA_seq_ciudades.NEXTVAL, 3, 'Akureyri');
 
     INSERT INTO MEA_CIUDADES (id_ciudad, id_pais, nom_ciudad) --5
-    VALUES (seq_id_ciudad.NEXTVAL, 3, 'Reykjanesbær');
+    VALUES (MEA_seq_ciudades.NEXTVAL, 3, 'Reykjanesbær');
 
     INSERT INTO MEA_CIUDADES (id_ciudad, id_pais, nom_ciudad) --6
-    VALUES (seq_id_ciudad.NEXTVAL, 4, 'Dublín');
+    VALUES (MEA_seq_ciudades.NEXTVAL, 4, 'Dublín');
 
     INSERT INTO MEA_CIUDADES (id_ciudad, id_pais, nom_ciudad) --7
-    VALUES (seq_id_ciudad.NEXTVAL, 4, 'Galway');
+    VALUES (MEA_seq_ciudades.NEXTVAL, 4, 'Galway');
 
     INSERT INTO MEA_CIUDADES (id_ciudad, id_pais, nom_ciudad) --8
-    VALUES (seq_id_ciudad.NEXTVAL, 4, 'Cork');
+    VALUES (MEA_seq_ciudades.NEXTVAL, 4, 'Cork');
 
     INSERT INTO MEA_CIUDADES (id_ciudad, id_pais, nom_ciudad) --9
-    VALUES (seq_id_ciudad.NEXTVAL, 5, 'Estambul');
+    VALUES (MEA_seq_ciudades.NEXTVAL, 5, 'Estambul');
 
     INSERT INTO MEA_CIUDADES (id_ciudad, id_pais, nom_ciudad) --10
-    VALUES (seq_id_ciudad.NEXTVAL, 5, 'Ankara');
+    VALUES (MEA_seq_ciudades.NEXTVAL, 5, 'Ankara');
 
     INSERT INTO MEA_CIUDADES (id_ciudad, id_pais, nom_ciudad) --11
-    VALUES (seq_id_ciudad.NEXTVAL, 5, 'Esmirna');
+    VALUES (MEA_seq_ciudades.NEXTVAL, 5, 'Esmirna');
 
     INSERT INTO MEA_CIUDADES (id_ciudad, id_pais, nom_ciudad) --12
-    VALUES (seq_id_ciudad.NEXTVAL, 6, 'Ámsterdam');
+    VALUES (MEA_seq_ciudades.NEXTVAL, 6, 'Ámsterdam');
 
     INSERT INTO MEA_CIUDADES (id_ciudad, id_pais, nom_ciudad) --13
-    VALUES (seq_id_ciudad.NEXTVAL, 7, 'Ciudad del Cabo');
+    VALUES (MEA_seq_ciudades.NEXTVAL, 7, 'Ciudad del Cabo');
 
     INSERT INTO MEA_CIUDADES (id_ciudad, id_pais, nom_ciudad) --14
-    VALUES (seq_id_ciudad.NEXTVAL, 8, 'Lisboa');
+    VALUES (MEA_seq_ciudades.NEXTVAL, 8, 'Lisboa');
 
     INSERT INTO MEA_CIUDADES (id_ciudad, id_pais, nom_ciudad) --15
-    VALUES (seq_id_ciudad.NEXTVAL, 9, 'Toronto');
+    VALUES (MEA_seq_ciudades.NEXTVAL, 9, 'Toronto');
 
     INSERT INTO MEA_CIUDADES (id_ciudad, id_pais, nom_ciudad) --16
-    VALUES (seq_id_ciudad.NEXTVAL, 10, 'Praga');
+    VALUES (MEA_seq_ciudades.NEXTVAL, 10, 'Praga');
 
 
 
@@ -217,127 +232,186 @@ COMMIT;
 
     --Islandia
         INSERT INTO MEA_CLUBES (id_club, nombre_club, fech_creacion, direccion, codigo_postal, id_pais, id_ciudad, cuota_membresia)
-        VALUES (seq_id_club.NEXTVAL, 'Círculo de Lectura del Fin del Mundo', TO_DATE('10-01-2024', 'DD-MM-YYYY'), 'Calle Falsa 1','1060', 3, 4, 25.00);
+        VALUES (MEA_seq_clubes.NEXTVAL, 'Círculo de Lectura del Fin del Mundo', TO_DATE('10-01-2024', 'DD-MM-YYYY'), 'Calle Falsa 1','1060', 3, 4, 25.00);
 
         INSERT INTO MEA_CLUBES (id_club, nombre_club, fech_creacion, direccion, codigo_postal, id_pais, id_ciudad)
-        VALUES (seq_id_club.NEXTVAL, 'Sagas de Reikiavik', TO_DATE('11-01-2004', 'DD-MM-YYYY'), 'Calle Falsa 2','2050', 3, 3);
+        VALUES (MEA_seq_clubes.NEXTVAL, 'Sagas de Reikiavik', TO_DATE('11-01-2004', 'DD-MM-YYYY'), 'Calle Falsa 2','2050', 3, 3);
 
     -- Irlanda
         INSERT INTO MEA_CLUBES (id_club, nombre_club, fech_creacion, direccion, codigo_postal, id_pais, id_ciudad)
-        VALUES (seq_id_club.NEXTVAL, 'La Tertulia del Faro', TO_DATE('11-01-2004', 'DD-MM-YYYY'), 'Calle Falsa 3','4861', 4, 6);
+        VALUES (MEA_seq_clubes.NEXTVAL, 'La Tertulia del Faro', TO_DATE('11-01-2004', 'DD-MM-YYYY'), 'Calle Falsa 3','4861', 4, 6);
 
         INSERT INTO MEA_CLUBES (id_club, nombre_club, fech_creacion, direccion, codigo_postal, id_pais, id_ciudad)
-        VALUES (seq_id_club.NEXTVAL, 'Trébol Literario de Dublín', TO_DATE('11-01-2004', 'DD-MM-YYYY'), 'Calle Falsa 10','4868', 4, 6);
+        VALUES (MEA_seq_clubes.NEXTVAL, 'Trébol Literario de Dublín', TO_DATE('11-01-2004', 'DD-MM-YYYY'), 'Calle Falsa 10','4868', 4, 6);
 
     -- Turquía
         INSERT INTO MEA_CLUBES (id_club, nombre_club, fech_creacion, direccion, codigo_postal, id_pais, id_ciudad)
-        VALUES (seq_id_club.NEXTVAL, 'Lectores del Bósforo', TO_DATE('11-01-2004', 'DD-MM-YYYY'), 'Calle Falsa 4','4862', 5, 10);
+        VALUES (MEA_seq_clubes.NEXTVAL, 'Lectores del Bósforo', TO_DATE('11-01-2004', 'DD-MM-YYYY'), 'Calle Falsa 4','4862', 5, 10);
 
         INSERT INTO MEA_CLUBES (id_club, nombre_club, fech_creacion, direccion, codigo_postal, id_pais, id_ciudad)
-        VALUES (seq_id_club.NEXTVAL, 'Bazar de Libros de Estambul', TO_DATE('11-01-2004', 'DD-MM-YYYY'), 'Calle Falsa 11','4869', 5, 9);
+        VALUES (MEA_seq_clubes.NEXTVAL, 'Bazar de Libros de Estambul', TO_DATE('11-01-2004', 'DD-MM-YYYY'), 'Calle Falsa 11','4869', 5, 9);
 
     -- Países Bajos
         INSERT INTO MEA_CLUBES (id_club, nombre_club, fech_creacion, direccion, codigo_postal, id_pais, id_ciudad)
-        VALUES (seq_id_club.NEXTVAL, 'El Club de los Libros Olvidados', TO_DATE('11-01-2004', 'DD-MM-YYYY'), 'Calle Falsa 5','4863', 6, 12);
+        VALUES (MEA_seq_clubes.NEXTVAL, 'El Club de los Libros Olvidados', TO_DATE('11-01-2004', 'DD-MM-YYYY'), 'Calle Falsa 5','4863', 6, 12);
 
     -- Sudáfrica
         INSERT INTO MEA_CLUBES (id_club, nombre_club, fech_creacion, direccion, codigo_postal, id_pais, id_ciudad)
-        VALUES (seq_id_club.NEXTVAL, 'Sociedad de Lectura del Cabo', TO_DATE('11-01-2004', 'DD-MM-YYYY'), 'Calle Falsa 6','4864', 7, 13);
+        VALUES (MEA_seq_clubes.NEXTVAL, 'Sociedad de Lectura del Cabo', TO_DATE('11-01-2004', 'DD-MM-YYYY'), 'Calle Falsa 6','4864', 7, 13);
 
     -- Portugal
         INSERT INTO MEA_CLUBES (id_club, nombre_club, fech_creacion, direccion, codigo_postal, id_pais, id_ciudad)
-        VALUES (seq_id_club.NEXTVAL, 'Hermandad de la Tinta Verde', TO_DATE('11-01-2004', 'DD-MM-YYYY'), 'Calle Falsa 7','4865', 8, 14);
+        VALUES (MEA_seq_clubes.NEXTVAL, 'Hermandad de la Tinta Verde', TO_DATE('11-01-2004', 'DD-MM-YYYY'), 'Calle Falsa 7','4865', 8, 14);
 
     -- Canadá
         INSERT INTO MEA_CLUBES (id_club, nombre_club, fech_creacion, direccion, codigo_postal, id_pais, id_ciudad)
-        VALUES (seq_id_club.NEXTVAL, 'Los Nómadas del Papel', TO_DATE('11-01-2004', 'DD-MM-YYYY'), 'Calle Falsa 8','4866', 9, 15);
+        VALUES (MEA_seq_clubes.NEXTVAL, 'Los Nómadas del Papel', TO_DATE('11-01-2004', 'DD-MM-YYYY'), 'Calle Falsa 8','4866', 9, 15);
 
     -- República Checa
         INSERT INTO MEA_CLUBES (id_club, nombre_club, fech_creacion, direccion, codigo_postal, id_pais, id_ciudad)
-        VALUES (seq_id_club.NEXTVAL, 'Café Literario de Praga', TO_DATE('11-01-2004', 'DD-MM-YYYY'), 'Calle Falsa 9','4867', 10, 16);
+        VALUES (MEA_seq_clubes.NEXTVAL, 'Café Literario de Praga', TO_DATE('11-01-2004', 'DD-MM-YYYY'), 'Calle Falsa 9','4867', 10, 16);
 
         INSERT INTO MEA_CLUBES (id_club, nombre_club, fech_creacion, direccion, codigo_postal, id_pais, id_ciudad)
-        VALUES (seq_id_club.NEXTVAL, 'Bohemia Literaria', TO_DATE('11-01-2004', 'DD-MM-YYYY'), 'Calle Falsa 12','4870', 10, 16);
+        VALUES (MEA_seq_clubes.NEXTVAL, 'Bohemia Literaria', TO_DATE('11-01-2004', 'DD-MM-YYYY'), 'Calle Falsa 12','4870', 10, 16);
 
 
 
 -- 7. Tabla: LECTORES 
     INSERT INTO lectores (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email) 
-    VALUES (seq_id_lector.NEXTVAL, 11222333, 'Juan', 'Carlos', 'Pérez', 'Rodríguez', TO_DATE('15-05-1985', 'DD-MM-YYYY'), 'juan.perez@email.com');
+    VALUES (MEA_seq_lectores.NEXTVAL, 11222333, 'Juan', 'Carlos', 'Pérez', 'Rodríguez', TO_DATE('15-05-1985', 'DD-MM-YYYY'), 'juan.perez@email.com');
 
     INSERT INTO lectores (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email) 
-    VALUES (seq_id_lector.NEXTVAL, 22333444, 'María', 'Elena', 'García', 'López', TO_DATE('20-10-1992', 'DD-MM-YYYY'), 'maria.garcia@email.com');
+    VALUES (MEA_seq_lectores.NEXTVAL, 22333444, 'María', 'Elena', 'García', 'López', TO_DATE('20-10-1992', 'DD-MM-YYYY'), 'maria.garcia@email.com');
 
 
 
 -- 8. Tabla: OBRAS 
     INSERT INTO obras (id_obra, nombre_obra, precio, status, id_club) 
-    VALUES (seq_id_obra.NEXTVAL, 'Cien Años de Soledad: El Drama', 5.99, 'activa', 1);
+    VALUES (MEA_seq_obras.NEXTVAL, 'Cien Años de Soledad: El Drama', 5.99, 'activa', 1);
 
 
 
 -- 9. Tabla: HABLAN 
     INSERT INTO hablan (id_habla, id_idioma, id_lector) 
-    VALUES (seq_id_habla.NEXTVAL, 1, 1);
+    VALUES (MEA_seq_hablan.NEXTVAL, 1, 1);
 
     INSERT INTO hablan (id_habla, id_idioma, id_club) 
-    VALUES (seq_id_habla.NEXTVAL, 2, 1);
+    VALUES (MEA_seq_hablan.NEXTVAL, 2, 1);
 
 
 
 -- 10. Tabla: REPRESENTANTES 
-    INSERT INTO representantes (id_lector, id_represent, doc_identidad, p_nombre, p_apellido, s_apellido) 
-    VALUES (1, seq_id_represent.NEXTVAL, 5556667, 'Roberto', 'Pérez', 'Díaz');
+    INSERT INTO MEA_REPRESENTANTES (id_lector, id_representante, doc_identidad, p_nombre, p_apellido, s_apellido) 
+    VALUES (1, MEA_seq_representantes.NEXTVAL, 5556667, 'Roberto', 'Pérez', 'Díaz');
 
 
 
 -- 11. Tabla: TELÉFONOS 
-    INSERT INTO telefonos (cod_local, cod_area, num_tlf, id_club) 
+    INSERT INTO MEA_TELEFONOS (cod_local, cod_area, num_tlf, id_club) 
     VALUES (58, 212, 1234567, 1);
 
-    INSERT INTO telefonos (cod_local, cod_area, num_tlf, id_lector) 
+    INSERT INTO MEA_TELEFONOS (cod_local, cod_area, num_tlf, id_lector) 
     VALUES (34, 91, 9876543, 2);
 
 
 
 -- 12. Tabla: LIBROS 
-    INSERT INTO libros (isbn, titulo_libro, año_publicacion, cant_paginas, resumen, sinopsis, tema, tipo_narrativa, id_pais) 
-    VALUES (seq_isbn.NEXTVAL, 'Cien Años de Soledad', TO_DATE('05-06-1967', 'DD-MM-YYYY'), 471, 'Épica de la familia Buendía', 'Realismo mágico en Macondo', 'Saga Familiar', 'novela', 3);
+    INSERT INTO MEA_LIBROS (isbn, titulo_libro, año_publicacion, cant_paginas, resumen, sinopsis, tema, tipo_narrativa, id_pais) 
+    VALUES (9788420633114, 'El Aleph', 1949, 152, 'Borges nos guía por relatos donde el tiempo, la inmortalidad y los laberintos son protagonistas. El cuento principal narra el descubrimiento de un punto en el espacio que contiene todos los puntos del universo simultáneamente.', 'Obra cumbre de la literatura fantástica. A través de la erudición y la ironía, el autor explora las obsesiones humanas y las paradojas matemáticas, invitando al lector a cuestionar la estructura de la realidad y la infinitud.', 'Ficción filosófica', 'Cuentos', 11);
+
+    INSERT INTO MEA_LIBROS (isbn, titulo_libro, año_publicacion, cant_paginas, resumen, sinopsis, tema, tipo_narrativa, id_pais) 
+    VALUES (9788420633121, 'Ficciones', 1944, 192, 'Colección dividida en "El jardín de senderos que se bifurcan" y "Artificios". Presenta universos paralelos, bibliotecas infinitas, detectives y falsificaciones literarias que alteran el curso de la historia.', 'Un hito del cuento moderno. Borges entrelaza filosofía, religión y mitología para crear mundos ficticios que desafían la lógica, demostrando que la literatura puede ser un inmenso juego intelectual de proporciones cósmicas.', 'Realismo mágico', 'Cuentos', 11);
+
+    INSERT INTO MEA_LIBROS (isbn, titulo_libro, año_publicacion, cant_paginas, resumen, sinopsis, tema, tipo_narrativa, id_pais) 
+    VALUES (9788420423852, 'La tregua', 1960, 216, 'Martín Santomé, un viudo a punto de jubilarse, lleva una vida gris en Montevideo hasta que conoce a Laura Avellaneda, una joven empleada con la que inicia un romance que le devuelve la esperanza y la alegría de vivir.', 'Escrita en formato de diario, es una exploración conmovedora sobre la rutina, el paso del tiempo, el amor tardío y lo efímero de la felicidad. Una obra magistral que retrata a la clase media uruguaya con dulce melancolía.', 'Rutina y esperanza', 'Novela', 12);
+
+    INSERT INTO MEA_LIBROS (isbn, titulo_libro, año_publicacion, cant_paginas, resumen, sinopsis, tema, tipo_narrativa, id_pais) 
+    VALUES (9788432219764, 'El beso de la mujer araña', 1976, 288, 'En una celda argentina, dos presos muy distintos —Molina, un romántico, y Valentín, un activista político— conviven. Forjan un vínculo profundo mientras Molina narra películas clásicas para evadir la dura realidad.', 'Una profunda crítica a la represión política y sexual. Mediante diálogos sin narrador tradicional, Puig examina la identidad, el heroísmo, los roles de género y el poder transformador de la empatía en el aislamiento.', 'Opresión/Libertad', 'Novela', 11);
+
+    INSERT INTO MEA_LIBROS (isbn, titulo_libro, año_publicacion, cant_paginas, resumen, sinopsis, tema, tipo_narrativa, id_pais) 
+    VALUES (9788420600734, 'La vuelta al mundo en 80 días', 1872, 320, 'Phileas Fogg, un caballero inglés, apuesta su fortuna a que puede dar la vuelta al mundo en 80 días. Junto a su sirviente Passepartout, sortea obstáculos increíbles y evade a un detective que lo confunde con un ladrón.', 'Un clásico de aventuras que captura la fascinación del siglo XIX por la tecnología y los nuevos transportes, celebrando la tenacidad humana, la precisión y la maravilla de un mundo que comenzaba a estar globalizado.', 'Aventura/Progreso', 'Novela', 13);
+
+    INSERT INTO MEA_LIBROS (isbn, titulo_libro, año_publicacion, cant_paginas, resumen, sinopsis, tema, tipo_narrativa, id_pais) 
+    VALUES (9788420653068, 'Moby Dick', 1851, 824, 'Ismael se embarca en el ballenero Pequod, comandado por el capitán Ahab. El viaje pronto revela su verdadero y oscuro propósito: la caza implacable y obsesiva de Moby Dick, una gigantesca y fiera ballena blanca.', 'Una epopeya monumental sobre la lucha del hombre contra la naturaleza y lo divino. Mezclando acción con profundas reflexiones filosóficas, aborda los límites de la cordura, el odio humano y la sed de retribución.', 'Venganza y obsesión', 'Novela', 14);
+
+    INSERT INTO MEA_LIBROS (isbn, titulo_libro, año_publicacion, cant_paginas, resumen, sinopsis, tema, tipo_narrativa, id_pais) 
+    VALUES (9788498380811, 'Coraline', 2002, 160, 'Al mudarse a una nueva casa, Coraline descubre una puerta a un mundo alternativo. Allí, sus "Otros Padres" son atentos pero tienen botones por ojos e intentarán atraparla para siempre en esa escalofriante y falsa utopía.', 'Un oscuro y brillante relato sobre la valentía. Gaiman construye una atmósfera aterradora con elementos de cuento de hadas para demostrar que el coraje real no es la ausencia de miedo, sino enfrentarlo pese a tenerlo.', 'Fantasía oscura', 'Novela', 15);
+
+    INSERT INTO MEA_LIBROS (isbn, titulo_libro, año_publicacion, cant_paginas, resumen, sinopsis, tema, tipo_narrativa, id_pais) 
+    VALUES (9788415594048, 'El libro del cementerio', 2008, 304, 'Tras el asesinato de su familia, el bebé Nadie escapa a un cementerio, donde es adoptado y criado por fantasmas y criaturas nocturnas. Al crecer, debe aprender a convivir y defenderse entre el mundo de los vivos y los muertos.', 'Una reimaginación de "El libro de la selva" en un entorno macabro. Aborda temas universales como el crecimiento, la identidad y la aceptación de la pérdida, mezclando folclore oscuro con una emotiva historia familiar.', 'Fantasía juvenil', 'Novela', 15);
+
+    INSERT INTO MEA_LIBROS (isbn, titulo_libro, año_publicacion, cant_paginas, resumen, sinopsis, tema, tipo_narrativa, id_pais) 
+    VALUES (9786073111451, 'Las ventajas de ser invisible', 1999, 224, 'Charlie es un adolescente solitario lidiando con traumas pasados. A través de cartas anónimas, relata su ingreso a la preparatoria y cómo conoce a Sam y Patrick, quienes lo introducen al mundo de la amistad y la música.', 'Una honesta historia de maduración que aborda el abuso, el despertar sexual y la importancia de pertenecer. Una obra de culto que captura con enorme sensibilidad la angustia, la vulnerabilidad y la intensidad adolescente.', 'Salud mental/Amor', 'Novela', 14);
+
+    INSERT INTO MEA_LIBROS (isbn, titulo_libro, año_publicacion, cant_paginas, resumen, sinopsis, tema, tipo_narrativa, id_pais) 
+    VALUES (9788420415703, 'Eleanor & Park', 2012, 336, 'Dos adolescentes inadaptados en los años 80, la excéntrica Eleanor y el callado Park, comparten un asiento en el autobús escolar. A través de cómics y casetes, desarrollan un profundo pero complicado primer amor.', 'Una exploración cruda y dulce del amor juvenil frente a la adversidad. La novela contrasta la ternura de la conexión adolescente con realidades duras como el acoso escolar y el abuso doméstico, dejando una fuerte huella.', 'Primer amor', 'Novela', 14);
+
+    INSERT INTO MEA_LIBROS (isbn, titulo_libro, año_publicacion, cant_paginas, resumen, sinopsis, tema, tipo_narrativa, id_pais) 
+    VALUES (9788466649176, 'Ready Player One', 2011, 464, 'En un futuro distópico, la humanidad se refugia en OASIS, un mundo virtual. Su creador dejó su inmensa fortuna escondida allí, y el joven Wade Watts compite contra corporaciones implacables para encontrar el "huevo de pascua".', 'Una trepidante carta de amor a la cultura pop de los ochenta. Mezcla ciencia ficción con estética ciberpunk y videojuegos, ofreciendo una aventura vertiginosa que advierte sutilmente sobre los peligros del escapismo.', 'Realidad virtual', 'Novela', 14);
+
+    INSERT INTO MEA_LIBROS (isbn, titulo_libro, año_publicacion, cant_paginas, resumen, sinopsis, tema, tipo_narrativa, id_pais) 
+    VALUES (9788466655054, 'El marciano', 2011, 400, 'El astronauta Mark Watney es dado por muerto y abandonado en Marte tras una tormenta de arena. Con escasos suministros, deberá usar todo su ingenio, botánica e ingeniería para sobrevivir e intentar contactar a la Tierra.', 'Un thriller de ciencia ficción centrado en la resolución de problemas lógicos. Con un humor sarcástico y una precisión científica asombrosa, celebra la capacidad del intelecto y la resiliencia frente a la hostilidad del cosmos.', 'Supervivencia', 'Novela', 14);
+
+    INSERT INTO MEA_LIBROS (isbn, titulo_libro, año_publicacion, cant_paginas, resumen, sinopsis, tema, tipo_narrativa, id_pais) 
+    VALUES (9788418037130, 'Project Hail Mary', 2021, 496, 'Ryland Grace despierta sin memoria en una nave a años luz de casa, junto a dos cadáveres. Al recordar, comprende que es la única esperanza para salvar a la Tierra de un letal microorganismo que está consumiendo al sol.', 'Una fascinante odisea interestelar que explora la soledad, el sacrificio y la amistad más allá de las barreras de las especies. Destaca por su rigor científico accesible y su emotivo mensaje de cooperación existencial.', 'Cooperación y vida', 'Novela', 14);
+
+    INSERT INTO MEA_LIBROS (isbn, titulo_libro, año_publicacion, cant_paginas, resumen, sinopsis, tema, tipo_narrativa, id_pais) 
+    VALUES (9788412275957, 'La biblioteca de la medianoche', 2020, 336, 'Nora Seed, sumida en la depresión, intenta terminar con su vida. Sin embargo, despierta en una mágica biblioteca donde cada libro le permite experimentar una versión de su vida si hubiera tomado decisiones diferentes.', 'Una novela reconfortante sobre las infinitas posibilidades de la existencia. Reflexiona sobre el enorme peso de los arrepentimientos, la salud mental y la verdadera definición del éxito, recordando que nunca es tarde para vivir.', 'Arrepentimiento', 'Novela', 15);
+
+    INSERT INTO MEA_LIBROS (isbn, titulo_libro, año_publicacion, cant_paginas, resumen, sinopsis, tema, tipo_narrativa, id_pais) 
+    VALUES (9788416327855, 'Los 7 maridos de Evelyn Hugo', 2017, 400, 'La mítica estrella de Hollywood Evelyn Hugo elige a la periodista Monique Grant para revelar su biografía no autorizada. Evelyn narra su meteórico ascenso a la cima, sus siete matrimonios y el verdadero gran amor de su vida.', 'Un retrato deslumbrante del glamour clásico del cine y sus secretos. Explora la ambición desenfrenada, el alto costo de la fama, los sacrificios personales y las complejidades de la identidad bajo el implacable ojo público.', 'Fama y ambición', 'Novela', 14);
+
+    INSERT INTO MEA_LIBROS (isbn, titulo_libro, año_publicacion, cant_paginas, resumen, sinopsis, tema, tipo_narrativa, id_pais) 
+    VALUES (9788467550037, 'Donde los árboles cantan', 2011, 480, 'Viana, una joven doncella educada para el matrimonio, ve su vida destruida cuando los bárbaros conquistan su reino de Nortia. Deberá huir al Gran Bosque, aprender a luchar y desentrañar sus misterios para recuperar su hogar.', 'Una historia de empoderamiento, magia y lealtad. La autora reinterpreta los cantares de gesta medievales a través de una heroína fuerte y en constante evolución, tejiendo un hermoso relato sobre la supervivencia y la naturaleza.', 'Fantasía épica', 'Novela', 2);
 
 
 
 -- 13. Tabla: ASOCIACIONES 
-    INSERT INTO asociaciones (id_club1, id_club2) 
+    INSERT INTO MEA_ASOCIACIONES (id_club1, id_club2) 
     VALUES (1, 2);
 
 
 
 -- 14. Tabla: A_L 
-    INSERT INTO a_l (id_autor, isbn) 
-    VALUES (2, 1);
+    INSERT INTO MEA_A_L (id_autor, isbn) VALUES (2, 9788420633114);
+    INSERT INTO MEA_A_L (id_autor, isbn) VALUES (2, 9788420633121);
+    INSERT INTO MEA_A_L (id_autor, isbn) VALUES (3, 9788420423852);
+    INSERT INTO MEA_A_L (id_autor, isbn) VALUES (4, 9788432219764);
+    INSERT INTO MEA_A_L (id_autor, isbn) VALUES (5, 9788420600734);
+    INSERT INTO MEA_A_L (id_autor, isbn) VALUES (6, 9788420653068);
+    INSERT INTO MEA_A_L (id_autor, isbn) VALUES (7, 9788498380811);
+    INSERT INTO MEA_A_L (id_autor, isbn) VALUES (7, 9788415594048);
+    INSERT INTO MEA_A_L (id_autor, isbn) VALUES (8, 9786073111451);
+    INSERT INTO MEA_A_L (id_autor, isbn) VALUES (9, 9788420415703);
+    INSERT INTO MEA_A_L (id_autor, isbn) VALUES (10, 9788466649176);
+    INSERT INTO MEA_A_L (id_autor, isbn) VALUES (11, 9788466655054);
+    INSERT INTO MEA_A_L (id_autor, isbn) VALUES (11, 9788418037130);
+    INSERT INTO MEA_A_L (id_autor, isbn) VALUES (12, 9788412275957);
+    INSERT INTO MEA_A_L (id_autor, isbn) VALUES (13, 9788416327855);
+    INSERT INTO MEA_A_L (id_autor, isbn) VALUES (14, 9788467550037);
 
 
 
 -- 15. Tabla: REFERENCIAS 
-    INSERT INTO referencias (id_libro, id_obra) 
+    INSERT INTO MEA_REFERENCIAS (id_libro, id_obra) 
     VALUES (1, 1);
 
 
 
 -- 16. Tabla: ELENCOS 
-    INSERT INTO elencos (id_obra, id_lector) 
+    INSERT INTO MEA_ELENCOS (id_obra, id_lector) 
     VALUES (1, 1);
 
 
 
 -- 17. Tabla: MEJORES_ACTORES 
-    INSERT INTO mejores_actores (id_presentacion, id_obra, id_elenco, id_lector) 
+    INSERT INTO MEA_MEJORES_ACTORES (id_presentacion, id_obra, id_elenco, id_lector) 
     VALUES (SYSDATE, 1, 1, 1);
 
 
 
 -- 18. Tabla: Favoritos
-    INSERT INTO favoritos (id_lector, id_libro, id_orden) 
+    INSERT INTO MEA_FAVORITOS (id_lector, id_libro, id_orden) 
     VALUES (1, 1, seq_id_orden.NEXTVAL);
 
 COMMIT;
