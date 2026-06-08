@@ -47,19 +47,19 @@ SELECT
 FROM MEA_LECTORES;
 
 --=========================================================================
-CREATE OR REPLACE FUNCTION %participacion_bimestre_miembro (id_part_lector number)
+create or replace NONEDITIONABLE FUNCTION participacion_bimestre_miembro (id_part_lector number)
 RETURN NUMBER IS
     v_inasistencias NUMBER;
     v_total_reuniones NUMBER;
     v_porcentaje NUMBER;
 BEGIN
-    
+
     SELECT count(*) INTO v_inasistencias
-        FROM inasistentes
+        FROM mea_inasistentes
         WHERE id_part_lector = id_lector AND fech_reunion between add_months(SYSDATE,-2) AND SYSDATE;
 
     SELECT count(*) INTO v_total_reuniones    
-        FROM historico_grupos h, reuniones_calendario r 
+        FROM mea_historico_grupos h, mea_reuniones_calendario r 
         WHERE 
             id_part_lector = h.id_lector 
             AND h.id_club_grupo = r.id_club 
@@ -68,7 +68,7 @@ BEGIN
             AND (h.fech_f_hist_grupo IS NULL OR r.fech_reunion <= h.fech_f_hist_grupo) 
             AND r.fech_reunion between add_months(SYSDATE,-2) AND SYSDATE 
             AND r.realizada = 'SI';
-    
+
     IF v_total_reuniones = 0 THEN
         RETURN 0;
     ELSE
