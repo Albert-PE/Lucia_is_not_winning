@@ -1,15 +1,15 @@
-CREATE OR REPLACE FUNCTION MEA_Conversion_Monetaria(
-    p_id_pais IN PAISES.id_pais%TYPE,
+create or replace FUNCTION MEA_Conversion_Monetaria(
+    p_id_pais IN MEA_PAISES.id_pais%TYPE,
     p_monto IN NUMBER,
     p_tasa_cambio IN NUMBER
 ) RETURN NUMBER IS
     v_monto_usd NUMBER;
-    v_nom_moneda PAISES.moneda%TYPE;
+    v_nom_moneda MEA_PAISES.moneda%TYPE;
 BEGIN
     -- Buscamos el nombre de la moneda basado en el ID del país
     SELECT moneda 
     INTO v_nom_moneda
-    FROM PAISES
+    FROM MEA_PAISES
     WHERE id_pais = p_id_pais;
 
     -- Realizamos la conversión
