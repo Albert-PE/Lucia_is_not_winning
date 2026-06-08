@@ -55,7 +55,7 @@ FROM MEA_LECTORES;
 
 --=========================================================================
 
-CREATE OR REPLACE FUNCTION MEA_Promedio_Part_Mensual_Tipo(
+create or replace NONEDITIONABLE FUNCTION MEA_Promedio_Part_Mensual_Tipo(
     p_id_club IN NUMBER,
     p_tipo_grupo IN VARCHAR2, -- 'joven', 'adulto', 'infantil'
     p_mes IN NUMBER,
@@ -65,15 +65,15 @@ CREATE OR REPLACE FUNCTION MEA_Promedio_Part_Mensual_Tipo(
     v_total_inasistencias NUMBER := 0;
     v_promedio NUMBER := 0;
     v_tipo_normalizado VARCHAR2(20);
-    v_nom_club CLUBES.nombre_club%TYPE;
+    v_nom_club MEA_CLUBES.nombre_club%TYPE;
     v_fecha_consulta DATE;
 BEGIN
     v_tipo_normalizado := LOWER(p_tipo_grupo);
-    
+
     -----VALIDACIONES-----
     BEGIN
         SELECT nombre_club INTO v_nom_club
-        FROM CLUBES
+        FROM MEA_CLUBES
         WHERE id_club = p_id_club;
     EXCEPTION
         WHEN NO_DATA_FOUND THEN
@@ -93,12 +93,12 @@ BEGIN
     -- Calculo asistencias esperadas
     SELECT COUNT(*)
     INTO v_total_esperado
-    FROM REUNIONES_CALENDARIO r, GRUPOS g, HISTORICO_GRUPOS h
+    FROM MEA_REUNIONES_CALENDARIO r, MEA_GRUPOS g, MEA_HISTORICO_GRUPOS h
     WHERE r.id_club = g.id_club 
       AND r.id_grupo = g.id_grupo
       AND h.id_club_grupo = g.id_club 
       AND h.id_grupo = g.id_grupo
-      AND r.fech_reunion >= h.fech_in_hist_grupo 
+      AND r.fech_reunion >= h.fech_i_hist_grupo 
       AND (h.fech_f_hist_grupo IS NULL OR r.fech_reunion <= h.fech_f_hist_grupo)
       AND g.id_club = p_id_club
       AND g.tipo = v_tipo_normalizado
@@ -109,7 +109,7 @@ BEGIN
     -- Calculo Total de inasistencias reales
     SELECT COUNT(*)
     INTO v_total_inasistencias
-    FROM INASISTENTES i, GRUPOS g
+    FROM MEA_INASISTENTES i, MEA_GRUPOS g
     WHERE i.id_club_reu = g.id_club 
       AND i.id_grupo_reu = g.id_grupo
       AND g.id_club = p_id_club
