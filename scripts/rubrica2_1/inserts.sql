@@ -1,3 +1,5 @@
+SET DEFINE OFF;
+
 /*
 Libros
     1. El Aleph - Jorge Luis Borges (1949) Argentina 

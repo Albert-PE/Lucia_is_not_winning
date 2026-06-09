@@ -185,4 +185,4 @@ END;
 
 -- COMPROBACIÓN
 
--- SELECT MEA_participacion_bimestre_miembro(&id_lector) FROM DUAL;
+-- SELECT MEA_participacion_bimestre_miembro(&id_lector, &fecha_inicial) FROM DUAL;
