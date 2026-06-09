@@ -45,23 +45,23 @@ Libros
     INSERT INTO MEA_INSTITUCIONES (id_inst, nom_inst, tipo_inst) 
     VALUES (MEA_seq_instituciones.NEXTVAL, 'Universidad de las Artes', 'universidad');
 
-INSERT INTO MEA_INSTITUCIONES (id_inst, nom_inst, tipo_inst) 
-VALUES (MEA_seq_instituciones.NEXTVAL, 'Colegio Nacional Simón Bolívar', 'colegio');
+    INSERT INTO MEA_INSTITUCIONES (id_inst, nom_inst, tipo_inst) 
+    VALUES (MEA_seq_instituciones.NEXTVAL, 'Colegio Nacional Simón Bolívar', 'colegio');
 
-INSERT INTO MEA_INSTITUCIONES (id_inst, nom_inst, tipo_inst) 
-VALUES (MEA_seq_instituciones.NEXTVAL, 'Biblioteca Nacional de España', 'biblioteca');
+    INSERT INTO MEA_INSTITUCIONES (id_inst, nom_inst, tipo_inst) 
+    VALUES (MEA_seq_instituciones.NEXTVAL, 'Biblioteca Nacional de España', 'biblioteca');
 
-INSERT INTO MEA_INSTITUCIONES (id_inst, nom_inst, tipo_inst) 
-VALUES (MEA_seq_instituciones.NEXTVAL, 'Universidad de Islandia', 'universidad');
+    INSERT INTO MEA_INSTITUCIONES (id_inst, nom_inst, tipo_inst) 
+    VALUES (MEA_seq_instituciones.NEXTVAL, 'Universidad de Islandia', 'universidad');
 
-INSERT INTO MEA_INSTITUCIONES (id_inst, nom_inst, tipo_inst) 
-VALUES (MEA_seq_instituciones.NEXTVAL, 'Trinity College Dublin', 'universidad');
+    INSERT INTO MEA_INSTITUCIONES (id_inst, nom_inst, tipo_inst) 
+    VALUES (MEA_seq_instituciones.NEXTVAL, 'Trinity College Dublin', 'universidad');
 
-INSERT INTO MEA_INSTITUCIONES (id_inst, nom_inst, tipo_inst) 
-VALUES (MEA_seq_instituciones.NEXTVAL, 'Biblioteca de Estambul', 'biblioteca');
+    INSERT INTO MEA_INSTITUCIONES (id_inst, nom_inst, tipo_inst) 
+    VALUES (MEA_seq_instituciones.NEXTVAL, 'Biblioteca de Estambul', 'biblioteca');
 
-INSERT INTO MEA_INSTITUCIONES (id_inst, nom_inst, tipo_inst) 
-VALUES (MEA_seq_instituciones.NEXTVAL, 'Colegio Erasmus de Ámsterdam', 'colegio');
+    INSERT INTO MEA_INSTITUCIONES (id_inst, nom_inst, tipo_inst) 
+    VALUES (MEA_seq_instituciones.NEXTVAL, 'Colegio Erasmus de Ámsterdam', 'colegio');
 
 
 
