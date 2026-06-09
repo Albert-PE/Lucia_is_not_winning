@@ -25,7 +25,7 @@ CREATE SEQUENCE MEA_seq_favoritos START WITH 1 INCREMENT BY 1;
 -- ENTRADA
 CREATE TABLE MEA_INSTITUCIONES (
     id_inst number(3,0) PRIMARY KEY,
-    nom_inst varchar2(20) NOT NULL,
+    nom_inst varchar2(35) NOT NULL,
     tipo_inst varchar2(20) NOT NULL,
     CONSTRAINT MEA_chk_tipo_inst CHECK (tipo_inst IN ('colegio', 'biblioteca', 'universidad'))
 );

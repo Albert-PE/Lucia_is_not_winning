@@ -579,28 +579,28 @@ COMMIT;
 
 -- 17. Tabla: Favoritos
     INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
-    VALUES (1, 9788408076912, MEA_seq_favoritos.NEXTVAL);
+    VALUES (1, 9788418037130, 1);
 
     INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
-    VALUES (1, 9788420633121, MEA_seq_favoritos.NEXTVAL);
+    VALUES (1, 9788420633121, 2);
 
     INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
-    VALUES (2, 9788420423852, MEA_seq_favoritos.NEXTVAL);
+    VALUES (2, 9788420423852, 1);
 
     INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
-    VALUES (2, 9788498380811, MEA_seq_favoritos.NEXTVAL);
+    VALUES (2, 9788498380811, 2);
 
     INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
-    VALUES (3, 9788466649176, MEA_seq_favoritos.NEXTVAL);
+    VALUES (3, 9788466649176, 1);
 
     INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
-    VALUES (4, 9788415594048, MEA_seq_favoritos.NEXTVAL);
+    VALUES (4, 9788415594048, 1);
 
     INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
-    VALUES (5, 9788418037130, MEA_seq_favoritos.NEXTVAL);
+    VALUES (5, 9788418037130, 1);
 
     INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
-    VALUES (6, 9788416327855, MEA_seq_favoritos.NEXTVAL);
+    VALUES (6, 9788416327855, 1);
 
 
 COMMIT;
