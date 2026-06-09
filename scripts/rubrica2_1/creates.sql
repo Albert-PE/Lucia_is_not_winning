@@ -494,7 +494,7 @@ END;
 
 --========================================================================
 
-CREATE OR REPLACE FUNCTION MEA_participacion_bimestre_miembro (id_part_lector number, fecha_inicial date)
+CREATE OR REPLACE FUNCTION MEA_participacion_bimestre_miembro (p_id_lector NUMBER, p_fecha_inicial DATE)
 RETURN NUMBER IS
     v_inasistencias NUMBER;
     v_total_reuniones NUMBER;
@@ -503,17 +503,17 @@ BEGIN
 
     SELECT count(*) INTO v_inasistencias
         FROM mea_inasistentes
-        WHERE id_part_lector = id_lector AND fech_reunion between add_months(fecha_inicial,-2) AND fecha_inicial;
+        WHERE p_id_lector = id_lector AND fech_reunion between add_months(p_fecha_inicial,-2) AND p_fecha_inicial;
 
     SELECT count(*) INTO v_total_reuniones    
         FROM mea_historico_grupos h, mea_reuniones_calendario r 
         WHERE 
-            id_part_lector = h.id_lector 
+            p_id_lector = h.id_lector 
             AND h.id_club_grupo = r.id_club 
             AND h.id_grupo = r.id_grupo 
             AND r.fech_reunion >= h.fech_i_hist_grupo 
             AND (h.fech_f_hist_grupo IS NULL OR r.fech_reunion <= h.fech_f_hist_grupo) 
-            AND r.fech_reunion between add_months(fecha_inicial,-2) AND fecha_inicial
+            AND r.fech_reunion between add_months(p_fecha_inicial,-2) AND p_fecha_inicial
             AND r.realizada = 'SI';
 
     IF v_total_reuniones = 0 THEN
@@ -523,7 +523,6 @@ BEGIN
         RETURN v_porcentaje;
     END IF;
 END;
-/
 
 
 --=====================================================================
