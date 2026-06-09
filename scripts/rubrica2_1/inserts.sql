@@ -317,6 +317,17 @@ COMMIT;
     INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email) 
     VALUES (MEA_seq_lectores.NEXTVAL, 88999000, 'Elena', 'Isabel', 'Ramos', 'Castro', TO_DATE('05-09-1988', 'DD-MM-YYYY'), 'elena.ramos@email.com');
 
+    INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email) 
+    VALUES (MEA_seq_lectores.NEXTVAL, 99222333, 'Alejandro', 'Javier', 'Ruiz', 'Pérez', TO_DATE('20-04-1981', 'DD-MM-YYYY'), 'alejandro.ruiz@email.com');
+
+    INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email) 
+    VALUES (MEA_seq_lectores.NEXTVAL, 99333444, 'Valeria', 'Camila', 'Gómez', 'López', TO_DATE('05-11-1984', 'DD-MM-YYYY'), 'valeria.gomez@email.com');
+
+    INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email, id_lector_repre) 
+    VALUES (MEA_seq_lectores.NEXTVAL, 99000111, 'Mateo', 'Alejandro', 'Ruiz', 'Gómez', TO_DATE('10-02-2009', 'DD-MM-YYYY'), 'mateo.ruiz@email.com', 21);
+
+    INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email, id_lector_repre) 
+    VALUES (MEA_seq_lectores.NEXTVAL, 99111222, 'Valentina', 'Isabella', 'Ruiz', 'Gómez', TO_DATE('15-08-2015', 'DD-MM-YYYY'), 'valentina.ruiz@email.com', 22);
 
 
 -- 8. Tabla: OBRAS 
@@ -456,7 +467,7 @@ COMMIT;
     VALUES (9786073111451, 'Las ventajas de ser invisible', 1999, 224, 'Charlie es un adolescente solitario lidiando con traumas pasados. A través de cartas anónimas, relata su ingreso a la preparatoria y cómo conoce a Sam y Patrick, quienes lo introducen al mundo de la amistad y la música.', 'Una honesta historia de maduración que aborda el abuso, el despertar sexual y la importancia de pertenecer. Una obra de culto que captura con enorme sensibilidad la angustia, la vulnerabilidad y la intensidad adolescente.', 'Salud mental/Amor', 'Novela', 14);
 
     INSERT INTO MEA_LIBROS (isbn, titulo_libro, año_publicacion, cant_paginas, resumen, sinopsis, tema, tipo_narrativa, id_pais) 
-    VALUES (9788420415703, 'Eleanor & Park', 2012, 336, 'Dos adolescentes inadaptados en los años 80, la excéntrica Eleanor y el callado Park, comparten un asiento en el autobús escolar. A través de cómics y casetes, desarrollan un profundo pero complicado primer amor.', 'Una exploración cruda y dulce del amor juvenil frente a la adversidad. La novela contrasta la ternura de la conexión adolescente con realidades duras como el acoso escolar y el abuso doméstico, dejando una fuerte huella.', 'Primer amor', 'Novela', 14);
+    VALUES (9788420415703, "Eleanor y Park", 2012, 336, 'Dos adolescentes inadaptados en los años 80, la excéntrica Eleanor y el callado Park, comparten un asiento en el autobús escolar. A través de cómics y casetes, desarrollan un profundo pero complicado primer amor.', 'Una exploración cruda y dulce del amor juvenil frente a la adversidad. La novela contrasta la ternura de la conexión adolescente con realidades duras como el acoso escolar y el abuso doméstico, dejando una fuerte huella.', 'Primer amor', 'Novela', 14);
 
     INSERT INTO MEA_LIBROS (isbn, titulo_libro, año_publicacion, cant_paginas, resumen, sinopsis, tema, tipo_narrativa, id_pais) 
     VALUES (9788466649176, 'Ready Player One', 2011, 464, 'En un futuro distópico, la humanidad se refugia en OASIS, un mundo virtual. Su creador dejó su inmensa fortuna escondida allí, y el joven Wade Watts compite contra corporaciones implacables para encontrar el "huevo de pascua".', 'Una trepidante carta de amor a la cultura pop de los ochenta. Mezcla ciencia ficción con estética ciberpunk y videojuegos, ofreciendo una aventura vertiginosa que advierte sutilmente sobre los peligros del escapismo.', 'Realidad virtual', 'Novela', 14);
@@ -583,24 +594,59 @@ COMMIT;
 
     INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
     VALUES (1, 9788420633121, 2);
+    
+    INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
+    VALUES (1, 9788420423852, 3);
+
 
     INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
     VALUES (2, 9788420423852, 1);
 
     INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
-    VALUES (2, 9788498380811, 2);
+    VALUES (2, 9788466649176, 2);
+    
+    INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
+    VALUES (2, 9788498380811, 3);
+
 
     INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
     VALUES (3, 9788466649176, 1);
 
     INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
+    VALUES (3, 9788466655054, 2);
+
+    INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
+    VALUES (3, 9788420423852, 3);
+
+
+    INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
     VALUES (4, 9788415594048, 1);
+
+    INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
+    VALUES (4, 9788466649176, 2);
+
+    INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
+    VALUES (4, 9788466655054, 3);
+
 
     INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
     VALUES (5, 9788418037130, 1);
 
     INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
+    VALUES (5, 9788466649176, 2);
+
+    INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
+    VALUES (5, 9788466655054, 3);
+
+
+    INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
     VALUES (6, 9788416327855, 1);
+
+    INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
+    VALUES (6, 9788418037130, 2);
+
+    INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
+    VALUES (6, 9788466649176, 3);
 
 
 COMMIT;
