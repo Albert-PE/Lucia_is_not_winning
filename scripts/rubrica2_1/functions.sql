@@ -1,4 +1,4 @@
-create or replace FUNCTION MEA_Conversion_Monetaria(
+create or replace FUNCTION MEA_conversion_monetaria(
     p_id_pais IN MEA_PAISES.id_pais%TYPE,
     p_monto IN NUMBER,
     p_tasa_cambio IN NUMBER
@@ -32,30 +32,30 @@ EXCEPTION
 END;
 
 -- COMPROBACIÓN
--- SELECT MEA_Conversion_Monetaria(&id_pais, &monto, &tasa_cambio) FROM DUAL;
+-- SELECT MEA_conversion_monetaria(&id_pais, &monto, &tasa_cambio) FROM DUAL;
 
 --=========================================================================
 
-CREATE OR REPLACE FUNCTION MEA_Antiguedad_en_club_miembro (v_fecha DATE) 
+CREATE OR REPLACE FUNCTION MEA_antiguedad_en_club_miembro (v_fecha DATE) 
 RETURN NUMBER IS 
 BEGIN 
     -- Se calcula la diferencia en días y se redondea al dividir entre los días del año.
     RETURN (ROUND(((SYSDATE - v_fecha) / 365), 0)); 
 END;
 
--- Query de prueba para MEA_Antigüedad_en_club_miembro
+-- Query de prueba para MEA_antiguedad_en_club_miembro
 SELECT 
     p_nombre AS "Nombre", 
     f_nacimiento AS "Fecha Nacimiento",
-    MEA_Antiguedad_en_club_miembro(f_nacimiento) AS "Edad Calculada"
+    MEA_antiguedad_en_club_miembro(f_nacimiento) AS "Edad Calculada"
 FROM MEA_LECTORES;
 
 --COMPROBACIÓN
--- SELECT MEA_Antiguedad_en_club_miembro(TO_DATE('&fecha_ingreso_DD_MM_YYYY', 'DD/MM/YYYY')) FROM DUAL;
+-- SELECT MEA_antiguedad_en_club_miembro(TO_DATE('&fecha_ingreso_DD_MM_YYYY', 'DD/MM/YYYY')) FROM DUAL;
 
 --=========================================================================
 
-create or replace NONEDITIONABLE FUNCTION MEA_Promedio_Part_Mensual_Tipo(
+CREATE OR REPLACE FUNCTION MEA_promedio_part_mensual_tipo(
     p_id_club IN NUMBER,
     p_tipo_grupo IN VARCHAR2, -- 'joven', 'adulto', 'infantil'
     p_mes IN NUMBER,
@@ -148,7 +148,7 @@ END;
 /
 
 -- COMPROBACIÓN
--- SELECT MEA_Promedio_Part_Mensual_Tipo(&id_club, '&tipo_grupo', &mes, &anio) FROM DUAL;
+-- SELECT MEA_promedio_part_mensual_tipo(&id_club, '&tipo_grupo', &mes, &anio) FROM DUAL;
 
 
 --=========================================================================
@@ -184,4 +184,5 @@ BEGIN
 END;
 
 -- COMPROBACIÓN
+
 -- SELECT MEA_participacion_bimestre_miembro(&id_lector) FROM DUAL;
