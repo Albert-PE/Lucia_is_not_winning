@@ -299,23 +299,23 @@ COMMIT;
     INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email) 
     VALUES (MEA_seq_lectores.NEXTVAL, 22333444, 'María', 'Elena', 'García', 'López', TO_DATE('20-10-1992', 'DD-MM-YYYY'), 'maria.garcia@email.com');
 
-INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email) 
-VALUES (MEA_seq_lectores.NEXTVAL, 33444555, 'Carlos', 'Alberto', 'Martínez', 'Suárez', TO_DATE('03-08-1978', 'DD-MM-YYYY'), 'carlos.martinez@email.com');
+    INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email) 
+    VALUES (MEA_seq_lectores.NEXTVAL, 33444555, 'Carlos', 'Alberto', 'Martínez', 'Suárez', TO_DATE('03-08-1978', 'DD-MM-YYYY'), 'carlos.martinez@email.com');
 
-INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email) 
-VALUES (MEA_seq_lectores.NEXTVAL, 44555666, 'Ana', 'Sofía', 'Hernández', 'Ruiz', TO_DATE('12-03-1990', 'DD-MM-YYYY'), 'ana.hernandez@email.com');
+    INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email) 
+    VALUES (MEA_seq_lectores.NEXTVAL, 44555666, 'Ana', 'Sofía', 'Hernández', 'Ruiz', TO_DATE('12-03-1990', 'DD-MM-YYYY'), 'ana.hernandez@email.com');
 
-INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email) 
-VALUES (MEA_seq_lectores.NEXTVAL, 55666777, 'Pedro', 'Luis', 'González', 'Díaz', TO_DATE('25-07-2000', 'DD-MM-YYYY'), 'pedro.gonzalez@email.com');
+    INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email) 
+    VALUES (MEA_seq_lectores.NEXTVAL, 55666777, 'Pedro', 'Luis', 'González', 'Díaz', TO_DATE('25-07-2000', 'DD-MM-YYYY'), 'pedro.gonzalez@email.com');
 
-INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email) 
-VALUES (MEA_seq_lectores.NEXTVAL, 66777888, 'Lucía', 'María', 'Torres', 'Vargas', TO_DATE('18-11-1982', 'DD-MM-YYYY'), 'lucia.torres@email.com');
+    INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email) 
+    VALUES (MEA_seq_lectores.NEXTVAL, 66777888, 'Lucía', 'María', 'Torres', 'Vargas', TO_DATE('18-11-1982', 'DD-MM-YYYY'), 'lucia.torres@email.com');
 
-INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email) 
-VALUES (MEA_seq_lectores.NEXTVAL, 77888999, 'Diego', 'Andrés', 'Flores', 'Mora', TO_DATE('30-01-1995', 'DD-MM-YYYY'), 'diego.flores@email.com');
+    INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email) 
+    VALUES (MEA_seq_lectores.NEXTVAL, 77888999, 'Diego', 'Andrés', 'Flores', 'Mora', TO_DATE('30-01-1995', 'DD-MM-YYYY'), 'diego.flores@email.com');
 
-INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email) 
-VALUES (MEA_seq_lectores.NEXTVAL, 88999000, 'Elena', 'Isabel', 'Ramos', 'Castro', TO_DATE('05-09-1988', 'DD-MM-YYYY'), 'elena.ramos@email.com');
+    INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email) 
+    VALUES (MEA_seq_lectores.NEXTVAL, 88999000, 'Elena', 'Isabel', 'Ramos', 'Castro', TO_DATE('05-09-1988', 'DD-MM-YYYY'), 'elena.ramos@email.com');
 
 
 
@@ -323,26 +323,26 @@ VALUES (MEA_seq_lectores.NEXTVAL, 88999000, 'Elena', 'Isabel', 'Ramos', 'Castro'
     INSERT INTO MEA_OBRAS (id_obra, nombre_obra, precio, status_obra, id_club) 
     VALUES (MEA_seq_obras.NEXTVAL, 'Cien Años de Soledad: El Drama', 5.99, 'activa', 1);
 
-INSERT INTO MEA_OBRAS (id_obra, nombre_obra, precio, status_obra, id_club) 
-VALUES (MEA_seq_obras.NEXTVAL, 'Hamlet en la Niebla', 7.50, 'activa', 2);
+    INSERT INTO MEA_OBRAS (id_obra, nombre_obra, precio, status_obra, id_club) 
+    VALUES (MEA_seq_obras.NEXTVAL, 'Hamlet en la Niebla', 7.50, 'activa', 2);
 
-INSERT INTO MEA_OBRAS (id_obra, nombre_obra, precio, status_obra, id_club) 
-VALUES (MEA_seq_obras.NEXTVAL, 'El Sueño de una Noche de Verano', 6.00, 'activa', 3);
+    INSERT INTO MEA_OBRAS (id_obra, nombre_obra, precio, status_obra, id_club) 
+    VALUES (MEA_seq_obras.NEXTVAL, 'El Sueño de una Noche de Verano', 6.00, 'activa', 3);
 
-INSERT INTO MEA_OBRAS (id_obra, nombre_obra, precio, status_obra, id_club) 
-VALUES (MEA_seq_obras.NEXTVAL, 'Los Miserables: Adaptación', 8.99, 'activa', 4);
+    INSERT INTO MEA_OBRAS (id_obra, nombre_obra, precio, status_obra, id_club) 
+    VALUES (MEA_seq_obras.NEXTVAL, 'Los Miserables: Adaptación', 8.99, 'activa', 4);
 
-INSERT INTO MEA_OBRAS (id_obra, nombre_obra, precio, status_obra, id_club) 
-VALUES (MEA_seq_obras.NEXTVAL, 'La Casa de los Espíritus', 5.50, 'inactiva', 5);
+    INSERT INTO MEA_OBRAS (id_obra, nombre_obra, precio, status_obra, id_club) 
+    VALUES (MEA_seq_obras.NEXTVAL, 'La Casa de los Espíritus', 5.50, 'inactiva', 5);
 
-INSERT INTO MEA_OBRAS (id_obra, nombre_obra, precio, status_obra, id_club) 
-VALUES (MEA_seq_obras.NEXTVAL, 'Esperando a Godot', 4.99, 'activa', 6);
+    INSERT INTO MEA_OBRAS (id_obra, nombre_obra, precio, status_obra, id_club) 
+    VALUES (MEA_seq_obras.NEXTVAL, 'Esperando a Godot', 4.99, 'activa', 6);
 
-INSERT INTO MEA_OBRAS (id_obra, nombre_obra, precio, status_obra, id_club) 
-VALUES (MEA_seq_obras.NEXTVAL, 'La Vida es Sueño', 6.50, 'activa', 7);
+    INSERT INTO MEA_OBRAS (id_obra, nombre_obra, precio, status_obra, id_club) 
+    VALUES (MEA_seq_obras.NEXTVAL, 'La Vida es Sueño', 6.50, 'activa', 7);
 
-INSERT INTO MEA_OBRAS (id_obra, nombre_obra, precio, status_obra, id_club) 
-VALUES (MEA_seq_obras.NEXTVAL, 'Bodas de Sangre', 5.00, 'activa', 8);
+    INSERT INTO MEA_OBRAS (id_obra, nombre_obra, precio, status_obra, id_club) 
+    VALUES (MEA_seq_obras.NEXTVAL, 'Bodas de Sangre', 5.00, 'activa', 8);
 
 
 
@@ -353,23 +353,23 @@ VALUES (MEA_seq_obras.NEXTVAL, 'Bodas de Sangre', 5.00, 'activa', 8);
     INSERT INTO MEA_HABLAN (id_habla, id_idioma, id_club) 
     VALUES (MEA_seq_hablan.NEXTVAL, 2, 1);
 
-INSERT INTO MEA_HABLAN (id_habla, id_idioma, id_lector) 
-VALUES (MEA_seq_hablan.NEXTVAL, 3, 3);
+    INSERT INTO MEA_HABLAN (id_habla, id_idioma, id_lector) 
+    VALUES (MEA_seq_hablan.NEXTVAL, 3, 3);
 
-INSERT INTO MEA_HABLAN (id_habla, id_idioma, id_club) 
-VALUES (MEA_seq_hablan.NEXTVAL, 3, 1);
+    INSERT INTO MEA_HABLAN (id_habla, id_idioma, id_club) 
+    VALUES (MEA_seq_hablan.NEXTVAL, 3, 1);
 
-INSERT INTO MEA_HABLAN (id_habla, id_idioma, id_lector) 
-VALUES (MEA_seq_hablan.NEXTVAL, 4, 4);
+    INSERT INTO MEA_HABLAN (id_habla, id_idioma, id_lector) 
+    VALUES (MEA_seq_hablan.NEXTVAL, 4, 4);
 
-INSERT INTO MEA_HABLAN (id_habla, id_idioma, id_club) 
-VALUES (MEA_seq_hablan.NEXTVAL, 5, 3);
+    INSERT INTO MEA_HABLAN (id_habla, id_idioma, id_club) 
+    VALUES (MEA_seq_hablan.NEXTVAL, 5, 3);
 
-INSERT INTO MEA_HABLAN (id_habla, id_idioma, id_lector) 
-VALUES (MEA_seq_hablan.NEXTVAL, 6, 5);
+    INSERT INTO MEA_HABLAN (id_habla, id_idioma, id_lector) 
+    VALUES (MEA_seq_hablan.NEXTVAL, 6, 5);
 
-INSERT INTO MEA_HABLAN (id_habla, id_idioma, id_club) 
-VALUES (MEA_seq_hablan.NEXTVAL, 7, 6);
+    INSERT INTO MEA_HABLAN (id_habla, id_idioma, id_club) 
+    VALUES (MEA_seq_hablan.NEXTVAL, 7, 6);
 
 
 
@@ -377,26 +377,26 @@ VALUES (MEA_seq_hablan.NEXTVAL, 7, 6);
     INSERT INTO MEA_REPRESENTANTES (id_lector, id_representante, doc_identidad, p_nombre, p_apellido, s_apellido) 
     VALUES (1, MEA_seq_representantes.NEXTVAL, 5556667, 'Roberto', 'Pérez', 'Díaz');
 
-INSERT INTO MEA_REPRESENTANTES (id_lector, id_representante, doc_identidad, p_nombre, p_apellido, s_apellido) 
-VALUES (3, MEA_seq_representantes.NEXTVAL, 12345678, 'Marta', 'Fernández', 'López');
+    INSERT INTO MEA_REPRESENTANTES (id_lector, id_representante, doc_identidad, p_nombre, p_apellido, s_apellido) 
+    VALUES (3, MEA_seq_representantes.NEXTVAL, 12345678, 'Marta', 'Fernández', 'López');
 
-INSERT INTO MEA_REPRESENTANTES (id_lector, id_representante, doc_identidad, p_nombre, p_apellido, s_apellido) 
-VALUES (4, MEA_seq_representantes.NEXTVAL, 23456789, 'José', 'Gutiérrez', 'Soto');
+    INSERT INTO MEA_REPRESENTANTES (id_lector, id_representante, doc_identidad, p_nombre, p_apellido, s_apellido) 
+    VALUES (4, MEA_seq_representantes.NEXTVAL, 23456789, 'José', 'Gutiérrez', 'Soto');
 
-INSERT INTO MEA_REPRESENTANTES (id_lector, id_representante, doc_identidad, p_nombre, p_apellido, s_apellido) 
-VALUES (5, MEA_seq_representantes.NEXTVAL, 34567890, 'Carmen', 'Jiménez', 'Ortega');
+    INSERT INTO MEA_REPRESENTANTES (id_lector, id_representante, doc_identidad, p_nombre, p_apellido, s_apellido) 
+    VALUES (5, MEA_seq_representantes.NEXTVAL, 34567890, 'Carmen', 'Jiménez', 'Ortega');
 
-INSERT INTO MEA_REPRESENTANTES (id_lector, id_representante, doc_identidad, p_nombre, p_apellido, s_apellido) 
-VALUES (1, MEA_seq_representantes.NEXTVAL, 45678901, 'Francisco', 'Álvarez', 'Reyes');
+    INSERT INTO MEA_REPRESENTANTES (id_lector, id_representante, doc_identidad, p_nombre, p_apellido, s_apellido) 
+    VALUES (1, MEA_seq_representantes.NEXTVAL, 45678901, 'Francisco', 'Álvarez', 'Reyes');
 
-INSERT INTO MEA_REPRESENTANTES (id_lector, id_representante, doc_identidad, p_nombre, p_apellido, s_apellido) 
-VALUES (6, MEA_seq_representantes.NEXTVAL, 56789012, 'Isabel', 'Navarro', 'Medina');
+    INSERT INTO MEA_REPRESENTANTES (id_lector, id_representante, doc_identidad, p_nombre, p_apellido, s_apellido) 
+    VALUES (6, MEA_seq_representantes.NEXTVAL, 56789012, 'Isabel', 'Navarro', 'Medina');
 
-INSERT INTO MEA_REPRESENTANTES (id_lector, id_representante, doc_identidad, p_nombre, p_apellido, s_apellido) 
-VALUES (7, MEA_seq_representantes.NEXTVAL, 67890123, 'Antonio', 'Romero', 'Herrera');
+    INSERT INTO MEA_REPRESENTANTES (id_lector, id_representante, doc_identidad, p_nombre, p_apellido, s_apellido) 
+    VALUES (7, MEA_seq_representantes.NEXTVAL, 67890123, 'Antonio', 'Romero', 'Herrera');
 
-INSERT INTO MEA_REPRESENTANTES (id_lector, id_representante, doc_identidad, p_nombre, p_apellido, s_apellido)
-VALUES (8, MEA_seq_representantes.NEXTVAL, 78901234, 'Sofía', 'Domínguez', 'Rivas');
+    INSERT INTO MEA_REPRESENTANTES (id_lector, id_representante, doc_identidad, p_nombre, p_apellido, s_apellido)
+    VALUES (8, MEA_seq_representantes.NEXTVAL, 78901234, 'Sofía', 'Domínguez', 'Rivas');
 
 
 
@@ -407,23 +407,23 @@ VALUES (8, MEA_seq_representantes.NEXTVAL, 78901234, 'Sofía', 'Domínguez', 'Ri
     INSERT INTO MEA_TELEFONOS (cod_local, cod_area, num_tlf, id_lector) 
     VALUES (34, 91, 9876543, 2);
 
-INSERT INTO MEA_TELEFONOS (cod_local, cod_area, num_tlf, id_club) 
-VALUES (354, 123, 4567890, 2);
+    INSERT INTO MEA_TELEFONOS (cod_local, cod_area, num_tlf, id_club) 
+    VALUES (354, 123, 4567890, 2);
 
-INSERT INTO MEA_TELEFONOS (cod_local, cod_area, num_tlf, id_lector) 
-VALUES (353, 1, 2345678, 3);
+    INSERT INTO MEA_TELEFONOS (cod_local, cod_area, num_tlf, id_lector) 
+    VALUES (353, 1, 2345678, 3);
 
-INSERT INTO MEA_TELEFONOS (cod_local, cod_area, num_tlf, id_club) 
-VALUES (90, 212, 3456789, 3);
+    INSERT INTO MEA_TELEFONOS (cod_local, cod_area, num_tlf, id_club) 
+    VALUES (90, 212, 3456789, 3);
 
-INSERT INTO MEA_TELEFONOS (cod_local, cod_area, num_tlf, id_lector) 
-VALUES (31, 20, 4567890, 4);
+    INSERT INTO MEA_TELEFONOS (cod_local, cod_area, num_tlf, id_lector) 
+    VALUES (31, 20, 4567890, 4);
 
-INSERT INTO MEA_TELEFONOS (cod_local, cod_area, num_tlf, id_club) 
-VALUES (27, 21, 5678901, 5);
+    INSERT INTO MEA_TELEFONOS (cod_local, cod_area, num_tlf, id_club) 
+    VALUES (27, 21, 5678901, 5);
 
-INSERT INTO MEA_TELEFONOS (cod_local, cod_area, num_tlf, id_club) 
-VALUES (351, 21, 6789012, 6);
+    INSERT INTO MEA_TELEFONOS (cod_local, cod_area, num_tlf, id_club) 
+    VALUES (351, 21, 6789012, 6);
 
 
 
@@ -482,26 +482,26 @@ VALUES (351, 21, 6789012, 6);
     INSERT INTO MEA_ASOCIACIONES (id_club1, id_club2) 
     VALUES (1, 2);
 
-INSERT INTO MEA_ASOCIACIONES (id_club1, id_club2) 
-VALUES (1, 3);
+    INSERT INTO MEA_ASOCIACIONES (id_club1, id_club2) 
+    VALUES (1, 3);
 
-INSERT INTO MEA_ASOCIACIONES (id_club1, id_club2) 
-VALUES (2, 4);
+    INSERT INTO MEA_ASOCIACIONES (id_club1, id_club2) 
+    VALUES (2, 4);
 
-INSERT INTO MEA_ASOCIACIONES (id_club1, id_club2) 
-VALUES (3, 5);
+    INSERT INTO MEA_ASOCIACIONES (id_club1, id_club2) 
+    VALUES (3, 5);
 
-INSERT INTO MEA_ASOCIACIONES (id_club1, id_club2) 
-VALUES (4, 6);
+    INSERT INTO MEA_ASOCIACIONES (id_club1, id_club2) 
+    VALUES (4, 6);
 
-INSERT INTO MEA_ASOCIACIONES (id_club1, id_club2) 
-VALUES (5, 7);
+    INSERT INTO MEA_ASOCIACIONES (id_club1, id_club2) 
+    VALUES (5, 7);
 
-INSERT INTO MEA_ASOCIACIONES (id_club1, id_club2) 
-VALUES (6, 8);
+    INSERT INTO MEA_ASOCIACIONES (id_club1, id_club2) 
+    VALUES (6, 8);
 
-INSERT INTO MEA_ASOCIACIONES (id_club1, id_club2) 
-VALUES (1, 8);
+    INSERT INTO MEA_ASOCIACIONES (id_club1, id_club2) 
+    VALUES (1, 8);
 
 
 
@@ -529,78 +529,78 @@ VALUES (1, 8);
     INSERT INTO MEA_REFERENCIAS (isbn, id_obra) 
     VALUES (9788420633114, 1);
 
-INSERT INTO MEA_REFERENCIAS (isbn, id_obra) 
-VALUES (9788420633121, 2);
+    INSERT INTO MEA_REFERENCIAS (isbn, id_obra) 
+    VALUES (9788420633121, 2);
 
-INSERT INTO MEA_REFERENCIAS (isbn, id_obra) 
-VALUES (9788420423852, 3);
+    INSERT INTO MEA_REFERENCIAS (isbn, id_obra) 
+    VALUES (9788420423852, 3);
 
-INSERT INTO MEA_REFERENCIAS (isbn, id_obra) 
-VALUES (9788432219764, 4);
+    INSERT INTO MEA_REFERENCIAS (isbn, id_obra) 
+    VALUES (9788432219764, 4);
 
-INSERT INTO MEA_REFERENCIAS (isbn, id_obra) 
-VALUES (9788498380811, 5);
+    INSERT INTO MEA_REFERENCIAS (isbn, id_obra) 
+    VALUES (9788498380811, 5);
 
-INSERT INTO MEA_REFERENCIAS (isbn, id_obra) 
-VALUES (9788415594048, 6);
+    INSERT INTO MEA_REFERENCIAS (isbn, id_obra) 
+    VALUES (9788415594048, 6);
 
-INSERT INTO MEA_REFERENCIAS (isbn, id_obra) 
-VALUES (9788466649176, 7);
+    INSERT INTO MEA_REFERENCIAS (isbn, id_obra) 
+    VALUES (9788466649176, 7);
 
-INSERT INTO MEA_REFERENCIAS (isbn, id_obra) 
-VALUES (9788466655054, 8);
+    INSERT INTO MEA_REFERENCIAS (isbn, id_obra) 
+    VALUES (9788466655054, 8);
 
 
 -- 16. Tabla: ELENCOS 
     INSERT INTO MEA_ELENCOS (id_obra, id_lector) 
     VALUES (1, 1);
 
-INSERT INTO MEA_ELENCOS (id_obra, id_lector) 
-VALUES (1, 2);
+    INSERT INTO MEA_ELENCOS (id_obra, id_lector) 
+    VALUES (1, 2);
 
-INSERT INTO MEA_ELENCOS (id_obra, id_lector) 
-VALUES (2, 3);
+    INSERT INTO MEA_ELENCOS (id_obra, id_lector) 
+    VALUES (2, 3);
 
-INSERT INTO MEA_ELENCOS (id_obra, id_lector) 
-VALUES (2, 4);
+    INSERT INTO MEA_ELENCOS (id_obra, id_lector) 
+    VALUES (2, 4);
 
-INSERT INTO MEA_ELENCOS (id_obra, id_lector) 
-VALUES (3, 5);
+    INSERT INTO MEA_ELENCOS (id_obra, id_lector) 
+    VALUES (3, 5);
 
-INSERT INTO MEA_ELENCOS (id_obra, id_lector) 
-VALUES (3, 1);
+    INSERT INTO MEA_ELENCOS (id_obra, id_lector) 
+    VALUES (3, 1);
 
-INSERT INTO MEA_ELENCOS (id_obra, id_lector) 
-VALUES (4, 2);
+    INSERT INTO MEA_ELENCOS (id_obra, id_lector) 
+    VALUES (4, 2);
 
-INSERT INTO MEA_ELENCOS (id_obra, id_lector) 
-VALUES (5, 6);
+    INSERT INTO MEA_ELENCOS (id_obra, id_lector) 
+    VALUES (5, 6);
 
 
 -- 17. Tabla: Favoritos
     INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
     VALUES (1, 9788408076912, MEA_seq_favoritos.NEXTVAL);
 
-INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
-VALUES (1, 9788420633121, MEA_seq_favoritos.NEXTVAL);
+    INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
+    VALUES (1, 9788420633121, MEA_seq_favoritos.NEXTVAL);
 
-INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
-VALUES (2, 9788420423852, MEA_seq_favoritos.NEXTVAL);
+    INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
+    VALUES (2, 9788420423852, MEA_seq_favoritos.NEXTVAL);
 
-INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
-VALUES (2, 9788498380811, MEA_seq_favoritos.NEXTVAL);
+    INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
+    VALUES (2, 9788498380811, MEA_seq_favoritos.NEXTVAL);
 
-INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
-VALUES (3, 9788466649176, MEA_seq_favoritos.NEXTVAL);
+    INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
+    VALUES (3, 9788466649176, MEA_seq_favoritos.NEXTVAL);
 
-INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
-VALUES (4, 9788415594048, MEA_seq_favoritos.NEXTVAL);
+    INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
+    VALUES (4, 9788415594048, MEA_seq_favoritos.NEXTVAL);
 
-INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
-VALUES (5, 9788418037130, MEA_seq_favoritos.NEXTVAL);
+    INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
+    VALUES (5, 9788418037130, MEA_seq_favoritos.NEXTVAL);
 
-INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
-VALUES (6, 9788416327855, MEA_seq_favoritos.NEXTVAL);
+    INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) 
+    VALUES (6, 9788416327855, MEA_seq_favoritos.NEXTVAL);
 
 
 COMMIT;
