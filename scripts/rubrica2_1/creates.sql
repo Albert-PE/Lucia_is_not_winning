@@ -13,6 +13,8 @@ CREATE SEQUENCE MEA_seq_hablan START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE MEA_seq_obras START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE MEA_seq_pagos_membresias START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE MEA_seq_grupos START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE seq_id_orden START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE MEA_seq_favoritos START WITH 1 INCREMENT BY 1;
 
 --=====================================================================
 --                      TABLAS INDEPENDIENTES
@@ -67,7 +69,7 @@ CREATE TABLE MEA_CIUDADES (
 -- ENTRADA
 CREATE TABLE MEA_CLUBES (
     id_club number (3,0) PRIMARY KEY,
-    nombre_club varchar2(20) NOT NULL,
+    nombre_club varchar2(40) NOT NULL,
     fech_creacion date NOT NULL,
     direccion varchar2(30) NOT NULL,
     codigo_postal varchar2(5) NOT NULL,
@@ -136,7 +138,7 @@ CREATE TABLE MEA_TELEFONOS (
 -- ENTRADA
 CREATE TABLE MEA_OBRAS (
     id_obra number(4,0) PRIMARY KEY,
-    nombre_obra varchar2(30) NOT NULL,
+    nombre_obra varchar2(50) NOT NULL,
     status_obra varchar2(10) NOT NULL,
     id_club number(3,0) NOT NULL,
     precio number(10,2),
@@ -314,7 +316,7 @@ CREATE TABLE MEA_INASISTENTES(
     CONSTRAINT MEA_pk_inasistentes PRIMARY KEY (id_club_reu, id_grupo_reu, isbn, fech_reunion, id_club_hist, id_grupo_hist, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo)
 )
 
--- ENTRADA
+-- SALIDA
 CREATE TABLE MEA_FAVORITOS (
     id_lector number(5,0) NOT NULL,
     isbn number(13,0) NOT NULL,
