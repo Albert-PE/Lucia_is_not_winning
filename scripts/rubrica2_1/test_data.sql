@@ -126,5 +126,5 @@ SET DEFINE ON;
 
 -- Caso 4.3: INTERACTIVO (Popup)
 -- Instrucción: Ingrese id_lector=2, fecha_inicial=TO_DATE('01-06-2026', 'DD-MM-YYYY')
--- SELECT MEA_participacion_bimestre_miembro(&id_lector, &fecha_inicial) AS PART_INTERACTIVA FROM DUAL;
+-- SELECT MEA_participacion_bimestre_miembro(&id_lector, &fecha_inicial) AS PARTICIPACIÓN FROM DUAL;
 
