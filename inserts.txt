@@ -286,10 +286,10 @@ COMMIT;
     VALUES (MEA_seq_lectores.NEXTVAL, 99333444, 'Valeria', 'Camila', 'Gómez', 'López', TO_DATE('05-11-1984', 'DD-MM-YYYY'), 'valeria.gomez@email.com');
 
     INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email, id_lector_repre) 
-    VALUES (MEA_seq_lectores.NEXTVAL, 99000111, 'Mateo', 'Alejandro', 'Ruiz', 'Gómez', TO_DATE('10-02-2009', 'DD-MM-YYYY'), 'mateo.ruiz@email.com', 21);
+    VALUES (MEA_seq_lectores.NEXTVAL, 99000111, 'Mateo', 'Alejandro', 'Ruiz', 'Gómez', TO_DATE('10-02-2009', 'DD-MM-YYYY'), 'mateo.ruiz@email.com', 7);
 
     INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email, id_lector_repre) 
-    VALUES (MEA_seq_lectores.NEXTVAL, 99111222, 'Valentina', 'Isabella', 'Ruiz', 'Gómez', TO_DATE('15-08-2015', 'DD-MM-YYYY'), 'valentina.ruiz@email.com', 22);
+    VALUES (MEA_seq_lectores.NEXTVAL, 99111222, 'Valentina', 'Isabella', 'Ruiz', 'Gómez', TO_DATE('15-08-2015', 'DD-MM-YYYY'), 'valentina.ruiz@email.com', 8);
 
 
 -- 8. Tabla: OBRAS 
