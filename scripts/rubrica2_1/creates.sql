@@ -1,6 +1,7 @@
 --=====================================================================
 --                            SECUENCIAS
 --=====================================================================
+
 CREATE SEQUENCE MEA_seq_instituciones START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE MEA_seq_idiomas START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE MEA_seq_paises START WITH 1 INCREMENT BY 1;
@@ -13,8 +14,9 @@ CREATE SEQUENCE MEA_seq_hablan START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE MEA_seq_obras START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE MEA_seq_pagos_membresias START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE MEA_seq_grupos START WITH 1 INCREMENT BY 1;
-CREATE SEQUENCE seq_id_orden START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE MEA_seq_id_orden START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE MEA_seq_favoritos START WITH 1 INCREMENT BY 1;
+
 
 --=====================================================================
 --                      TABLAS INDEPENDIENTES
@@ -49,6 +51,7 @@ CREATE TABLE MEA_AUTORES (
     p_apellido varchar2(15),
     s_apellido varchar2(15)
 )
+
 
 --=====================================================================
 --                      TABLAS DEPENDIENTES
@@ -325,3 +328,404 @@ CREATE TABLE MEA_FAVORITOS (
     CONSTRAINT MEA_fk_favo_libro FOREIGN KEY (isbn) REFERENCES MEA_LIBROS(isbn),
     CONSTRAINT MEA_pk_favoritos PRIMARY KEY (id_lector, isbn, orden)
 )
+
+
+--=====================================================================
+--                            ÍNDICES
+--=====================================================================
+
+CREATE INDEX MEA_idx_paises_nom ON MEA_PAISES(nom_pais);
+
+CREATE INDEX MEA_idx_autores_apellido ON MEA_AUTORES(p_apellido);
+
+CREATE INDEX MEA_idx_inst_nombre ON MEA_INSTITUCIONES(nom_inst);
+
+CREATE INDEX MEA_idx_libros_titulo ON MEA_LIBROS(titulo_libro);
+
+CREATE INDEX MEA_idx_fk_club_ciudades ON MEA_CIUDADES(id_pais);
+
+CREATE INDEX MEA_idx_fk_clubes_inst ON MEA_CLUBES(id_inst);
+
+CREATE INDEX MEA_idx_fk_lectores_repr ON MEA_LECTORES(id_lector_repre);
+
+CREATE INDEX MEA_idx_fk_obras_club ON MEA_OBRAS(id_club);
+
+CREATE INDEX MEA_idx_fk_libros_pais ON MEA_LIBROS(id_pais);
+
+CREATE INDEX MEA_idx_fk_libros_anterior ON MEA_LIBROS(isbn_lib_anterior);
+
+
+--=====================================================================
+--                            FUNCIONES
+--=====================================================================
+
+CREATE OR REPLACE FUNCTION MEA_conversion_monetaria(
+    p_id_pais IN MEA_PAISES.id_pais%TYPE,
+    p_monto IN NUMBER,
+    p_tasa_cambio IN NUMBER
+) RETURN NUMBER IS
+    v_monto_usd NUMBER;
+    v_nom_moneda MEA_PAISES.moneda%TYPE;
+BEGIN
+    -- Buscamos el nombre de la moneda basado en el ID del país
+    SELECT moneda 
+    INTO v_nom_moneda
+    FROM MEA_PAISES
+    WHERE id_pais = p_id_pais;
+
+    -- Realizamos la conversión
+    v_monto_usd := p_monto / p_tasa_cambio;
+    
+    -- Feedback para el usuario con la moneda recuperada de la tabla
+    DBMS_OUTPUT.PUT_LINE(p_monto || ' ' || v_nom_moneda || ' cambiados a ' || v_monto_usd || ' dolares');
+
+    RETURN (v_monto_usd);
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        raise_application_error(-20007, 'El ID de país proporcionado no existe.');
+        RETURN NULL;
+    WHEN ZERO_DIVIDE THEN
+        raise_application_error(-20005, 'La tasa de cambio no puede ser cero.');
+        RETURN NULL;
+    WHEN OTHERS THEN
+        raise_application_error(-20006, 'Error en la conversión monetaria: ' || SQLERRM);
+        RETURN NULL;
+END;
+
+--========================================================================
+
+CREATE OR REPLACE FUNCTION MEA_antiguedad_en_club_miembro (v_fecha DATE) 
+RETURN NUMBER IS 
+BEGIN 
+    RETURN (ROUND(((SYSDATE - v_fecha) / 365), 0)); 
+END;
+
+--========================================================================
+
+CREATE OR REPLACE FUNCTION MEA_promedio_part_mensual_tipo(
+    p_id_club IN NUMBER,
+    p_tipo_grupo IN VARCHAR2, -- 'joven', 'adulto', 'infantil'
+    p_mes IN NUMBER,
+    p_anio IN NUMBER
+) RETURN NUMBER IS
+    v_total_esperado NUMBER := 0;
+    v_total_inasistencias NUMBER := 0;
+    v_promedio NUMBER := 0;
+    v_tipo_normalizado VARCHAR2(20);
+    v_nom_club MEA_CLUBES.nombre_club%TYPE;
+    v_fecha_consulta DATE;
+BEGIN
+    v_tipo_normalizado := LOWER(p_tipo_grupo);
+
+    -----VALIDACIONES-----
+    BEGIN
+        SELECT nombre_club INTO v_nom_club
+        FROM MEA_CLUBES
+        WHERE id_club = p_id_club;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            raise_application_error(-20010, 'Error: El club con ID ' || p_id_club || ' no existe.');
+    END;
+
+    IF p_mes < 1 OR p_mes > 12 THEN
+        raise_application_error(-20011, 'Error: El mes debe estar entre 1 y 12.');
+    END IF;
+
+    v_fecha_consulta := TO_DATE('01/' || p_mes || '/' || p_anio, 'DD/MM/YYYY');
+    IF v_fecha_consulta > SYSDATE THEN
+        raise_application_error(-20012, 'Error: No se pueden analizar promedios de fechas futuras.');
+    END IF;
+    -----------------------
+
+    -- Calculo asistencias esperadas
+    SELECT COUNT(*)
+    INTO v_total_esperado
+    FROM MEA_REUNIONES_CALENDARIO r, MEA_GRUPOS g, MEA_HISTORICO_GRUPOS h
+    WHERE r.id_club = g.id_club 
+      AND r.id_grupo = g.id_grupo
+      AND h.id_club_grupo = g.id_club 
+      AND h.id_grupo = g.id_grupo
+      AND r.fech_reunion >= h.fech_i_hist_grupo 
+      AND (h.fech_f_hist_grupo IS NULL OR r.fech_reunion <= h.fech_f_hist_grupo)
+      AND g.id_club = p_id_club
+      AND g.tipo = v_tipo_normalizado
+      AND EXTRACT(MONTH FROM r.fech_reunion) = p_mes
+      AND EXTRACT(YEAR FROM r.fech_reunion) = p_anio
+      AND r.realizada = 'SI';
+
+    -- Calculo Total de inasistencias reales
+    SELECT COUNT(*)
+    INTO v_total_inasistencias
+    FROM MEA_INASISTENTES i, MEA_GRUPOS g
+    WHERE i.id_club_reu = g.id_club 
+      AND i.id_grupo_reu = g.id_grupo
+      AND g.id_club = p_id_club
+      AND g.tipo = v_tipo_normalizado
+      AND EXTRACT(MONTH FROM i.fech_reunion) = p_mes
+      AND EXTRACT(YEAR FROM i.fech_reunion) = p_anio;
+
+    -- Cálculo final
+    IF v_total_esperado > 0 THEN
+        v_promedio := ((v_total_esperado - v_total_inasistencias) / v_total_esperado) * 100;
+    ELSE
+        v_promedio := 0;
+    END IF;
+
+    v_promedio := ROUND(v_promedio, 2);
+
+    -- IMPRESIÓN EN CONSOLA
+    DBMS_OUTPUT.PUT_LINE('--- RESULTADO DEL ANÁLISIS ---');
+    DBMS_OUTPUT.PUT_LINE('Club: ' || v_nom_club);
+    DBMS_OUTPUT.PUT_LINE('Periodo: ' || p_mes || '/' || p_anio);
+    DBMS_OUTPUT.PUT_LINE('Tipo de Grupo: ' || v_tipo_normalizado);
+    DBMS_OUTPUT.PUT_LINE('Promedio de Asistencia: ' || v_promedio || '%');
+    DBMS_OUTPUT.PUT_LINE('------------------------------');
+
+    RETURN v_promedio;
+
+    EXCEPTION
+    WHEN OTHERS THEN
+        -- Si el error no es uno de los definidos arriba, relanzar con mensaje general
+        IF SQLCODE NOT BETWEEN -20999 AND -20000 THEN
+            raise_application_error(-20013, 'Error inesperado en la función: ' || SQLERRM);
+        ELSE
+            RAISE;
+        END IF;
+END;
+
+--========================================================================
+
+CREATE OR REPLACE FUNCTION MEA_participacion_bimestre_miembro (id_part_lector number, fecha_inicial date)
+RETURN NUMBER IS
+    v_inasistencias NUMBER;
+    v_total_reuniones NUMBER;
+    v_porcentaje NUMBER;
+BEGIN
+
+    SELECT count(*) INTO v_inasistencias
+        FROM mea_inasistentes
+        WHERE id_part_lector = id_lector AND fech_reunion between add_months(fecha_inicial,-2) AND fecha_inicial;
+
+    SELECT count(*) INTO v_total_reuniones    
+        FROM mea_historico_grupos h, mea_reuniones_calendario r 
+        WHERE 
+            id_part_lector = h.id_lector 
+            AND h.id_club_grupo = r.id_club 
+            AND h.id_grupo = r.id_grupo 
+            AND r.fech_reunion >= h.fech_i_hist_grupo 
+            AND (h.fech_f_hist_grupo IS NULL OR r.fech_reunion <= h.fech_f_hist_grupo) 
+            AND r.fech_reunion between add_months(fecha_inicial,-2) AND fecha_inicial
+            AND r.realizada = 'SI';
+
+    IF v_total_reuniones = 0 THEN
+        RETURN 0;
+    ELSE
+        v_porcentaje := ((v_total_reuniones - v_inasistencias) / v_total_reuniones) * 100;
+        RETURN v_porcentaje;
+    END IF;
+END;
+
+
+--=====================================================================
+--                             VISTAS
+--=====================================================================
+
+-- 1. Vista: V_DETALLE_LECTORES
+CREATE OR REPLACE VIEW v_detalle_lectores AS
+SELECT 
+    l.id_lector, 
+    l.p_nombre || ' ' || l.p_apellido AS nombre_lector, 
+    l.email,
+    r.p_nombre || ' ' || r.p_apellido AS nombre_representante
+FROM MEA_LECTORES l
+LEFT JOIN MEA_REPRESENTANTES r ON l.id_lector = r.id_lector;
+
+SELECT * FROM v_detalle_lectores;
+
+-- 2. Vista: V_CLUBES_INSTITUCIONES
+CREATE OR REPLACE VIEW v_clubes_instituciones AS
+SELECT 
+    c.id_club, 
+    c.nombre_club, 
+    c.cuota_membresia,
+    i.nom_inst AS nombre_institucion, 
+    i.tipo_inst
+FROM MEA_CLUBES c
+LEFT JOIN MEA_INSTITUCIONES i ON c.id_inst = i.id_inst;
+
+SELECT * FROM v_clubes_instituciones;
+
+-- 3. Vista: V_SOCIOS_ACTIVOS
+CREATE OR REPLACE VIEW v_socios_activos AS
+SELECT 
+    s.id_club, 
+    c.nombre_club, 
+    l.p_nombre || ' ' || l.p_apellido AS nombre_socio, 
+    s.fech_i_socio AS fecha_ingreso
+FROM MEA_SOCIOS s
+JOIN MEA_CLUBES c ON s.id_club = c.id_club
+JOIN MEA_LECTORES l ON s.id_lector = l.id_lector
+WHERE s.status_socio = 'activo';
+
+SELECT * FROM v_socios_activos;
+
+-- 4. Vista: V_CATALOGO_LIBROS
+CREATE OR REPLACE VIEW v_catalogo_libros AS
+SELECT 
+    b.isbn, 
+    b.titulo_libro, 
+    a.p_nombre || ' ' || a.p_apellido AS autor,
+    p.nom_pais AS pais_origen,
+    b.tipo_narrativa
+FROM MEA_LIBROS b
+JOIN MEA_A_L al ON b.isbn = al.isbn
+JOIN MEA_AUTORES a ON al.id_autor = a.id_autor
+JOIN MEA_PAISES p ON b.id_pais = p.id_pais;
+
+SELECT * FROM v_catalogo_libros;
+
+-- 5. Vista: V_HISTORIAL_PAGOS
+CREATE OR REPLACE VIEW v_historial_pago_socios AS
+SELECT 
+    l.p_nombre || ' ' || l.p_apellido AS lector,
+    c.nombre_club,
+    p.id_pago_membresia AS recibo,
+    p.fech_emision AS fecha_pago
+FROM MEA_PAGOS_MEMBRESIAS p
+JOIN MEA_LECTORES l ON p.id_lector = l.id_lector
+JOIN MEA_CLUBES c ON p.id_club = c.id_club;
+
+SELECT * FROM v_historial_pago_socios;
+
+-- 6. Vista: V_AGENDA_REUNIONES
+CREATE OR REPLACE VIEW v_agenda_reuniones AS
+SELECT 
+    r.fech_reunion, 
+    c.nombre_club, 
+    g.tipo AS tipo_grupo, 
+    b.titulo_libro,
+    r.realizada
+FROM MEA_REUNIONES_CALENDARIO r
+JOIN MEA_CLUBES c ON r.id_club = c.id_club
+JOIN MEA_GRUPOS g ON r.id_club = g.id_club AND r.id_grupo = g.id_grupo
+JOIN MEA_LIBROS b ON r.isbn = b.isbn;
+
+SELECT * FROM v_agenda_reuniones;
+
+-- 7. Vista: V_CONTACTOS_SISTEMA
+CREATE OR REPLACE VIEW v_contactos_sistema AS
+SELECT 
+    'CLUB' AS origen,
+    c.nombre_club AS entidad,
+    '(' || t.cod_local || ') ' || t.cod_area || '-' || t.num_tlf AS numero_completo
+FROM MEA_TELEFONOS t
+JOIN MEA_CLUBES c ON t.id_club = c.id_club
+UNION
+SELECT 
+    'LECTOR' AS origen,
+    l.p_nombre || ' ' || l.p_apellido AS entidad,
+    '(' || t.cod_local || ') ' || t.cod_area || '-' || t.num_tlf AS numero_completo
+FROM MEA_TELEFONOS t
+JOIN MEA_LECTORES l ON t.id_lector = l.id_lector;
+
+SELECT * FROM v_contactos_sistema;
+
+-- 8. Vista: V_IDIOMAS_HABLADOS
+CREATE OR REPLACE VIEW v_idiomas_hablados AS
+SELECT 
+    i.nom_idioma,
+    'CLUB' AS tipo_entidad,
+    c.nombre_club AS nombre_entidad
+FROM MEA_HABLAN h
+JOIN MEA_IDIOMAS i ON h.id_idioma = i.id_idioma
+JOIN MEA_CLUBES c ON h.id_club = c.id_club
+UNION
+SELECT 
+    i.nom_idioma,
+    'LECTOR' AS tipo_entidad,
+    l.p_nombre || ' ' || l.p_apellido AS nombre_entidad
+FROM MEA_HABLAN h
+JOIN MEA_IDIOMAS i ON h.id_idioma = i.id_idioma
+JOIN MEA_LECTORES l ON h.id_lector = l.id_lector;
+
+SELECT * FROM v_idiomas_hablados;
+
+-- 9. Vista: V_LIBROS_FAVORITOS
+CREATE OR REPLACE VIEW v_libros_favoritos AS
+SELECT 
+    l.p_nombre || ' ' || l.p_apellido AS lector,
+    b.titulo_libro,
+    f.orden AS rango_preferencia
+FROM MEA_FAVORITOS f
+JOIN MEA_LECTORES l ON f.id_lector = l.id_lector
+JOIN MEA_LIBROS b ON f.isbn = b.isbn
+ORDER BY lector, f.orden;
+
+SELECT * FROM v_libros_favoritos;
+
+-- 10. Vista: V_REPORTE_INASISTENCIAS
+CREATE OR REPLACE VIEW v_reporte_inasistencias AS
+SELECT 
+    i.fech_reunion AS fecha_reunion,
+    l.p_nombre || ' ' || l.p_apellido AS socio_ausente,
+    c.nombre_club,
+    b.titulo_libro
+FROM MEA_INASISTENTES i
+JOIN MEA_LECTORES l ON i.id_lector = l.id_lector
+JOIN MEA_CLUBES c ON i.id_club_soc = c.id_club
+JOIN MEA_LIBROS b ON i.isbn = b.isbn;
+
+SELECT * FROM v_reporte_inasistencias;
+
+-- 11. Vista: V_PRODUCCION_OBRAS
+CREATE OR REPLACE VIEW v_produccion_obras AS
+SELECT 
+    o.nombre_obra,
+    p.fech_presentacion,
+    p.cantidad_asistentes,
+    p.valoracion,
+    o.precio AS costo_entrada
+FROM MEA_OBRAS o
+JOIN MEA_PRESENTACIONES p ON o.id_obra = p.id_obra;
+
+SELECT * FROM v_produccion_obras;
+
+-- 12. Vista: V_ELENCOS_Y_PREMIADOS
+CREATE OR REPLACE VIEW v_elencos_y_premiados AS
+SELECT 
+    o.nombre_obra,
+    l.p_nombre || ' ' || l.p_apellido AS actor,
+    CASE WHEN m.id_lector IS NULL THEN 'No' ELSE 'SÍ' END AS fue_premiado,
+    m.id_fech_presentacion AS fecha_premio
+FROM MEA_ELENCOS e
+JOIN MEA_OBRAS o ON e.id_obra = o.id_obra
+JOIN MEA_LECTORES l ON e.id_lector = l.id_lector
+LEFT JOIN MEA_MEJORES_ACTORES m ON e.id_lector = m.id_lector AND e.id_obra = m.id_obra_elenco;
+
+SELECT * FROM v_elencos_y_premiados;
+
+-- 13. Vista: V_TRAYECTORIA_GRUPOS
+CREATE OR REPLACE VIEW v_trayectoria_grupos AS
+SELECT 
+    l.p_nombre || ' ' || l.p_apellido AS socio,
+    c.nombre_club,
+    g.tipo AS tipo_grupo,
+    hg.fech_i_hist_grupo AS fecha_inicio,
+    hg.fech_f_hist_grupo AS fecha_fin
+FROM MEA_HISTORICO_GRUPOS hg
+JOIN MEA_LECTORES l ON hg.id_lector = l.id_lector
+JOIN MEA_CLUBES c ON hg.id_club_soc = c.id_club
+JOIN MEA_GRUPOS g ON hg.id_club_grupo = g.id_club AND hg.id_grupo = g.id_grupo;
+
+SELECT * FROM v_trayectoria_grupos;
+
+-- 14. Vista: V_CLUBES_ASOCIADOS
+CREATE OR REPLACE VIEW v_clubes_asociados AS
+SELECT 
+    c1.nombre_club AS club_principal,
+    c2.nombre_club AS club_asociado
+FROM MEA_ASOCIACIONES a
+JOIN MEA_CLUBES c1 ON a.id_club1 = c1.id_club
+JOIN MEA_CLUBES c2 ON a.id_club2 = c2.id_club;
+
+SELECT * FROM v_clubes_asociados;
