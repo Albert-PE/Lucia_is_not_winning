@@ -1,0 +1,31 @@
+TIPOS PARA LA FUNCION 1:
+-- 1. Crear el tipo de fila
+CREATE OR REPLACE TYPE MEA_conversion_row AS OBJECT (
+    id_pais       NUMBER,
+    nom_pais      VARCHAR2(20),
+    moneda        VARCHAR2(3),
+    monto_origen  NUMBER,
+    tasa_cambio   VARCHAR2(50),
+    monto_usd     VARCHAR2(30)
+);
+
+-- 2. Crear el tipo tabla
+CREATE OR REPLACE TYPE MEA_conversion_table AS TABLE OF MEA_conversion_row;
+
+------------------------------------------------------------------------
+TIPOS PARA LA FUNCION 2:
+
+-- 1. Crear el tipo de fila
+CREATE OR REPLACE TYPE MEA_edad_row AS OBJECT (
+    id_lector         NUMBER,
+    p_nombre          VARCHAR2(15),
+    s_nombre          VARCHAR2(15),
+    p_apellido        VARCHAR2(15),
+    s_apellido        VARCHAR2(15),
+    f_nacimiento      VARCHAR2(10),
+    edad              NUMBER
+);
+
+
+-- 2. Crear el tipo tabla
+CREATE OR REPLACE TYPE MEA_edad_table AS TABLE OF MEA_edad_row;
