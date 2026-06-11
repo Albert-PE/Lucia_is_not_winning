@@ -1,57 +1,74 @@
-create or replace FUNCTION MEA_conversion_monetaria(
-    p_id_pais IN MEA_PAISES.id_pais%TYPE,
-    p_monto IN NUMBER,
+CREATE OR REPLACE FUNCTION MEA_conversion_monetaria(
+    p_id_pais     IN MEA_PAISES.id_pais%TYPE,
+    p_monto       IN NUMBER,
     p_tasa_cambio IN NUMBER
-) RETURN NUMBER IS
-    v_monto_usd NUMBER;
-    v_nom_moneda MEA_PAISES.moneda%TYPE;
+) RETURN MEA_conversion_table PIPELINED IS
+    v_monto_usd  NUMBER;
+    v_moneda     MEA_PAISES.moneda%TYPE;
+    v_pais       MEA_PAISES.nom_pais%TYPE;
 BEGIN
-    -- Buscamos el nombre de la moneda basado en el ID del país
-    SELECT moneda 
-    INTO v_nom_moneda
+    SELECT moneda, nom_pais
+    INTO v_moneda, v_pais
     FROM MEA_PAISES
     WHERE id_pais = p_id_pais;
 
-    -- Realizamos la conversión
-    v_monto_usd := p_monto / p_tasa_cambio;
-    
-    -- Feedback para el usuario con la moneda recuperada de la tabla
-    DBMS_OUTPUT.PUT_LINE(p_monto || ' ' || v_nom_moneda || ' cambiados a ' || v_monto_usd || ' dolares');
+    IF UPPER(v_pais) = 'ESTADOS UNIDOS' THEN
+        raise_application_error(-20008, 'No se permite convertir desde Estados Unidos.');
+    END IF;
 
-    RETURN (v_monto_usd);
-EXCEPTION
-    WHEN NO_DATA_FOUND THEN
-        raise_application_error(-20007, 'El ID de país proporcionado no existe.');
-        RETURN NULL;
-    WHEN ZERO_DIVIDE THEN
-        raise_application_error(-20005, 'La tasa de cambio no puede ser cero.');
-        RETURN NULL;
-    WHEN OTHERS THEN
-        raise_application_error(-20006, 'Error en la conversión monetaria: ' || SQLERRM);
-        RETURN NULL;
+    v_monto_usd := ROUND(p_monto / p_tasa_cambio, 2);
+
+    PIPE ROW (MEA_conversion_row(
+        p_id_pais,
+        v_pais,
+        v_moneda,
+        p_monto,
+        '1 USD = ' || p_tasa_cambio || ' ' || v_moneda,
+        v_monto_usd || ' USD'
+    ));
+
+    RETURN;
 END;
 
+
 -- COMPROBACIÓN
--- SELECT MEA_conversion_monetaria(&id_pais, &monto, &tasa_cambio) FROM DUAL;
+-- SELECT * FROM TABLE(MEA_conversion_monetaria(&id_pais, &monto, &tasa_cambio));
 
 --=========================================================================
 
-CREATE OR REPLACE FUNCTION MEA_antiguedad_en_club_miembro (v_fecha DATE) 
-RETURN NUMBER IS 
-BEGIN 
-    -- Se calcula la diferencia en días y se redondea al dividir entre los días del año.
-    RETURN (ROUND(((SYSDATE - v_fecha) / 365), 0)); 
+CREATE OR REPLACE FUNCTION MEA_antiguedad_en_club_miembro (
+    p_id_lector IN MEA_LECTORES.id_lector%TYPE
+) RETURN MEA_edad_table PIPELINED IS
+    v_edad NUMBER;
+BEGIN
+    FOR rec IN (
+        SELECT id_lector, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento
+        FROM MEA_LECTORES
+        WHERE id_lector = p_id_lector
+    ) LOOP
+        v_edad := ROUND(((SYSDATE - rec.f_nacimiento) / 365), 0);
+
+        PIPE ROW (MEA_edad_row(
+            rec.id_lector,
+            rec.p_nombre,
+            rec.s_nombre,
+            rec.p_apellido,
+            rec.s_apellido,
+            TO_CHAR(rec.f_nacimiento, 'DD/MM/YYYY'),
+            v_edad
+        ));
+    END LOOP;
+
+    RETURN;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        raise_application_error(-20015, 'Error: El lector con ID ' || p_id_lector || ' no existe.');
+    WHEN OTHERS THEN
+        raise_application_error(-20016, 'Error al calcular edad: ' || SQLERRM);
 END;
 
--- Query de prueba para MEA_antiguedad_en_club_miembro
-SELECT 
-    p_nombre AS "Nombre", 
-    f_nacimiento AS "Fecha Nacimiento",
-    MEA_antiguedad_en_club_miembro(f_nacimiento) AS "Edad Calculada"
-FROM MEA_LECTORES;
-
 --COMPROBACIÓN
--- SELECT MEA_antiguedad_en_club_miembro(TO_DATE('&fecha_ingreso_DD_MM_YYYY', 'DD/MM/YYYY')) FROM DUAL;
+-- SELECT * FROM TABLE(MEA_antiguedad_en_club_miembro(&id_lector));
 
 --=========================================================================
 
@@ -153,7 +170,7 @@ END;
 
 --=========================================================================
 
-CREATE OR REPLACE FUNCTION MEA_participacion_bimestre_miembro (id_part_lector number, fecha_inicial date)
+CREATE OR REPLACE FUNCTION MEA_participacion_bimestre_miembro (p_id_lector NUMBER, p_fecha_inicial DATE)
 RETURN NUMBER IS
     v_inasistencias NUMBER;
     v_total_reuniones NUMBER;
@@ -162,17 +179,17 @@ BEGIN
 
     SELECT count(*) INTO v_inasistencias
         FROM mea_inasistentes
-        WHERE id_part_lector = id_lector AND fech_reunion between add_months(fecha_inicial,-2) AND fecha_inicial;
+        WHERE p_id_lector = id_lector AND fech_reunion between add_months(p_fecha_inicial,-2) AND p_fecha_inicial;
 
     SELECT count(*) INTO v_total_reuniones    
         FROM mea_historico_grupos h, mea_reuniones_calendario r 
         WHERE 
-            id_part_lector = h.id_lector 
+            p_id_lector = h.id_lector 
             AND h.id_club_grupo = r.id_club 
             AND h.id_grupo = r.id_grupo 
             AND r.fech_reunion >= h.fech_i_hist_grupo 
             AND (h.fech_f_hist_grupo IS NULL OR r.fech_reunion <= h.fech_f_hist_grupo) 
-            AND r.fech_reunion between add_months(fecha_inicial,-2) AND fecha_inicial
+            AND r.fech_reunion between add_months(p_fecha_inicial,-2) AND p_fecha_inicial
             AND r.realizada = 'SI';
 
     IF v_total_reuniones = 0 THEN
@@ -185,4 +202,4 @@ END;
 
 -- COMPROBACIÓN
 
--- SELECT MEA_participacion_bimestre_miembro(&id_lector, &fecha_inicial) FROM DUAL;
+-- SELECT MEA_participacion_bimestre_miembro(&id_lector, TO_DATE('&fecha', 'DD-MM-YYYY')) FROM DUAL;

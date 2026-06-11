@@ -269,7 +269,7 @@ CREATE TABLE MEA_REUNIONES_CALENDARIO (
     fech_i_socio date NOT NULL,
     fech_i_hist_grupo date NOT NULL,
     conclusion varchar2(500),
-    valoracion number(2,1), -- Valoración de 0.0 a 5.0
+    valoracion number(1,1), -- Valoración de 0.0 a 5.0
     ult_discusion varchar2(2), -- 'SI' o 'NO'
     CONSTRAINT MEA_fk_reun_grupo FOREIGN KEY (id_club, id_grupo) REFERENCES MEA_GRUPOS(id_club, id_grupo), -- Corregido orden
     CONSTRAINT MEA_fk_reun_libro FOREIGN KEY (isbn) REFERENCES MEA_LIBROS(isbn),
