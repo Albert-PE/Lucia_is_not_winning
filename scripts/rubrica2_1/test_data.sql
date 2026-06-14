@@ -72,31 +72,31 @@ SET DEFINE ON;
 -- -----------------------------------------------------------------------------
 
 -- Caso 1.1: Convertir 1000 VED (Venezuela, ID 1) a USD con tasa de 40.
--- SELECT MEA_conversion_monetaria(1, 1000, 40) AS RESULTADO_CONV_VED FROM DUAL;
+-- SELECT * FROM TABLE(MEA_conversion_monetaria(1, 1000, 40));
 
 -- Caso 1.2: Convertir 50 EUR (España, ID 2) a USD con tasa de 0.92.
--- SELECT MEA_conversion_monetaria(2, 50, 0.92) AS RESULTADO_CONV_EUR FROM DUAL;
+-- SELECT * FROM TABLE(MEA_conversion_monetaria(2, 50, 0.92));
 
 -- Caso 1.3: INTERACTIVO (Popup)
--- Instrucción: Ingrese id_pais=3 (Islandia), monto=5000, tasa_cambio=138
--- SELECT MEA_conversion_monetaria(&id_pais, &monto, &tasa_cambio) AS CONV_INTERACTIVA FROM DUAL;
+-- Instrucción: Ingrese id_pais=14 (Reino Unido), monto=100, tasa_cambio=0.79
+-- SELECT * FROM TABLE(MEA_conversion_monetaria(&id_pais, &monto, &tasa_cambio));
 
 
 -- -----------------------------------------------------------------------------
--- FUNCIÓN 2: MEA_antiguedad_en_club_miembro(fecha_nacimiento/ingreso)
+-- FUNCIÓN 2: MEA_antiguedad_en_club_miembro(fecha)
 -- -----------------------------------------------------------------------------
 
--- Caso 2.1: Antigüedad de Juan Pérez (ID 1, nacido en 1985).
+-- Caso 2.1: Edad de Juan Pérez (ID 1, nacido en 1985).
 -- SELECT p_nombre, MEA_antiguedad_en_club_miembro(f_nacimiento) AS EDAD_CALCULADA 
 -- FROM MEA_LECTORES WHERE id_lector = 1;
 
--- Caso 2.2: Antigüedad de Pedro González (ID 5, nacido en 2000).
--- SELECT p_nombre, MEA_antiguedad_en_club_miembro(f_nacimiento) AS EDAD_CALCULADA 
--- FROM MEA_LECTORES WHERE id_lector = 5;
+-- Caso 2.2: Antigüedad de un socio (Ingreso: 01/01/2010).
+-- SELECT MEA_antiguedad_en_club_miembro(TO_DATE('01/01/2010', 'DD/MM/YYYY')) AS ANIOS_ANTIGUEDAD FROM DUAL;
 
 -- Caso 2.3: INTERACTIVO (Popup)
--- Instrucción: Ingrese la fecha en formato DD/MM/YYYY (ej. 10/01/2024 para ingreso de club)
--- SELECT MEA_antiguedad_en_club_miembro(TO_DATE('&fecha_ingreso_DD_MM_YYYY', 'DD/MM/YYYY')) AS ANTIGUEDAD_INTERACTIVA FROM DUAL;
+-- Instrucción: Ingrese la fecha en formato DD-MM-YYYY (ej. 15-05-1998 para edad)
+-- SELECT MEA_antiguedad_en_club_miembro(TO_DATE('&fecha_DD_MM_YYYY', 'DD-MM-YYYY')) AS ANIOS_CALCULADOS FROM DUAL;
+
 
 
 -- -----------------------------------------------------------------------------
@@ -125,6 +125,7 @@ SET DEFINE ON;
 -- SELECT MEA_participacion_bimestre_miembro(1, TO_DATE('01-06-2026', 'DD-MM-YYYY')) AS PART_JUAN FROM DUAL;
 
 -- Caso 4.3: INTERACTIVO (Popup)
--- Instrucción: Ingrese id_lector=2, fecha_inicial=TO_DATE('01-06-2026', 'DD-MM-YYYY')
--- SELECT MEA_participacion_bimestre_miembro(&id_lector, &fecha_inicial) AS PARTICIPACIÓN FROM DUAL;
+-- Instrucción: Ingrese id_lector=2, fecha_inicial_DD_MM_YYYY=01-06-2026
+-- SELECT MEA_participacion_bimestre_miembro(&id_lector, TO_DATE('&fecha_inicial_DD_MM_YYYY', 'DD-MM-YYYY')) AS PARTICIPACIÓN FROM DUAL;
+
 

@@ -1,4 +1,26 @@
+--=====================================================================
+--                            TIPOS
+--=====================================================================
+
+CREATE OR REPLACE TYPE MEA_conversion_row AS OBJECT (
+    id_pais       NUMBER,
+    nom_pais      VARCHAR2(20),
+    moneda        VARCHAR2(3),
+    monto_origen  NUMBER,
+    tasa_cambio   VARCHAR2(50),
+    monto_usd     VARCHAR2(30)
+);
+/
+
+CREATE OR REPLACE TYPE MEA_conversion_table AS TABLE OF MEA_conversion_row;
+/
+
+--=====================================================================
+--                            FUNCIONES
+--=====================================================================
+
 CREATE OR REPLACE FUNCTION MEA_conversion_monetaria(
+
     p_id_pais     IN MEA_PAISES.id_pais%TYPE,
     p_monto       IN NUMBER,
     p_tasa_cambio IN NUMBER
@@ -12,18 +34,18 @@ BEGIN
     FROM MEA_PAISES
     WHERE id_pais = p_id_pais;
 
-    IF UPPER(v_pais) = 'ESTADOS UNIDOS' THEN
-        raise_application_error(-20008, 'No se permite convertir desde Estados Unidos.');
+    IF v_moneda = 'USD' THEN
+        v_monto_usd := p_monto;
+    ELSE
+        v_monto_usd := ROUND(p_monto / p_tasa_cambio, 2);
     END IF;
-
-    v_monto_usd := ROUND(p_monto / p_tasa_cambio, 2);
 
     PIPE ROW (MEA_conversion_row(
         p_id_pais,
         v_pais,
         v_moneda,
         p_monto,
-        '1 USD = ' || p_tasa_cambio || ' ' || v_moneda,
+        CASE WHEN v_moneda = 'USD' THEN 'Misma moneda (USD)' ELSE '1 USD = ' || p_tasa_cambio || ' ' || v_moneda END,
         v_monto_usd || ' USD'
     ));
 
@@ -38,39 +60,19 @@ END;
 --=========================================================================
 
 CREATE OR REPLACE FUNCTION MEA_antiguedad_en_club_miembro (
-    p_id_lector IN MEA_LECTORES.id_lector%TYPE
-) RETURN MEA_edad_table PIPELINED IS
-    v_edad NUMBER;
+    p_fecha IN DATE
+) RETURN NUMBER IS
 BEGIN
-    FOR rec IN (
-        SELECT id_lector, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento
-        FROM MEA_LECTORES
-        WHERE id_lector = p_id_lector
-    ) LOOP
-        v_edad := ROUND(((SYSDATE - rec.f_nacimiento) / 365), 0);
-
-        PIPE ROW (MEA_edad_row(
-            rec.id_lector,
-            rec.p_nombre,
-            rec.s_nombre,
-            rec.p_apellido,
-            rec.s_apellido,
-            TO_CHAR(rec.f_nacimiento, 'DD/MM/YYYY'),
-            v_edad
-        ));
-    END LOOP;
-
-    RETURN;
+    RETURN TRUNC(MONTHS_BETWEEN(SYSDATE, p_fecha) / 12);
 EXCEPTION
-    WHEN NO_DATA_FOUND THEN
-        raise_application_error(-20015, 'Error: El lector con ID ' || p_id_lector || ' no existe.');
     WHEN OTHERS THEN
-        raise_application_error(-20016, 'Error al calcular edad: ' || SQLERRM);
+        raise_application_error(-20016, 'Error al calcular años: ' || SQLERRM);
 END;
 /
 
 --COMPROBACIÓN
--- SELECT * FROM TABLE(MEA_antiguedad_en_club_miembro(&id_lector));
+-- SELECT MEA_antiguedad_en_club_miembro(f_nacimiento) FROM MEA_LECTORES;
+
 
 --=========================================================================
 

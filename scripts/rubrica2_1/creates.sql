@@ -19,8 +19,27 @@ CREATE SEQUENCE MEA_seq_favoritos START WITH 1 INCREMENT BY 1;
 
 
 --=====================================================================
+--                            TIPOS
+--=====================================================================
+
+CREATE OR REPLACE TYPE MEA_conversion_row AS OBJECT (
+    id_pais       NUMBER,
+    nom_pais      VARCHAR2(20),
+    moneda        VARCHAR2(3),
+    monto_origen  NUMBER,
+    tasa_cambio   VARCHAR2(50),
+    monto_usd     VARCHAR2(30)
+);
+/
+
+CREATE OR REPLACE TYPE MEA_conversion_table AS TABLE OF MEA_conversion_row;
+/
+
+
+--=====================================================================
 --                      TABLAS INDEPENDIENTES
 --=====================================================================
+
 
 -- ENTRADA
 CREATE TABLE MEA_INSTITUCIONES (
@@ -356,47 +375,50 @@ CREATE INDEX MEA_idx_fk_libros_anterior ON MEA_LIBROS(isbn_lib_anterior);
 --=====================================================================
 
 CREATE OR REPLACE FUNCTION MEA_conversion_monetaria(
-    p_id_pais IN MEA_PAISES.id_pais%TYPE,
-    p_monto IN NUMBER,
+    p_id_pais     IN MEA_PAISES.id_pais%TYPE,
+    p_monto       IN NUMBER,
     p_tasa_cambio IN NUMBER
-) RETURN NUMBER IS
-    v_monto_usd NUMBER;
-    v_nom_moneda MEA_PAISES.moneda%TYPE;
+) RETURN MEA_conversion_table PIPELINED IS
+    v_monto_usd  NUMBER;
+    v_moneda     MEA_PAISES.moneda%TYPE;
+    v_pais       MEA_PAISES.nom_pais%TYPE;
 BEGIN
-    -- Buscamos el nombre de la moneda basado en el ID del país
-    SELECT moneda 
-    INTO v_nom_moneda
+    SELECT moneda, nom_pais
+    INTO v_moneda, v_pais
     FROM MEA_PAISES
     WHERE id_pais = p_id_pais;
 
-    -- Realizamos la conversión
-    v_monto_usd := p_monto / p_tasa_cambio;
-    
-    -- Feedback para el usuario con la moneda recuperada de la tabla
-    DBMS_OUTPUT.PUT_LINE(p_monto || ' ' || v_nom_moneda || ' cambiados a ' || v_monto_usd || ' dolares');
+    IF v_moneda = 'USD' THEN
+        v_monto_usd := p_monto;
+    ELSE
+        v_monto_usd := ROUND(p_monto / p_tasa_cambio, 2);
+    END IF;
 
-    RETURN (v_monto_usd);
-EXCEPTION
-    WHEN NO_DATA_FOUND THEN
-        raise_application_error(-20007, 'El ID de país proporcionado no existe.');
-        RETURN NULL;
-    WHEN ZERO_DIVIDE THEN
-        raise_application_error(-20005, 'La tasa de cambio no puede ser cero.');
-        RETURN NULL;
-    WHEN OTHERS THEN
-        raise_application_error(-20006, 'Error en la conversión monetaria: ' || SQLERRM);
-        RETURN NULL;
+    PIPE ROW (MEA_conversion_row(
+        p_id_pais,
+        v_pais,
+        v_moneda,
+        p_monto,
+        CASE WHEN v_moneda = 'USD' THEN 'Misma moneda (USD)' ELSE '1 USD = ' || p_tasa_cambio || ' ' || v_moneda END,
+        v_monto_usd || ' USD'
+    ));
+
+    RETURN;
 END;
 /
 
 --========================================================================
 
-CREATE OR REPLACE FUNCTION MEA_antiguedad_en_club_miembro (v_fecha DATE) 
+CREATE OR REPLACE FUNCTION MEA_antiguedad_en_club_miembro (p_fecha DATE) 
 RETURN NUMBER IS 
 BEGIN 
-    RETURN (ROUND(((SYSDATE - v_fecha) / 365), 0)); 
+    RETURN TRUNC(MONTHS_BETWEEN(SYSDATE, p_fecha) / 12);
+EXCEPTION
+    WHEN OTHERS THEN
+        raise_application_error(-20016, 'Error al calcular años: ' || SQLERRM);
 END;
 /
+
 
 --========================================================================
 
