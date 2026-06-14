@@ -21,50 +21,49 @@ BEGIN
     END IF;
 END;
 
-ejemplo de gatilleo:
-paso 1 tener minimo estas tablas llenas:
-País 
+--ejemplo de gatilleo:
+--paso 1 tener minimo estas tablas llenas:
+--País 
 INSERT INTO MEA_PAISES (id_pais, nom_pais, moneda, nacionalidad) 
 VALUES (1, 'Venezuela', 'VES', 'Venezolana');
 
-Institución
+--Institución
 INSERT INTO MEA_INSTITUCIONES (id_inst, nom_inst, tipo_inst) 
 VALUES (1, 'Biblioteca Central', 'biblioteca');
 
-
-Ciudad 
+--Ciudad 
 INSERT INTO MEA_CIUDADES (id_pais, id_ciudad, nom_ciudad) 
 VALUES (1, 1, 'Caracas');
 
-Club 
+--Club 
 INSERT INTO MEA_CLUBES (id_club, nombre_club, fech_creacion, direccion, codigo_postal, id_pais, id_ciudad, id_inst) 
 VALUES (1, 'Círculo Ávila', SYSDATE, 'Av. Principal', '1060', 1, 1, 1);
 
-Lector 
+--Lector 
 INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email) 
 VALUES (10, 12345678, 'Carlos', 'Eduardo', 'Gómez', 'Matos', TO_DATE('01-01-1990','DD-MM-YYYY'), 'carlos@mail.com');
 
-Libro 
+--Libro 
 INSERT INTO MEA_LIBROS (isbn, titulo_libro, año_publicacion, cant_paginas, resumen, sinopsis, tema, tipo_narrativa, id_pais) 
 VALUES (999, 'Base de Datos Pro', 2026, 300, '.', '.', 'Tecnología', 'novela', 1);
 
-Socio
+--Socio
 INSERT INTO MEA_SOCIOS (id_club, id_lector, fech_i_socio, status_socio) 
 VALUES (1, 10, TO_DATE('01-01-2026','DD-MM-YYYY'), 'activo');
 
-Grupos
+--Grupos
 INSERT INTO MEA_GRUPOS (id_club, id_grupo, fech_creacion, tipo, dia_reunion, hora_i_reunion) 
 VALUES (1, 101, SYSDATE, 'adulto', 2, 18);
 INSERT INTO MEA_GRUPOS (id_club, id_grupo, fech_creacion, tipo, dia_reunion, hora_i_reunion) 
 VALUES (1, 102, SYSDATE, 'joven', 3, 17);
 
-Historial 
+--Historial 
 INSERT INTO MEA_HISTORICO_GRUPOS (id_club_grupo, id_grupo, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo) 
 VALUES (1, 101, 1, 10, TO_DATE('01-01-2026','DD-MM-YYYY'), TO_DATE('01-02-2026','DD-MM-YYYY'));
 INSERT INTO MEA_HISTORICO_GRUPOS (id_club_grupo, id_grupo, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo) 
 VALUES (1, 102, 1, 10, TO_DATE('01-01-2026','DD-MM-YYYY'), TO_DATE('01-02-2026','DD-MM-YYYY'));
 
-paso 2: insertar al moderador
+--paso 2: insertar al moderador
 INSERT INTO MEA_REUNIONES_CALENDARIO (
     id_club, id_grupo, isbn, fech_reunion, realizada, 
     id_club_hist, id_grupo_hist, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo
@@ -82,3 +81,63 @@ INSERT INTO MEA_REUNIONES_CALENDARIO (
     1, 102, 1, 10, TO_DATE('01-01-2026','DD-MM-YYYY'), TO_DATE('01-02-2026','DD-MM-YYYY')
 );
 --caso negativo y salta el error ORA-20020
+
+----------------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE TRIGGER MEA_TRG_TRASLADO_GRUPO
+BEFORE INSERT ON MEA_HISTORICO_GRUPOS
+FOR EACH ROW
+DECLARE
+    PRAGMA AUTONOMOUS_TRANSACTION; 
+BEGIN
+    DELETE FROM MEA_HISTORICO_GRUPOS
+    WHERE id_lector = :new.id_lector;
+    COMMIT; 
+    :new.fech_i_hist_grupo := TRUNC(SYSDATE);
+    :new.fech_f_hist_grupo := NULL; 
+END;
+
+ejemplo de gatilleo:
+
+-- PAISES
+INSERT INTO MEA_PAISES (id_pais, nom_pais, moneda, nacionalidad) 
+VALUES (1, 'Venezuela', 'VES', 'Venezolana');
+
+-- INSTITUCIONES
+INSERT INTO MEA_INSTITUCIONES (id_inst, nom_inst, tipo_inst) 
+VALUES (1, 'Biblioteca Central', 'biblioteca');
+
+-- CIUDADES
+INSERT INTO MEA_CIUDADES (id_pais, id_ciudad, nom_ciudad) 
+VALUES (1, 1, 'Caracas');
+
+-- CLUBES
+INSERT INTO MEA_CLUBES (id_club, nombre_club, fech_creacion, direccion, codigo_postal, id_pais, id_ciudad, id_inst) 
+VALUES (1, 'Círculo Ávila', SYSDATE, 'Av. Principal', '1060', 1, 1, 1);
+
+-- LECTORES
+INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email) 
+VALUES (50, 12345678, 'Luis', 'Alberto', 'Gómez', 'Matos', TO_DATE('01-01-1995','DD-MM-YYYY'), 'luis@mail.com');
+
+-- SOCIOS
+INSERT INTO MEA_SOCIOS (id_club, id_lector, fech_i_socio, status_socio) 
+VALUES (1, 50, TO_DATE('01-01-2026','DD-MM-YYYY'), 'activo');
+
+-- GRUPOS
+INSERT INTO MEA_GRUPOS (id_club, id_grupo, fech_creacion, tipo, dia_reunion, hora_i_reunion) 
+VALUES (1, 10, SYSDATE, 'adulto', 2, 18); -- Grupo Actual
+INSERT INTO MEA_GRUPOS (id_club, id_grupo, fech_creacion, tipo, dia_reunion, hora_i_reunion) 
+VALUES (1, 20, SYSDATE, 'joven', 3, 17);  -- Grupo de Destino
+
+-- HISTORICO GRUPOS
+INSERT INTO MEA_HISTORICO_GRUPOS (id_club_grupo, id_grupo, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo) 
+VALUES (1, 10, 1, 50, TO_DATE('01-01-2026','DD-MM-YYYY'), TO_DATE('01-01-2026','DD-MM-YYYY'));
+
+-- gatilleo del trigger
+INSERT INTO MEA_HISTORICO_GRUPOS (id_club_grupo, id_grupo, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo) 
+VALUES (1, 20, 1, 50, TO_DATE('01-01-2026','DD-MM-YYYY'), TO_DATE('01-03-2000','DD-MM-YYYY'));
+COMMIT; 
+
+-- VERIFICACIÓN PARA VER LOS CAMBIOS
+SELECT id_lector, id_grupo, TO_CHAR(fech_i_hist_grupo, 'DD-MON-YYYY') as FECHA 
+FROM MEA_HISTORICO_GRUPOS 
+WHERE id_lector = 50;
