@@ -134,7 +134,7 @@ VALUES (1, 10, 1, 50, TO_DATE('01-01-2026','DD-MM-YYYY'), TO_DATE('01-01-2026','
 
 -- gatilleo del trigger
 INSERT INTO MEA_HISTORICO_GRUPOS (id_club_grupo, id_grupo, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo) 
-VALUES (1, 20, 1, 50, TO_DATE('01-01-2026','DD-MM-YYYY'), TO_DATE('01-03-2000','DD-MM-YYYY'));
+VALUES (1, 20, 1, 50, TO_DATE('01-01-2026','DD-MM-YYYY'), TO_DATE('01-03-2026','DD-MM-YYYY'));
 COMMIT; 
 
 -- VERIFICACIÓN PARA VER LOS CAMBIOS
