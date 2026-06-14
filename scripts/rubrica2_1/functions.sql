@@ -226,6 +226,9 @@ RETURN NUMBER IS
     v_total_reuniones NUMBER;
     v_porcentaje NUMBER;
 BEGIN
+    IF p_bimestre < 1 OR p_bimestre > 6 THEN
+        raise_application_error(-20014, 'Error: El bimestre debe ser un valor entre 1 y 6.');
+    END IF;
 
     SELECT count(*) INTO v_inasistencias
         FROM mea_inasistentes
