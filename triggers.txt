@@ -1,0 +1,84 @@
+create or replace NONEDITIONABLE TRIGGER MEA_TRG_MODERADOR_UNICO
+BEFORE INSERT OR UPDATE OF id_lector, id_club, id_grupo ON MEA_REUNIONES_CALENDARIO
+FOR EACH ROW
+DECLARE
+    v_conteo NUMBER;
+    v_lector_actual NUMBER;
+BEGIN
+    v_lector_actual := :new.id_lector;
+
+    -- Regla: Un moderador solo puede serlo en un grupo a la vez.
+    -- Buscamos si el lector ya es moderador en REUNIONES de un grupo DIFERENTE al actual.
+    SELECT COUNT(*)
+    INTO v_conteo
+    FROM MEA_REUNIONES_CALENDARIO
+    WHERE id_lector = v_lector_actual
+      AND (id_club <> :new.id_club OR id_grupo <> :new.id_grupo);
+
+    IF v_conteo > 0 THEN
+        RAISE_APPLICATION_ERROR(-20020, 'ERROR: El lector ID ' || v_lector_actual || 
+            ' ya es moderador en otro grupo. Solo se permite moderar un grupo a la vez.');
+    END IF;
+END;
+
+ejemplo de gatilleo:
+paso 1 tener minimo estas tablas llenas:
+País 
+INSERT INTO MEA_PAISES (id_pais, nom_pais, moneda, nacionalidad) 
+VALUES (1, 'Venezuela', 'VES', 'Venezolana');
+
+Institución
+INSERT INTO MEA_INSTITUCIONES (id_inst, nom_inst, tipo_inst) 
+VALUES (1, 'Biblioteca Central', 'biblioteca');
+
+
+Ciudad 
+INSERT INTO MEA_CIUDADES (id_pais, id_ciudad, nom_ciudad) 
+VALUES (1, 1, 'Caracas');
+
+Club 
+INSERT INTO MEA_CLUBES (id_club, nombre_club, fech_creacion, direccion, codigo_postal, id_pais, id_ciudad, id_inst) 
+VALUES (1, 'Círculo Ávila', SYSDATE, 'Av. Principal', '1060', 1, 1, 1);
+
+Lector 
+INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email) 
+VALUES (10, 12345678, 'Carlos', 'Eduardo', 'Gómez', 'Matos', TO_DATE('01-01-1990','DD-MM-YYYY'), 'carlos@mail.com');
+
+Libro 
+INSERT INTO MEA_LIBROS (isbn, titulo_libro, año_publicacion, cant_paginas, resumen, sinopsis, tema, tipo_narrativa, id_pais) 
+VALUES (999, 'Base de Datos Pro', 2026, 300, '.', '.', 'Tecnología', 'novela', 1);
+
+Socio
+INSERT INTO MEA_SOCIOS (id_club, id_lector, fech_i_socio, status_socio) 
+VALUES (1, 10, TO_DATE('01-01-2026','DD-MM-YYYY'), 'activo');
+
+Grupos
+INSERT INTO MEA_GRUPOS (id_club, id_grupo, fech_creacion, tipo, dia_reunion, hora_i_reunion) 
+VALUES (1, 101, SYSDATE, 'adulto', 2, 18);
+INSERT INTO MEA_GRUPOS (id_club, id_grupo, fech_creacion, tipo, dia_reunion, hora_i_reunion) 
+VALUES (1, 102, SYSDATE, 'joven', 3, 17);
+
+Historial 
+INSERT INTO MEA_HISTORICO_GRUPOS (id_club_grupo, id_grupo, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo) 
+VALUES (1, 101, 1, 10, TO_DATE('01-01-2026','DD-MM-YYYY'), TO_DATE('01-02-2026','DD-MM-YYYY'));
+INSERT INTO MEA_HISTORICO_GRUPOS (id_club_grupo, id_grupo, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo) 
+VALUES (1, 102, 1, 10, TO_DATE('01-01-2026','DD-MM-YYYY'), TO_DATE('01-02-2026','DD-MM-YYYY'));
+
+paso 2: insertar al moderador
+INSERT INTO MEA_REUNIONES_CALENDARIO (
+    id_club, id_grupo, isbn, fech_reunion, realizada, 
+    id_club_hist, id_grupo_hist, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo
+) VALUES (
+    1, 101, 999, TO_DATE('20-06-2026','DD-MM-YYYY'), 'NO',
+    1, 101, 1, 10, TO_DATE('01-01-2026','DD-MM-YYYY'), TO_DATE('01-02-2026','DD-MM-YYYY')
+);
+--caso positivo y no ocurre nada
+
+INSERT INTO MEA_REUNIONES_CALENDARIO (
+    id_club, id_grupo, isbn, fech_reunion, realizada, 
+    id_club_hist, id_grupo_hist, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo
+) VALUES (
+    1, 102, 999, TO_DATE('21-06-2026','DD-MM-YYYY'), 'NO',
+    1, 102, 1, 10, TO_DATE('01-01-2026','DD-MM-YYYY'), TO_DATE('01-02-2026','DD-MM-YYYY')
+);
+--caso negativo y salta el error ORA-20020
