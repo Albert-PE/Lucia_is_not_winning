@@ -59,19 +59,48 @@ END;
 
 --=========================================================================
 
-CREATE OR REPLACE FUNCTION MEA_antiguedad_en_club_miembro (
-    p_fecha IN DATE
+CREATE OR REPLACE FUNCTION MEA_edad_miembro (
+    p_id_lector IN NUMBER
 ) RETURN NUMBER IS
+    v_fecha DATE;
 BEGIN
-    RETURN TRUNC(MONTHS_BETWEEN(SYSDATE, p_fecha) / 12);
+    SELECT f_nacimiento INTO v_fecha
+    FROM MEA_LECTORES
+    WHERE id_lector = p_id_lector;
+
+    RETURN TRUNC(MONTHS_BETWEEN(SYSDATE, v_fecha) / 12);
 EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        raise_application_error(-20015, 'Error: El lector con ID ' || p_id_lector || ' no existe.');
     WHEN OTHERS THEN
-        raise_application_error(-20016, 'Error al calcular años: ' || SQLERRM);
+        raise_application_error(-20016, 'Error al calcular edad: ' || SQLERRM);
+END;
+/
+
+--=========================================================================
+
+CREATE OR REPLACE FUNCTION MEA_antiguedad_miembro (
+    p_id_lector IN NUMBER
+) RETURN NUMBER IS
+    v_fecha DATE;
+BEGIN
+    -- Buscamos la fecha de ingreso al club en la tabla de SOCIOS
+    SELECT fech_i_socio INTO v_fecha
+    FROM MEA_SOCIOS
+    WHERE id_lector = p_id_lector;
+
+    RETURN TRUNC(MONTHS_BETWEEN(SYSDATE, v_fecha) / 12);
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        raise_application_error(-20017, 'Error: El lector ' || p_id_lector || ' no es socio de ningún club.');
+    WHEN OTHERS THEN
+        raise_application_error(-20018, 'Error al calcular antigüedad: ' || SQLERRM);
 END;
 /
 
 --COMPROBACIÓN
--- SELECT MEA_antiguedad_en_club_miembro(f_nacimiento) FROM MEA_LECTORES;
+-- SELECT p_nombre, MEA_edad_miembro(id_lector) as edad, MEA_antiguedad_miembro(id_lector) as anios_club FROM MEA_LECTORES;
+
 
 
 --=========================================================================

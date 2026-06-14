@@ -83,19 +83,19 @@ SET DEFINE ON;
 
 
 -- -----------------------------------------------------------------------------
--- FUNCIÓN 2: MEA_antiguedad_en_club_miembro(fecha)
+-- FUNCIÓN 2: MEA_edad_miembro y MEA_antiguedad_miembro
 -- -----------------------------------------------------------------------------
 
--- Caso 2.1: Edad de Juan Pérez (ID 1, nacido en 1985).
--- SELECT p_nombre, MEA_antiguedad_en_club_miembro(f_nacimiento) AS EDAD_CALCULADA 
--- FROM MEA_LECTORES WHERE id_lector = 1;
+-- Caso 2.1: Edad de Juan Pérez (ID 1).
+-- SELECT p_nombre, MEA_edad_miembro(id_lector) AS EDAD FROM MEA_LECTORES WHERE id_lector = 1;
 
--- Caso 2.2: Antigüedad de un socio (Ingreso: 01/01/2010).
--- SELECT MEA_antiguedad_en_club_miembro(TO_DATE('01/01/2010', 'DD/MM/YYYY')) AS ANIOS_ANTIGUEDAD FROM DUAL;
+-- Caso 2.2: Antigüedad de Juan Pérez (ID 1) en el club.
+-- SELECT p_nombre, MEA_antiguedad_miembro(id_lector) AS ANIOS_EN_CLUB FROM MEA_LECTORES WHERE id_lector = 1;
 
 -- Caso 2.3: INTERACTIVO (Popup)
--- Instrucción: Ingrese la fecha en formato DD-MM-YYYY (ej. 15-05-1998 para edad)
--- SELECT MEA_antiguedad_en_club_miembro(TO_DATE('&fecha_DD_MM_YYYY', 'DD-MM-YYYY')) AS ANIOS_CALCULADOS FROM DUAL;
+-- Instrucción: Ingrese el ID del lector (ej. 1)
+-- SELECT p_nombre, MEA_edad_miembro(id_lector) as edad, MEA_antiguedad_miembro(id_lector) as antiguedad FROM MEA_LECTORES WHERE id_lector = &id_lector;
+
 
 
 
