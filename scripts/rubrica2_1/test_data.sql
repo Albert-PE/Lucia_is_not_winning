@@ -100,18 +100,18 @@ SET DEFINE ON;
 
 
 -- -----------------------------------------------------------------------------
--- FUNCIÓN 3: MEA_promedio_part_mensual_tipo(id_club, tipo_grupo, mes, año)
+-- FUNCIÓN 3: MEA_promedio_part_mensual_tipo(id_club, mes, año)
 -- -----------------------------------------------------------------------------
 
--- Caso 3.1: Club 1, Grupo 'adulto', Mayo 2026. (Resultado: 85%)
--- SELECT MEA_promedio_part_mensual_tipo(1, 'adulto', 5, 2026) AS PROMEDIO_ASIST_MAYO FROM DUAL;
+-- Caso 3.1: Club 1, Mayo 2026. (Retorna VARCHAR2 con promedios por tipo)
+-- SELECT MEA_promedio_part_mensual_tipo(1, 5, 2026) AS PROMEDIO_CLUB_MAYO FROM DUAL;
 
--- Caso 3.2: Club 1, Grupo 'adulto', Abril 2026. (Resultado: 0%)
--- SELECT MEA_promedio_part_mensual_tipo(1, 'adulto', 4, 2026) AS PROMEDIO_ASIST_ABRIL FROM DUAL;
+-- Caso 3.2: Club 1, Abril 2026.
+-- SELECT MEA_promedio_part_mensual_tipo(1, 4, 2026) AS PROMEDIO_CLUB_ABRIL FROM DUAL;
 
 -- Caso 3.3: INTERACTIVO (Popup)
--- Instrucción: Ingrese id_club=1, tipo_grupo='adulto', mes=5, anio=2026
--- SELECT MEA_promedio_part_mensual_tipo(&id_club, '&tipo_grupo', &mes, &anio) AS PROMEDIO_INTERACTIVO FROM DUAL;
+-- Instrucción: Ingrese id_club=1, mes=5, anio=2026
+-- SELECT MEA_promedio_part_mensual_tipo(&id_club, &mes, &anio) AS PROMEDIO_INTERACTIVO FROM DUAL;
 
 
 -- -----------------------------------------------------------------------------

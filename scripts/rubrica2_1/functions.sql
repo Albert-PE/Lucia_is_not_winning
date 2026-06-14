@@ -29,6 +29,7 @@ BEGIN
 
     RETURN;
 END;
+/
 
 
 -- COMPROBACIÓN
@@ -66,6 +67,7 @@ EXCEPTION
     WHEN OTHERS THEN
         raise_application_error(-20016, 'Error al calcular edad: ' || SQLERRM);
 END;
+/
 
 --COMPROBACIÓN
 -- SELECT * FROM TABLE(MEA_antiguedad_en_club_miembro(&id_lector));
@@ -74,20 +76,25 @@ END;
 
 CREATE OR REPLACE FUNCTION MEA_promedio_part_mensual_tipo(
     p_id_club IN NUMBER,
-    p_tipo_grupo IN VARCHAR2, -- 'joven', 'adulto', 'infantil'
-    p_mes IN NUMBER,
-    p_anio IN NUMBER
-) RETURN NUMBER IS
-    v_total_esperado NUMBER := 0;
-    v_total_inasistencias NUMBER := 0;
-    v_promedio NUMBER := 0;
-    v_tipo_normalizado VARCHAR2(20);
-    v_nom_club MEA_CLUBES.nombre_club%TYPE;
-    v_fecha_consulta DATE;
+    p_mes     IN NUMBER,
+    p_anio    IN NUMBER
+) RETURN VARCHAR2 IS
+    v_total_esperado      NUMBER;
+    v_total_inasistencias NUMBER;
+    v_promedio_grupo      NUMBER;
+    v_suma_promedios_tipo NUMBER;
+    v_cont_grupos_tipo    NUMBER;
+    v_promedio_tipo_final NUMBER;
+    
+    v_nom_club            MEA_CLUBES.nombre_club%TYPE;
+    v_salida              VARCHAR2(2000);
+    
+    -- Cursor para iterar por los tipos de grupo definidos en el negocio
+    CURSOR cur_tipos IS 
+        SELECT column_value AS tipo 
+        FROM TABLE(SYS.ODCIVARCHAR2LIST('adulto', 'joven', 'infantil'));
 BEGIN
-    v_tipo_normalizado := LOWER(p_tipo_grupo);
-
-    -----VALIDACIONES-----
+    ----- VALIDACIONES INICIALES -----
     BEGIN
         SELECT nombre_club INTO v_nom_club
         FROM MEA_CLUBES
@@ -101,63 +108,75 @@ BEGIN
         raise_application_error(-20011, 'Error: El mes debe estar entre 1 y 12.');
     END IF;
 
-    v_fecha_consulta := TO_DATE('01/' || p_mes || '/' || p_anio, 'DD/MM/YYYY');
-    IF v_fecha_consulta > SYSDATE THEN
-        raise_application_error(-20012, 'Error: No se pueden analizar promedios de fechas futuras.');
-    END IF;
-    -----------------------
-
-    -- Calculo asistencias esperadas
-    SELECT COUNT(*)
-    INTO v_total_esperado
-    FROM MEA_REUNIONES_CALENDARIO r, MEA_GRUPOS g, MEA_HISTORICO_GRUPOS h
-    WHERE r.id_club = g.id_club 
-      AND r.id_grupo = g.id_grupo
-      AND h.id_club_grupo = g.id_club 
-      AND h.id_grupo = g.id_grupo
-      AND r.fech_reunion >= h.fech_i_hist_grupo 
-      AND (h.fech_f_hist_grupo IS NULL OR r.fech_reunion <= h.fech_f_hist_grupo)
-      AND g.id_club = p_id_club
-      AND g.tipo = v_tipo_normalizado
-      AND EXTRACT(MONTH FROM r.fech_reunion) = p_mes
-      AND EXTRACT(YEAR FROM r.fech_reunion) = p_anio
-      AND r.realizada = 'SI';
-
-    -- Calculo Total de inasistencias reales
-    SELECT COUNT(*)
-    INTO v_total_inasistencias
-    FROM MEA_INASISTENTES i, MEA_GRUPOS g
-    WHERE i.id_club_reu = g.id_club 
-      AND i.id_grupo_reu = g.id_grupo
-      AND g.id_club = p_id_club
-      AND g.tipo = v_tipo_normalizado
-      AND EXTRACT(MONTH FROM i.fech_reunion) = p_mes
-      AND EXTRACT(YEAR FROM i.fech_reunion) = p_anio;
-
-    -- Cálculo final
-    IF v_total_esperado > 0 THEN
-        v_promedio := ((v_total_esperado - v_total_inasistencias) / v_total_esperado) * 100;
-    ELSE
-        v_promedio := 0;
+    IF TO_DATE('01/' || p_mes || '/' || p_anio, 'DD/MM/YYYY') > SYSDATE THEN
+        raise_application_error(-20012, 'Error: No se pueden analizar fechas futuras.');
     END IF;
 
-    v_promedio := ROUND(v_promedio, 2);
+    v_salida := 'Promedio por grupos:' || CHR(10);
 
-    -- IMPRESIÓN EN CONSOLA
-    DBMS_OUTPUT.PUT_LINE('--- RESULTADO DEL ANÁLISIS ---');
-    DBMS_OUTPUT.PUT_LINE('Club: ' || v_nom_club);
-    DBMS_OUTPUT.PUT_LINE('Periodo: ' || p_mes || '/' || p_anio);
-    DBMS_OUTPUT.PUT_LINE('Tipo de Grupo: ' || v_tipo_normalizado);
-    DBMS_OUTPUT.PUT_LINE('Promedio de Asistencia: ' || v_promedio || '%');
-    DBMS_OUTPUT.PUT_LINE('------------------------------');
+    -- Iteramos por cada tipo (Adulto, Joven, Infantil)
+    FOR r_tipo IN cur_tipos LOOP
+        v_suma_promedios_tipo := 0;
+        v_cont_grupos_tipo    := 0;
 
-    RETURN v_promedio;
+        -- Buscamos todos los grupos de ese tipo para el club dado
+        FOR r_grupo IN (SELECT id_grupo FROM MEA_GRUPOS WHERE id_club = p_id_club AND tipo = r_tipo.tipo) LOOP
+            
+            -- 1. Calculamos esperados para el grupo específico
+            SELECT COUNT(*)
+            INTO v_total_esperado
+            FROM MEA_REUNIONES_CALENDARIO r, MEA_HISTORICO_GRUPOS h
+            WHERE r.id_club = h.id_club_grupo
+              AND r.id_grupo = h.id_grupo
+              AND r.fech_reunion >= h.fech_i_hist_grupo
+              AND (h.fech_f_hist_grupo IS NULL OR r.fech_reunion <= h.fech_f_hist_grupo)
+              AND r.id_club = p_id_club
+              AND r.id_grupo = r_grupo.id_grupo
+              AND EXTRACT(MONTH FROM r.fech_reunion) = p_mes
+              AND EXTRACT(YEAR FROM r.fech_reunion) = p_anio
+              AND r.realizada = 'SI';
+
+            -- 2. Calculamos inasistencias para el grupo específico
+            SELECT COUNT(*)
+            INTO v_total_inasistencias
+            FROM MEA_INASISTENTES i
+            WHERE i.id_club_reu = p_id_club
+              AND i.id_grupo_reu = r_grupo.id_grupo
+              AND EXTRACT(MONTH FROM i.fech_reunion) = p_mes
+              AND EXTRACT(YEAR FROM i.fech_reunion) = p_anio;
+
+            -- 3. Promedio del grupo
+            IF v_total_esperado > 0 THEN
+                v_promedio_grupo := ((v_total_esperado - v_total_inasistencias) / v_total_esperado) * 100;
+                v_suma_promedios_tipo := v_suma_promedios_tipo + v_promedio_grupo;
+                v_cont_grupos_tipo := v_cont_grupos_tipo + 1;
+            END IF;
+        END LOOP;
+
+        -- 4. Promedio de promedios para el tipo
+        IF v_cont_grupos_tipo > 0 THEN
+            v_promedio_tipo_final := ROUND(v_suma_promedios_tipo / v_cont_grupos_tipo, 2);
+        ELSE
+            v_promedio_tipo_final := 0;
+        END IF;
+
+        -- 5. Construcción de la cadena de salida
+        IF r_tipo.tipo = 'adulto' THEN
+            v_salida := v_salida || 'Adultos: ' || v_promedio_tipo_final || '%' || CHR(10);
+        ELSIF r_tipo.tipo = 'joven' THEN
+            v_salida := v_salida || 'Juveniles: ' || v_promedio_tipo_final || '%' || CHR(10);
+        ELSIF r_tipo.tipo = 'infantil' THEN
+            v_salida := v_salida || 'Infantiles: ' || v_promedio_tipo_final || '%';
+        END IF;
+        
+    END LOOP;
+
+    RETURN v_salida;
 
 EXCEPTION
     WHEN OTHERS THEN
-        -- Si el error no es uno de los definidos arriba, relanzar con mensaje general
         IF SQLCODE NOT BETWEEN -20999 AND -20000 THEN
-            raise_application_error(-20013, 'Error inesperado en la función: ' || SQLERRM);
+            raise_application_error(-20013, 'Error inesperado: ' || SQLERRM);
         ELSE
             RAISE;
         END IF;
