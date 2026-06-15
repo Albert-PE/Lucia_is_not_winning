@@ -89,10 +89,15 @@ FOR EACH ROW
 DECLARE
     PRAGMA AUTONOMOUS_TRANSACTION; 
 BEGIN
-    DELETE FROM MEA_HISTORICO_GRUPOS
-    WHERE id_lector = :new.id_lector;
+    -- Cerrar la membresia en el grupo actual (del mismo club)
+    UPDATE MEA_HISTORICO_GRUPOS
+    SET fech_f_hist_grupo = :new.fech_i_hist_grupo
+    WHERE id_lector = :new.id_lector 
+      AND id_club_soc = :new.id_club_soc
+      AND fech_f_hist_grupo IS NULL;
     COMMIT; 
-    :new.fech_i_hist_grupo := TRUNC(SYSDATE);
+    
+    -- Nos aseguramos de que el nuevo registro quede abierto (NULL)
     :new.fech_f_hist_grupo := NULL; 
 END;
 
