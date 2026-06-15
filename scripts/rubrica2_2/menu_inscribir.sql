@@ -54,5 +54,7 @@ END;
 /
 
 PROMPT
-PROMPT Presione ENTER para terminar...
+PROMPT Presione ENTER para continuar...
 PAUSE
+
+@@menu_miembros.sql
