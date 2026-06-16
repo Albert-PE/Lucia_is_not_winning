@@ -1,5 +1,5 @@
 PROMPT ######################################################################
-PROMPT #                     GESTIONAR REUNIONES (MEA)                      #
+PROMPT #                         GESTIONAR REUNIONES                        #
 PROMPT ######################################################################
 PROMPT
 PROMPT 1. Generar Calendario (Nuevo Libro)
