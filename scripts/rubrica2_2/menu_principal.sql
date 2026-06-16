@@ -1,12 +1,7 @@
-SET SERVEROUTPUT ON SIZE 1000000
-SET VERIFY OFF
+SET DEFINE ON
+SET SERVEROUTPUT ON
 SET FEEDBACK OFF
-SET LINESIZE 200
-SET PAGESIZE 50
 
-UNDEFINE v_opc_principal
-
-CLEAR SCREEN
 PROMPT ######################################################################
 PROMPT #                     SISTEMA CLUB DE LECTURA                        #
 PROMPT ######################################################################
@@ -18,10 +13,9 @@ PROMPT 4. Gestionar Miembros
 PROMPT 5. Salir del Sistema
 PROMPT
 
-ACCEPT v_opc_principal PROMPT '>> Seleccione una opcion (1-5): '
-
 COLUMN script_to_run NEW_VALUE v_script_principal
-SELECT CASE '&v_opc_principal'
+-- Usamos & directo para que SQL Developer abra el popup automáticamente
+SELECT CASE '&opcion_menu_principal'
     WHEN '1' THEN 'menu_clubes.sql'
     WHEN '2' THEN 'menu_grupos.sql'
     WHEN '3' THEN 'menu_reuniones.sql'

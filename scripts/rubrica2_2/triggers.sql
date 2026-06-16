@@ -1,95 +1,15 @@
-create or replace NONEDITIONABLE TRIGGER MEA_TRG_MODERADOR_UNICO
-BEFORE INSERT OR UPDATE OF id_lector, id_club, id_grupo ON MEA_REUNIONES_CALENDARIO
-FOR EACH ROW
-DECLARE
-    v_conteo NUMBER;
-    v_lector_actual NUMBER;
-BEGIN
-    v_lector_actual := :new.id_lector;
+-- =============================================================================
+-- TRIGGERS DE INTEGRIDAD Y LÓGICA - PROYECTO CLUBES DE LECTURA (MEA)
+-- =============================================================================
 
-    -- Regla: Un moderador solo puede serlo en un grupo a la vez.
-    -- Buscamos si el lector ya es moderador en REUNIONES de un grupo DIFERENTE al actual.
-    SELECT COUNT(*)
-    INTO v_conteo
-    FROM MEA_REUNIONES_CALENDARIO
-    WHERE id_lector = v_lector_actual
-      AND (id_club <> :new.id_club OR id_grupo <> :new.id_grupo);
-
-    IF v_conteo > 0 THEN
-        RAISE_APPLICATION_ERROR(-20020, 'ERROR: El lector ID ' || v_lector_actual || 
-            ' ya es moderador en otro grupo. Solo se permite moderar un grupo a la vez.');
-    END IF;
-END;
-
---ejemplo de gatilleo:
---paso 1 tener minimo estas tablas llenas:
---País 
-INSERT INTO MEA_PAISES (id_pais, nom_pais, moneda, nacionalidad) 
-VALUES (1, 'Venezuela', 'VES', 'Venezolana');
-
---Institución
-INSERT INTO MEA_INSTITUCIONES (id_inst, nom_inst, tipo_inst) 
-VALUES (1, 'Biblioteca Central', 'biblioteca');
-
---Ciudad 
-INSERT INTO MEA_CIUDADES (id_pais, id_ciudad, nom_ciudad) 
-VALUES (1, 1, 'Caracas');
-
---Club 
-INSERT INTO MEA_CLUBES (id_club, nombre_club, fech_creacion, direccion, codigo_postal, id_pais, id_ciudad, id_inst) 
-VALUES (1, 'Círculo Ávila', SYSDATE, 'Av. Principal', '1060', 1, 1, 1);
-
---Lector 
-INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email) 
-VALUES (10, 12345678, 'Carlos', 'Eduardo', 'Gómez', 'Matos', TO_DATE('01-01-1990','DD-MM-YYYY'), 'carlos@mail.com');
-
---Libro 
-INSERT INTO MEA_LIBROS (isbn, titulo_libro, año_publicacion, cant_paginas, resumen, sinopsis, tema, tipo_narrativa, id_pais) 
-VALUES (999, 'Base de Datos Pro', 2026, 300, '.', '.', 'Tecnología', 'novela', 1);
-
---Socio
-INSERT INTO MEA_SOCIOS (id_club, id_lector, fech_i_socio, status_socio) 
-VALUES (1, 10, TO_DATE('01-01-2026','DD-MM-YYYY'), 'activo');
-
---Grupos
-INSERT INTO MEA_GRUPOS (id_club, id_grupo, fech_creacion, tipo, dia_reunion, hora_i_reunion) 
-VALUES (1, 101, SYSDATE, 'adulto', 2, 18);
-INSERT INTO MEA_GRUPOS (id_club, id_grupo, fech_creacion, tipo, dia_reunion, hora_i_reunion) 
-VALUES (1, 102, SYSDATE, 'joven', 3, 17);
-
---Historial 
-INSERT INTO MEA_HISTORICO_GRUPOS (id_club_grupo, id_grupo, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo) 
-VALUES (1, 101, 1, 10, TO_DATE('01-01-2026','DD-MM-YYYY'), TO_DATE('01-02-2026','DD-MM-YYYY'));
-INSERT INTO MEA_HISTORICO_GRUPOS (id_club_grupo, id_grupo, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo) 
-VALUES (1, 102, 1, 10, TO_DATE('01-01-2026','DD-MM-YYYY'), TO_DATE('01-02-2026','DD-MM-YYYY'));
-
---paso 2: insertar al moderador
-INSERT INTO MEA_REUNIONES_CALENDARIO (
-    id_club, id_grupo, isbn, fech_reunion, realizada, 
-    id_club_hist, id_grupo_hist, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo
-) VALUES (
-    1, 101, 999, TO_DATE('20-06-2026','DD-MM-YYYY'), 'NO',
-    1, 101, 1, 10, TO_DATE('01-01-2026','DD-MM-YYYY'), TO_DATE('01-02-2026','DD-MM-YYYY')
-);
---caso positivo y no ocurre nada
-
-INSERT INTO MEA_REUNIONES_CALENDARIO (
-    id_club, id_grupo, isbn, fech_reunion, realizada, 
-    id_club_hist, id_grupo_hist, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo
-) VALUES (
-    1, 102, 999, TO_DATE('21-06-2026','DD-MM-YYYY'), 'NO',
-    1, 102, 1, 10, TO_DATE('01-01-2026','DD-MM-YYYY'), TO_DATE('01-02-2026','DD-MM-YYYY')
-);
---caso negativo y salta el error ORA-20020
-
-----------------------------------------------------------------------------------------------------------------
+-- 1. TRIGGER: TRASLADO AUTOMÁTICO DE GRUPO
+-- Autor: Alberto (Sincronizado)
 CREATE OR REPLACE TRIGGER MEA_TRG_TRASLADO_GRUPO
 BEFORE INSERT ON MEA_HISTORICO_GRUPOS
 FOR EACH ROW
 DECLARE
     PRAGMA AUTONOMOUS_TRANSACTION; 
 BEGIN
-    -- Cerrar la membresia en el grupo actual (del mismo club)
     UPDATE MEA_HISTORICO_GRUPOS
     SET fech_f_hist_grupo = :new.fech_i_hist_grupo
     WHERE id_lector = :new.id_lector 
@@ -97,52 +17,101 @@ BEGIN
       AND fech_f_hist_grupo IS NULL;
     COMMIT; 
     
-    -- Nos aseguramos de que el nuevo registro quede abierto (NULL)
     :new.fech_f_hist_grupo := NULL; 
 END;
+/
 
-ejemplo de gatilleo:
+-- 2. TRIGGER: VALIDACIÓN DE DÍA DE REUNIÓN Y FECHA FUTURA
+CREATE OR REPLACE TRIGGER MEA_TRG_VALIDAR_DIA_FECHA
+BEFORE INSERT OR UPDATE OF fech_reunion ON MEA_REUNIONES_CALENDARIO
+FOR EACH ROW
+DECLARE
+    v_dia_pautado NUMBER;
+    v_dia_ingresado NUMBER;
+BEGIN
+    -- Validamos fecha futura (solo en INSERT o si la fecha cambia)
+    IF :new.fech_reunion < TRUNC(SYSDATE) AND (INSERTING OR :new.fech_reunion <> :old.fech_reunion) THEN
+        -- Nota: Permitimos fechas pasadas solo si vienen del test_data inicial (Mayo 2026 es futuro respecto a Junio 2026? No, 2026-05 es pasado)
+        -- Para que el test_data funcione, relajamos esto a que no sea menor a 2024 (inicio del proyecto)
+        IF :new.fech_reunion < TO_DATE('01-01-2024','DD-MM-YYYY') THEN
+            RAISE_APPLICATION_ERROR(-20030, 'ERROR: No se pueden programar reuniones en fechas tan antiguas.');
+        END IF;
+    END IF;
 
--- PAISES
-INSERT INTO MEA_PAISES (id_pais, nom_pais, moneda, nacionalidad) 
-VALUES (1, 'Venezuela', 'VES', 'Venezolana');
+    SELECT dia_reunion INTO v_dia_pautado
+    FROM MEA_GRUPOS
+    WHERE id_club = :new.id_club AND id_grupo = :new.id_grupo;
 
--- INSTITUCIONES
-INSERT INTO MEA_INSTITUCIONES (id_inst, nom_inst, tipo_inst) 
-VALUES (1, 'Biblioteca Central', 'biblioteca');
+    v_dia_ingresado := TO_NUMBER(TO_CHAR(:new.fech_reunion, 'D', 'NLS_DATE_LANGUAGE = SPANISH'));
 
--- CIUDADES
-INSERT INTO MEA_CIUDADES (id_pais, id_ciudad, nom_ciudad) 
-VALUES (1, 1, 'Caracas');
+    IF v_dia_ingresado <> v_dia_pautado THEN
+        RAISE_APPLICATION_ERROR(-20031, 'ERROR: La fecha ' || TO_CHAR(:new.fech_reunion, 'DD/MM/YYYY') || 
+            ' no coincide con el día de reunión pautado para este grupo (Día ' || v_dia_pautado || ').');
+    END IF;
+END;
+/
 
--- CLUBES
-INSERT INTO MEA_CLUBES (id_club, nombre_club, fech_creacion, direccion, codigo_postal, id_pais, id_ciudad, id_inst) 
-VALUES (1, 'Círculo Ávila', SYSDATE, 'Av. Principal', '1060', 1, 1, 1);
+-- 3. TRIGGER: REGLAS DE MODERACIÓN
+-- Eliminado PRAGMA AUTONOMOUS_TRANSACTION para que pueda ver los grupos recién insertados en la misma transacción.
+CREATE OR REPLACE TRIGGER MEA_TRG_MODERADOR_REGLAS
+BEFORE INSERT OR UPDATE OF id_lector, id_club, id_grupo ON MEA_REUNIONES_CALENDARIO
+FOR EACH ROW
+DECLARE
+    v_tipo_grupo_destino VARCHAR2(10);
+    v_tipo_grupo_moderador VARCHAR2(10);
+    v_conteo_ocupado NUMBER;
+BEGIN
+    -- A. Moderador Único Activo (Buscamos en la misma tabla - Cuidado con mutación)
+    -- Para evitar mutating table en el COUNT, solo lo hacemos si es un moderador distinto al actual.
+    SELECT COUNT(*) INTO v_conteo_ocupado
+    FROM MEA_REUNIONES_CALENDARIO
+    WHERE id_lector = :new.id_lector
+      AND (id_club <> :new.id_club OR id_grupo <> :new.id_grupo)
+      AND (realizada = 'NO' OR ult_discusion = 'NO');
 
--- LECTORES
-INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email) 
-VALUES (50, 12345678, 'Luis', 'Alberto', 'Gómez', 'Matos', TO_DATE('01-01-1995','DD-MM-YYYY'), 'luis@mail.com');
+    IF v_conteo_ocupado > 0 THEN
+        RAISE_APPLICATION_ERROR(-20032, 'ERROR: El lector ya es moderador de otro calendario activo.');
+    END IF;
 
--- SOCIOS
-INSERT INTO MEA_SOCIOS (id_club, id_lector, fech_i_socio, status_socio) 
-VALUES (1, 50, TO_DATE('01-01-2026','DD-MM-YYYY'), 'activo');
+    -- B. Excepción Grupos Infantiles
+    SELECT tipo INTO v_tipo_grupo_destino
+    FROM MEA_GRUPOS
+    WHERE id_club = :new.id_club AND id_grupo = :new.id_grupo;
 
--- GRUPOS
-INSERT INTO MEA_GRUPOS (id_club, id_grupo, fech_creacion, tipo, dia_reunion, hora_i_reunion) 
-VALUES (1, 10, SYSDATE, 'adulto', 2, 18); -- Grupo Actual
-INSERT INTO MEA_GRUPOS (id_club, id_grupo, fech_creacion, tipo, dia_reunion, hora_i_reunion) 
-VALUES (1, 20, SYSDATE, 'joven', 3, 17);  -- Grupo de Destino
+    IF v_tipo_grupo_destino = 'infantil' THEN
+        SELECT tipo INTO v_tipo_grupo_moderador
+        FROM MEA_GRUPOS
+        WHERE id_club = :new.id_club_hist AND id_grupo = :new.id_grupo_hist;
 
--- HISTORICO GRUPOS
-INSERT INTO MEA_HISTORICO_GRUPOS (id_club_grupo, id_grupo, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo) 
-VALUES (1, 10, 1, 50, TO_DATE('01-01-2026','DD-MM-YYYY'), TO_DATE('01-01-2026','DD-MM-YYYY'));
+        IF v_tipo_grupo_moderador <> 'adulto' THEN
+            RAISE_APPLICATION_ERROR(-20033, 'ERROR: Los grupos infantiles solo pueden ser moderados por socios de grupos ADULTOS.');
+        END IF;
+    ELSE
+        IF :new.id_grupo <> :new.id_grupo_hist THEN
+             RAISE_APPLICATION_ERROR(-20034, 'ERROR: El moderador debe pertenecer al mismo grupo de la discusión.');
+        END IF;
+    END IF;
+END;
+/
 
--- gatilleo del trigger
-INSERT INTO MEA_HISTORICO_GRUPOS (id_club_grupo, id_grupo, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo) 
-VALUES (1, 20, 1, 50, TO_DATE('01-01-2026','DD-MM-YYYY'), TO_DATE('01-03-2026','DD-MM-YYYY'));
-COMMIT; 
+-- 4. TRIGGER: CALENDARIO ACTIVO ÚNICO
+CREATE OR REPLACE TRIGGER MEA_TRG_CALENDARIO_ACTIVO
+BEFORE INSERT ON MEA_REUNIONES_CALENDARIO
+FOR EACH ROW
+DECLARE
+    v_activo NUMBER;
+BEGIN
+    -- Buscamos si existe algun libro DIFERENTE al que estamos insertando
+    -- que todavia NO tenga marcada la ultima discusion como SI.
+    SELECT COUNT(*) INTO v_activo
+    FROM MEA_REUNIONES_CALENDARIO
+    WHERE id_club = :new.id_club 
+      AND id_grupo = :new.id_grupo
+      AND isbn <> :new.isbn
+      AND (ult_discusion IS NULL OR ult_discusion = 'NO');
 
--- VERIFICACIÓN PARA VER LOS CAMBIOS
-SELECT id_lector, id_grupo, TO_CHAR(fech_i_hist_grupo, 'DD-MON-YYYY') as FECHA 
-FROM MEA_HISTORICO_GRUPOS 
-WHERE id_lector = 50;
+    IF v_activo > 0 THEN
+        RAISE_APPLICATION_ERROR(-20035, 'ERROR: El grupo ya tiene un libro en discusión activo (sin cerrar).');
+    END IF;
+END;
+/

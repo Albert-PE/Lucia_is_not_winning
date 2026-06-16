@@ -19,27 +19,8 @@ CREATE SEQUENCE MEA_seq_favoritos START WITH 1 INCREMENT BY 1;
 
 
 --=====================================================================
---                            TIPOS
---=====================================================================
-
-CREATE OR REPLACE TYPE MEA_conversion_row AS OBJECT (
-    id_pais       NUMBER,
-    nom_pais      VARCHAR2(20),
-    moneda        VARCHAR2(3),
-    monto_origen  NUMBER,
-    tasa_cambio   VARCHAR2(50),
-    monto_usd     VARCHAR2(30)
-);
-/
-
-CREATE OR REPLACE TYPE MEA_conversion_table AS TABLE OF MEA_conversion_row;
-/
-
-
---=====================================================================
 --                      TABLAS INDEPENDIENTES
 --=====================================================================
-
 
 -- ENTRADA
 CREATE TABLE MEA_INSTITUCIONES (
@@ -375,101 +356,66 @@ CREATE INDEX MEA_idx_fk_libros_anterior ON MEA_LIBROS(isbn_lib_anterior);
 --=====================================================================
 
 CREATE OR REPLACE FUNCTION MEA_conversion_monetaria(
-    p_id_pais     IN MEA_PAISES.id_pais%TYPE,
-    p_monto       IN NUMBER,
+    p_id_pais IN MEA_PAISES.id_pais%TYPE,
+    p_monto IN NUMBER,
     p_tasa_cambio IN NUMBER
-) RETURN MEA_conversion_table PIPELINED IS
-    v_monto_usd  NUMBER;
-    v_moneda     MEA_PAISES.moneda%TYPE;
-    v_pais       MEA_PAISES.nom_pais%TYPE;
+) RETURN NUMBER IS
+    v_monto_usd NUMBER;
+    v_nom_moneda MEA_PAISES.moneda%TYPE;
 BEGIN
-    SELECT moneda, nom_pais
-    INTO v_moneda, v_pais
+    -- Buscamos el nombre de la moneda basado en el ID del país
+    SELECT moneda 
+    INTO v_nom_moneda
     FROM MEA_PAISES
     WHERE id_pais = p_id_pais;
 
-    IF v_moneda = 'USD' THEN
-        v_monto_usd := p_monto;
-    ELSE
-        v_monto_usd := ROUND(p_monto / p_tasa_cambio, 2);
-    END IF;
+    -- Realizamos la conversión
+    v_monto_usd := p_monto / p_tasa_cambio;
+    
+    -- Feedback para el usuario con la moneda recuperada de la tabla
+    DBMS_OUTPUT.PUT_LINE(p_monto || ' ' || v_nom_moneda || ' cambiados a ' || v_monto_usd || ' dolares');
 
-    PIPE ROW (MEA_conversion_row(
-        p_id_pais,
-        v_pais,
-        v_moneda,
-        p_monto,
-        CASE WHEN v_moneda = 'USD' THEN 'Misma moneda (USD)' ELSE '1 USD = ' || p_tasa_cambio || ' ' || v_moneda END,
-        v_monto_usd || ' USD'
-    ));
-
-    RETURN;
+    RETURN (v_monto_usd);
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        raise_application_error(-20007, 'El ID de país proporcionado no existe.');
+        RETURN NULL;
+    WHEN ZERO_DIVIDE THEN
+        raise_application_error(-20005, 'La tasa de cambio no puede ser cero.');
+        RETURN NULL;
+    WHEN OTHERS THEN
+        raise_application_error(-20006, 'Error en la conversión monetaria: ' || SQLERRM);
+        RETURN NULL;
 END;
 /
 
 --========================================================================
 
-CREATE OR REPLACE FUNCTION MEA_edad_miembro (
-    p_id_lector IN NUMBER
-) RETURN NUMBER IS
-    v_fecha DATE;
-BEGIN
-    SELECT f_nacimiento INTO v_fecha
-    FROM MEA_LECTORES
-    WHERE id_lector = p_id_lector;
-
-    RETURN TRUNC(MONTHS_BETWEEN(SYSDATE, v_fecha) / 12);
-EXCEPTION
-    WHEN NO_DATA_FOUND THEN
-        raise_application_error(-20015, 'Error: El lector con ID ' || p_id_lector || ' no existe.');
-    WHEN OTHERS THEN
-        raise_application_error(-20016, 'Error al calcular edad: ' || SQLERRM);
+CREATE OR REPLACE FUNCTION MEA_antiguedad_en_club_miembro (v_fecha DATE) 
+RETURN NUMBER IS 
+BEGIN 
+    RETURN (ROUND(((SYSDATE - v_fecha) / 365), 0)); 
 END;
 /
-
---========================================================================
-
-CREATE OR REPLACE FUNCTION MEA_antiguedad_miembro (
-    p_id_lector IN NUMBER
-) RETURN NUMBER IS
-    v_fecha DATE;
-BEGIN
-    SELECT fech_i_socio INTO v_fecha
-    FROM MEA_SOCIOS
-    WHERE id_lector = p_id_lector;
-
-    RETURN TRUNC(MONTHS_BETWEEN(SYSDATE, v_fecha) / 12);
-EXCEPTION
-    WHEN NO_DATA_FOUND THEN
-        raise_application_error(-20017, 'Error: El lector ' || p_id_lector || ' no es socio de ningún club.');
-    WHEN OTHERS THEN
-        raise_application_error(-20018, 'Error al calcular antigüedad: ' || SQLERRM);
-END;
-/
-
-
 
 --========================================================================
 
 CREATE OR REPLACE FUNCTION MEA_promedio_part_mensual_tipo(
     p_id_club IN NUMBER,
-    p_mes     IN NUMBER,
-    p_anio    IN NUMBER
-) RETURN VARCHAR2 IS
-    v_total_esperado      NUMBER;
-    v_total_inasistencias NUMBER;
-    v_promedio_grupo      NUMBER;
-    v_suma_promedios_tipo NUMBER;
-    v_cont_grupos_tipo    NUMBER;
-    v_promedio_tipo_final NUMBER;
-
-    v_nom_club            MEA_CLUBES.nombre_club%TYPE;
-    v_salida              VARCHAR2(2000);
-
-    CURSOR cur_tipos IS 
-        SELECT column_value AS tipo 
-        FROM TABLE(SYS.ODCIVARCHAR2LIST('adulto', 'joven', 'infantil'));
+    p_tipo_grupo IN VARCHAR2, -- 'joven', 'adulto', 'infantil'
+    p_mes IN NUMBER,
+    p_anio IN NUMBER
+) RETURN NUMBER IS
+    v_total_esperado NUMBER := 0;
+    v_total_inasistencias NUMBER := 0;
+    v_promedio NUMBER := 0;
+    v_tipo_normalizado VARCHAR2(20);
+    v_nom_club MEA_CLUBES.nombre_club%TYPE;
+    v_fecha_consulta DATE;
 BEGIN
+    v_tipo_normalizado := LOWER(p_tipo_grupo);
+
+    -----VALIDACIONES-----
     BEGIN
         SELECT nombre_club INTO v_nom_club
         FROM MEA_CLUBES
@@ -483,55 +429,66 @@ BEGIN
         raise_application_error(-20011, 'Error: El mes debe estar entre 1 y 12.');
     END IF;
 
-    IF TO_DATE('01/' || p_mes || '/' || p_anio, 'DD/MM/YYYY') > SYSDATE THEN
-        raise_application_error(-20012, 'Error: No se pueden analizar fechas futuras.');
+    v_fecha_consulta := TO_DATE('01/' || p_mes || '/' || p_anio, 'DD/MM/YYYY');
+    IF v_fecha_consulta > SYSDATE THEN
+        raise_application_error(-20012, 'Error: No se pueden analizar promedios de fechas futuras.');
+    END IF;
+    -----------------------
+
+    -- Calculo asistencias esperadas
+    SELECT COUNT(*)
+    INTO v_total_esperado
+    FROM MEA_REUNIONES_CALENDARIO r, MEA_GRUPOS g, MEA_HISTORICO_GRUPOS h
+    WHERE r.id_club = g.id_club 
+      AND r.id_grupo = g.id_grupo
+      AND h.id_club_grupo = g.id_club 
+      AND h.id_grupo = g.id_grupo
+      AND r.fech_reunion >= h.fech_i_hist_grupo 
+      AND (h.fech_f_hist_grupo IS NULL OR r.fech_reunion <= h.fech_f_hist_grupo)
+      AND g.id_club = p_id_club
+      AND g.tipo = v_tipo_normalizado
+      AND EXTRACT(MONTH FROM r.fech_reunion) = p_mes
+      AND EXTRACT(YEAR FROM r.fech_reunion) = p_anio
+      AND r.realizada = 'SI';
+
+    -- Calculo Total de inasistencias reales
+    SELECT COUNT(*)
+    INTO v_total_inasistencias
+    FROM MEA_INASISTENTES i, MEA_GRUPOS g
+    WHERE i.id_club_reu = g.id_club 
+      AND i.id_grupo_reu = g.id_grupo
+      AND g.id_club = p_id_club
+      AND g.tipo = v_tipo_normalizado
+      AND EXTRACT(MONTH FROM i.fech_reunion) = p_mes
+      AND EXTRACT(YEAR FROM i.fech_reunion) = p_anio;
+
+    -- Cálculo final
+    IF v_total_esperado > 0 THEN
+        v_promedio := ((v_total_esperado - v_total_inasistencias) / v_total_esperado) * 100;
+    ELSE
+        v_promedio := 0;
     END IF;
 
-    v_salida := 'Promedio por grupos:' || CHR(10);
+    v_promedio := ROUND(v_promedio, 2);
 
-    FOR r_tipo IN cur_tipos LOOP
-        v_suma_promedios_tipo := 0;
-        v_cont_grupos_tipo    := 0;
+    -- IMPRESIÓN EN CONSOLA
+    DBMS_OUTPUT.PUT_LINE('--- RESULTADO DEL ANÁLISIS ---');
+    DBMS_OUTPUT.PUT_LINE('Club: ' || v_nom_club);
+    DBMS_OUTPUT.PUT_LINE('Periodo: ' || p_mes || '/' || p_anio);
+    DBMS_OUTPUT.PUT_LINE('Tipo de Grupo: ' || v_tipo_normalizado);
+    DBMS_OUTPUT.PUT_LINE('Promedio de Asistencia: ' || v_promedio || '%');
+    DBMS_OUTPUT.PUT_LINE('------------------------------');
 
-        FOR r_grupo IN (SELECT id_grupo FROM MEA_GRUPOS WHERE id_club = p_id_club AND tipo = r_tipo.tipo) LOOP
-            SELECT COUNT(*) INTO v_total_esperado
-            FROM MEA_REUNIONES_CALENDARIO r, MEA_HISTORICO_GRUPOS h
-            WHERE r.id_club = h.id_club_grupo AND r.id_grupo = h.id_grupo
-              AND r.fech_reunion >= h.fech_i_hist_grupo
-              AND (h.fech_f_hist_grupo IS NULL OR r.fech_reunion <= h.fech_f_hist_grupo)
-              AND r.id_club = p_id_club AND r.id_grupo = r_grupo.id_grupo
-              AND EXTRACT(MONTH FROM r.fech_reunion) = p_mes
-              AND EXTRACT(YEAR FROM r.fech_reunion) = p_anio
-              AND r.realizada = 'SI';
+    RETURN v_promedio;
 
-            SELECT COUNT(*) INTO v_total_inasistencias
-            FROM MEA_INASISTENTES i
-            WHERE i.id_club_reu = p_id_club AND i.id_grupo_reu = r_grupo.id_grupo
-              AND EXTRACT(MONTH FROM i.fech_reunion) = p_mes
-              AND EXTRACT(YEAR FROM i.fech_reunion) = p_anio;
-
-            IF v_total_esperado > 0 THEN
-                v_promedio_grupo := ((v_total_esperado - v_total_inasistencias) / v_total_esperado) * 100;
-                v_suma_promedios_tipo := v_suma_promedios_tipo + v_promedio_grupo;
-                v_cont_grupos_tipo := v_cont_grupos_tipo + 1;
-            END IF;
-        END LOOP;
-
-        IF v_cont_grupos_tipo > 0 THEN
-            v_promedio_tipo_final := ROUND(v_suma_promedios_tipo / v_cont_grupos_tipo, 2);
+    EXCEPTION
+    WHEN OTHERS THEN
+        -- Si el error no es uno de los definidos arriba, relanzar con mensaje general
+        IF SQLCODE NOT BETWEEN -20999 AND -20000 THEN
+            raise_application_error(-20013, 'Error inesperado en la función: ' || SQLERRM);
         ELSE
-            v_promedio_tipo_final := 0;
+            RAISE;
         END IF;
-
-        IF r_tipo.tipo = 'adulto' THEN
-            v_salida := v_salida || 'Adultos: ' || v_promedio_tipo_final || '%' || CHR(10);
-        ELSIF r_tipo.tipo = 'joven' THEN
-            v_salida := v_salida || 'Juveniles: ' || v_promedio_tipo_final || '%' || CHR(10);
-        ELSIF r_tipo.tipo = 'infantil' THEN
-            v_salida := v_salida || 'Infantiles: ' || v_promedio_tipo_final || '%';
-        END IF;
-    END LOOP;
-    RETURN v_salida;
 END;
 /
 
@@ -566,7 +523,6 @@ BEGIN
         RETURN v_porcentaje;
     END IF;
 END;
-/
 
 
 --=====================================================================

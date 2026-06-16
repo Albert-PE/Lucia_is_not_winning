@@ -157,3 +157,111 @@ BEGIN
 
 END;
 /
+
+-- =============================================================================
+-- FASE 2: PROCEDIMIENTOS DE GESTIÓN DE REUNIONES - PROYECTO MEA
+-- =============================================================================
+
+-- 1. PROCEDURE: GENERAR CALENDARIO AUTOMÁTICO
+-- Propósito: Generar N reuniones a partir de una fecha de inicio, sumando 7 días.
+CREATE OR REPLACE PROCEDURE MEA_generar_calendario(
+    p_id_club      IN NUMBER,
+    p_id_grupo     IN NUMBER,
+    p_isbn         IN NUMBER,
+    p_fecha_inicio IN DATE,
+    p_cant_reun    IN NUMBER,
+    p_id_lector    IN NUMBER -- Moderador
+) IS
+    v_fecha_iterada DATE;
+    v_id_club_soc   NUMBER;
+    v_fech_i_socio  DATE;
+    v_fech_i_hist   DATE;
+BEGIN
+    -- 1. Obtener datos del historial del moderador para la FK
+    BEGIN
+        SELECT id_club_soc, fech_i_socio, fech_i_hist_grupo
+        INTO v_id_club_soc, v_fech_i_socio, v_fech_i_hist
+        FROM MEA_HISTORICO_GRUPOS
+        WHERE id_lector = p_id_lector 
+          AND fech_f_hist_grupo IS NULL; -- Moderador activo
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            raise_application_error(-20040, 'El moderador seleccionado no tiene un historial activo.');
+    END;
+
+    -- 2. Bucle para insertar reuniones
+    FOR i IN 0..(p_cant_reun - 1) LOOP
+        v_fecha_iterada := p_fecha_inicio + (i * 7);
+        
+        INSERT INTO MEA_REUNIONES_CALENDARIO (
+            id_club, id_grupo, isbn, fech_reunion, realizada,
+            id_club_hist, id_grupo_hist, id_club_soc, id_lector, 
+            fech_i_socio, fech_i_hist_grupo, ult_discusion
+        ) VALUES (
+            p_id_club, p_id_grupo, p_isbn, v_fecha_iterada, 'NO',
+            p_id_club, p_id_grupo, v_id_club_soc, p_id_lector, 
+            v_fech_i_socio, v_fech_i_hist, 'NO'
+        );
+    END LOOP;
+
+    DBMS_OUTPUT.PUT_LINE('Se generaron ' || p_cant_reun || ' reuniones exitosamente.');
+    COMMIT;
+END;
+/
+
+-- 2. PROCEDURE: REALIZAR REUNIÓN
+-- Propósito: Marcar una reunión como realizada.
+CREATE OR REPLACE PROCEDURE MEA_realizar_reunion(
+    p_id_club   IN NUMBER,
+    p_id_grupo  IN NUMBER,
+    p_isbn      IN NUMBER,
+    p_fecha     IN DATE
+) IS
+BEGIN
+    UPDATE MEA_REUNIONES_CALENDARIO
+    SET realizada = 'SI'
+    WHERE id_club = p_id_club AND id_grupo = p_id_grupo 
+      AND isbn = p_isbn AND fech_reunion = p_fecha;
+      
+    IF SQL%ROWCOUNT = 0 THEN
+        raise_application_error(-20041, 'No se encontró la reunión especificada.');
+    END IF;
+    
+    DBMS_OUTPUT.PUT_LINE('Reunión marcada como REALIZADA.');
+    COMMIT;
+END;
+/
+
+-- 3. PROCEDURE: CIERRE DE DISCUSIÓN Y LIMPIEZA
+-- Propósito: Cerrar el libro, pedir valoración y borrar reuniones futuras huérfanas.
+CREATE OR REPLACE PROCEDURE MEA_cerrar_calendario(
+    p_id_club      IN NUMBER,
+    p_id_grupo     IN NUMBER,
+    p_isbn         IN NUMBER,
+    p_fecha_cierre IN DATE,
+    p_valoracion   IN NUMBER,
+    p_conclusion   IN VARCHAR2
+) IS
+BEGIN
+    -- 1. Marcar la reunión como la última y realizada
+    UPDATE MEA_REUNIONES_CALENDARIO
+    SET realizada = 'SI',
+        ult_discusion = 'SI',
+        valoracion = p_valoracion,
+        conclusion = p_conclusion
+    WHERE id_club = p_id_club AND id_grupo = p_id_grupo 
+      AND isbn = p_isbn AND fech_reunion = p_fecha_cierre;
+
+    IF SQL%ROWCOUNT = 0 THEN
+        raise_application_error(-20042, 'No se encontró la reunión para realizar el cierre.');
+    END IF;
+
+    -- 2. Limpieza: Borrar reuniones futuras que quedaron "en el aire"
+    DELETE FROM MEA_REUNIONES_CALENDARIO
+    WHERE id_club = p_id_club AND id_grupo = p_id_grupo 
+      AND isbn = p_isbn AND fech_reunion > p_fecha_cierre;
+
+    DBMS_OUTPUT.PUT_LINE('Calendario cerrado exitosamente. Se eliminaron las reuniones futuras sobrantes.');
+    COMMIT;
+END;
+/

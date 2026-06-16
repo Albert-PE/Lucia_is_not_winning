@@ -1,15 +1,14 @@
 -- =============================================================================
--- SCRIPT DE RESET TOTAL Y RE-EJECUCIÓN
--- Proyecto: Lucia_is_not_winning
+-- SCRIPT MAESTRO DE RESET Y DESPLIEGUE - RÚBRICA 2.2
+-- Proyecto: Clubes de Lectura (MEA)
 -- =============================================================================
 
 SET AUTOCOMMIT OFF;
 SET FEEDBACK ON;
 SET DEFINE OFF;
+SET SERVEROUTPUT ON;
 
 PROMPT >>> ELIMINANDO TABLAS (ORDEN INVERSO DE DEPENDENCIAS)...
-
--- Tablas de Salida / Relaciones M:N
 DROP TABLE MEA_FAVORITOS CASCADE CONSTRAINTS;
 DROP TABLE MEA_INASISTENTES CASCADE CONSTRAINTS;
 DROP TABLE MEA_REFERENCIAS CASCADE CONSTRAINTS;
@@ -54,13 +53,22 @@ DROP SEQUENCE MEA_seq_favoritos;
 
 COMMIT;
 
-PROMPT >>> EJECUTANDO CREATES.SQL (ESTRUCTURA CORREGIDA)...
-@creates.sql
+PROMPT >>> 1. CREANDO ESTRUCTURA (creates.sql)...
+@../rubrica2_1/creates.sql
 
-PROMPT >>> EJECUTANDO INSERTS.SQL (DATOS MAESTROS)...
-@inserts.sql
+PROMPT >>> 2. INSERTANDO DATOS MAESTROS (inserts.sql)...
+@../rubrica2_1/inserts.sql
 
-PROMPT >>> EJECUTANDO TEST_DATA.SQL (DATOS TRANSACCIONALES PARA PRUEBAS)...
-@test_data.sql
+PROMPT >>> 3. COMPILANDO FUNCIONES...
+@../rubrica2_1/functions.sql
 
-PROMPT >>> ¡PROCESO FINALIZADO CON ÉXITO!
+PROMPT >>> 4. COMPILANDO PROCEDURES (procedures.sql)...
+@procedures.sql
+
+PROMPT >>> 5. COMPILANDO TRIGGERS (triggers.sql)...
+@triggers.sql
+
+PROMPT >>> 6. INSERTANDO DATOS DE PRUEBA (test_data.sql)...
+@../rubrica2_1/test_data.sql
+
+PROMPT >>> ¡RESET MAESTRO FINALIZADO CON ÉXITO!
