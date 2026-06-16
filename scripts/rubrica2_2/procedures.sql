@@ -1,3 +1,5 @@
+-- PROCEDURE: DIVIDIR GRUPO
+-- Propósito: Dividir un grupo en dos, moviendo la mitad mas nueva al nuevo grupo.
 CREATE OR REPLACE PROCEDURE MEA_dividir_grupo(
     p_id_club IN NUMBER,
     p_id_grupo IN NUMBER
@@ -10,7 +12,21 @@ IS
     v_tipo VARCHAR2(10);
     v_dia NUMBER;
     v_hora NUMBER;
+    v_reuniones_pendientes NUMBER;
 BEGIN
+    -- 0. Validar que el grupo no esté discutiendo un libro actualmente
+    -- Un grupo está discutiendo un libro si tiene reuniones en el calendario que aún no se han realizado.
+    SELECT COUNT(*) INTO v_reuniones_pendientes
+    FROM MEA_REUNIONES_CALENDARIO
+    WHERE id_club = p_id_club 
+      AND id_grupo = p_id_grupo
+      AND ult_discusion = 'SI'
+      AND realizada = 'NO';
+
+    IF v_reuniones_pendientes > 0 THEN
+        raise_application_error(-20050, 'ERROR: No se puede realizar el split del grupo porque actualmente se encuentra discutiendo un libro (tiene reuniones pendientes por realizar).');
+    END IF;
+
     -- 1. Obtener datos del grupo original para heredarlos
     BEGIN
         SELECT tipo, dia_reunion, hora_i_reunion 
@@ -64,10 +80,12 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE('--- DIVISION AUTOMATICA ---');
     DBMS_OUTPUT.PUT_LINE('Se creo el grupo ID: ' || v_nuevo_id_grupo || ' heredando el horario del grupo ' || p_id_grupo || '.');
     DBMS_OUTPUT.PUT_LINE('Se movieron ' || v_mitad || ' lectores al nuevo grupo.');
-
 END;
 /
 
+
+-- PROCEDURE: INSCRIBIR MIEMBRO
+-- Propósito: Inscribir un nuevo miembro en el club
 CREATE OR REPLACE PROCEDURE MEA_inscribir_miembro(
     p_doc_identidad IN NUMBER,
     p_p_nombre IN VARCHAR2,
@@ -76,7 +94,17 @@ CREATE OR REPLACE PROCEDURE MEA_inscribir_miembro(
     p_s_apellido IN VARCHAR2,
     p_f_nacimiento IN DATE,
     p_email IN VARCHAR2,
-    p_id_club IN NUMBER
+    p_id_club IN NUMBER,
+    -- Parámetros de libros favoritos
+    p_isbn_fav1 IN NUMBER,
+    p_isbn_fav2 IN NUMBER,
+    p_isbn_fav3 IN NUMBER,
+    -- Parámetros opcionales para representantes (menores de edad)
+    p_id_repre_lector IN NUMBER DEFAULT NULL,
+    p_doc_repre_ext   IN NUMBER DEFAULT NULL,
+    p_nom_repre_ext   IN VARCHAR2 DEFAULT NULL,
+    p_ape_repre_ext   IN VARCHAR2 DEFAULT NULL,
+    p_sape_repre_ext  IN VARCHAR2 DEFAULT NULL
 )
 IS
     v_id_lector NUMBER;
@@ -87,19 +115,50 @@ IS
     v_conteo_actual NUMBER;
     v_fecha_actual DATE := SYSDATE;
 BEGIN
-    -- 1. Insertamos el lector
-    v_id_lector := MEA_seq_lectores.NEXTVAL;
+    -- 0. Validar si el lector es menor de edad y tiene representante ANTES de insertar nada
+    v_edad := TRUNC(MONTHS_BETWEEN(v_fecha_actual, p_f_nacimiento) / 12);
+    IF v_edad < 18 AND p_id_repre_lector IS NULL AND p_doc_repre_ext IS NULL THEN
+        raise_application_error(-20040, 'El lector es menor de 18 años (tiene ' || v_edad || ' años) y debe tener un representante asignado obligatoriamente.');
+    END IF;
 
-    INSERT INTO MEA_LECTORES (
-        id_lector, doc_identidad, p_nombre, s_nombre, 
-        p_apellido, s_apellido, f_nacimiento, email
-    ) 
-    VALUES (
-        v_id_lector, p_doc_identidad, p_p_nombre, p_s_nombre, 
-        p_p_apellido, p_s_apellido, p_f_nacimiento, p_email
-    );
+    -- 1. Buscamos si el lector ya existe en la base de datos (por su doc_identidad)
+    BEGIN
+        SELECT id_lector INTO v_id_lector
+        FROM MEA_LECTORES
+        WHERE doc_identidad = p_doc_identidad;
+        
+        -- Si existe, no lo volvemos a insertar en LECTORES ni en REPRESENTANTES.
+        -- El trigger MEA_TRG_UN_CLUB_A_LA_VEZ validará que no esté activo en otro club al insertarlo en SOCIOS.
+        DBMS_OUTPUT.PUT_LINE('El lector ya está registrado en el sistema. Procediendo a inscribirlo al nuevo club...');
 
-    -- 2. Clasificamos por edad
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            -- Lector nuevo, lo insertamos
+            v_id_lector := MEA_seq_lectores.NEXTVAL;
+
+            INSERT INTO MEA_LECTORES (
+                id_lector, doc_identidad, p_nombre, s_nombre, 
+                p_apellido, s_apellido, f_nacimiento, email, id_lector_repre
+            ) 
+            VALUES (
+                v_id_lector, p_doc_identidad, p_p_nombre, p_s_nombre, 
+                p_p_apellido, p_s_apellido, p_f_nacimiento, p_email, p_id_repre_lector
+            );
+
+            -- Si es nuevo y tiene representante externo, lo registramos en MEA_REPRESENTANTES
+            IF p_doc_repre_ext IS NOT NULL THEN
+                INSERT INTO MEA_REPRESENTANTES (
+                    id_lector, id_representante, doc_identidad, p_nombre, p_apellido, s_apellido
+                ) VALUES (
+                    v_id_lector, MEA_seq_representantes.NEXTVAL, p_doc_repre_ext, p_nom_repre_ext, p_ape_repre_ext, p_sape_repre_ext
+                );
+            END IF;
+    END;
+
+    -- 2. Actualizar/Insertar Libros Favoritos
+    MEA_asignar_favoritos(v_id_lector, p_isbn_fav1, p_isbn_fav2, p_isbn_fav3);
+
+    -- 3. Clasificamos por edad
     v_edad := MEA_edad_miembro(v_id_lector);
 
     IF v_edad BETWEEN 6 AND 12 THEN
@@ -115,21 +174,31 @@ BEGIN
         raise_application_error(-20001, 'El lector no tiene edad suficiente para ningun grupo.');
     END IF;
 
-    -- 3. Inscribimos al lector como socio
+    -- 4. Inscribimos al lector como socio
     INSERT INTO MEA_SOCIOS (
         id_club, id_lector, fech_i_socio, status_socio
     ) VALUES (
         p_id_club, v_id_lector, v_fecha_actual, 'activo'
     );
 
-    -- 4. Buscamos el ID de un grupo de ese tipo que pertenezca al club
+    -- 4. Buscamos el ID de un grupo de ese tipo que pertenezca al club y NO esté discutiendo un libro
     BEGIN
-        SELECT id_grupo INTO v_id_grupo
-        FROM MEA_GRUPOS
-        WHERE id_club = p_id_club AND tipo = v_tipo_grupo AND ROWNUM = 1;
+        SELECT MIN(id_grupo) INTO v_id_grupo
+        FROM MEA_GRUPOS g
+        WHERE g.id_club = p_id_club 
+          AND g.tipo = v_tipo_grupo
+          AND NOT EXISTS (
+              SELECT 1 FROM MEA_REUNIONES_CALENDARIO r
+              WHERE r.id_club = g.id_club AND r.id_grupo = g.id_grupo
+                AND r.realizada = 'NO'
+          );
+
+        IF v_id_grupo IS NULL THEN
+            raise_application_error(-20002, 'No se encontró un grupo de tipo ' || v_tipo_grupo || ' disponible (todos están discutiendo un libro actualmente).');
+        END IF;
     EXCEPTION
         WHEN NO_DATA_FOUND THEN
-            raise_application_error(-20002, 'No se encontro un grupo de tipo ' || v_tipo_grupo || ' en el club.');
+            raise_application_error(-20002, 'No se encontró un grupo de tipo ' || v_tipo_grupo || ' en el club.');
     END;
 
     -- 5. Lo anadimos al historico de grupos
@@ -154,15 +223,12 @@ BEGIN
         DBMS_OUTPUT.PUT_LINE('Iniciando division automatica...');
         MEA_dividir_grupo(p_id_club, v_id_grupo);
     END IF;
-
 END;
 /
 
--- =============================================================================
--- FASE 2: PROCEDIMIENTOS DE GESTIÓN DE REUNIONES - PROYECTO MEA
--- =============================================================================
 
--- 1. PROCEDURE: GENERAR CALENDARIO AUTOMÁTICO
+
+-- PROCEDURE: GENERAR CALENDARIO AUTOMÁTICO
 -- Propósito: Generar N reuniones a partir de una fecha de inicio, sumando 7 días.
 CREATE OR REPLACE PROCEDURE MEA_generar_calendario(
     p_id_club      IN NUMBER,
@@ -177,7 +243,6 @@ CREATE OR REPLACE PROCEDURE MEA_generar_calendario(
     v_fech_i_socio  DATE;
     v_fech_i_hist   DATE;
 BEGIN
-    -- 1. Obtener datos del historial del moderador para la FK
     BEGIN
         SELECT id_club_soc, fech_i_socio, fech_i_hist_grupo
         INTO v_id_club_soc, v_fech_i_socio, v_fech_i_hist
@@ -189,7 +254,6 @@ BEGIN
             raise_application_error(-20040, 'El moderador seleccionado no tiene un historial activo.');
     END;
 
-    -- 2. Bucle para insertar reuniones
     FOR i IN 0..(p_cant_reun - 1) LOOP
         v_fecha_iterada := p_fecha_inicio + (i * 7);
         
@@ -209,7 +273,9 @@ BEGIN
 END;
 /
 
--- 2. PROCEDURE: REALIZAR REUNIÓN
+
+
+-- PROCEDURE: REALIZAR REUNIÓN
 -- Propósito: Marcar una reunión como realizada.
 CREATE OR REPLACE PROCEDURE MEA_realizar_reunion(
     p_id_club   IN NUMBER,
@@ -232,7 +298,9 @@ BEGIN
 END;
 /
 
--- 3. PROCEDURE: CIERRE DE DISCUSIÓN Y LIMPIEZA
+
+
+-- PROCEDURE: CIERRE DE DISCUSIÓN Y LIMPIEZA
 -- Propósito: Cerrar el libro, pedir valoración y borrar reuniones futuras huérfanas.
 CREATE OR REPLACE PROCEDURE MEA_cerrar_calendario(
     p_id_club      IN NUMBER,
@@ -262,6 +330,107 @@ BEGIN
       AND isbn = p_isbn AND fech_reunion > p_fecha_cierre;
 
     DBMS_OUTPUT.PUT_LINE('Calendario cerrado exitosamente. Se eliminaron las reuniones futuras sobrantes.');
+    COMMIT;
+END;
+/
+
+
+
+-- PROCEDURE: RETIRAR MIEMBRO
+-- Propósito: Desactiva a un socio de un club y lo retira de su grupo activo.
+CREATE OR REPLACE PROCEDURE MEA_retirar_miembro(
+    p_id_club IN NUMBER,
+    p_id_lector IN NUMBER,
+    p_motivo IN VARCHAR2
+) IS
+BEGIN
+    -- 1. Validar y actualizar estado del socio
+    UPDATE MEA_SOCIOS
+    SET status_socio = 'inactivo',
+        fech_f_socio = SYSDATE,
+        motivo_retiro = LOWER(p_motivo)
+    WHERE id_club = p_id_club 
+      AND id_lector = p_id_lector 
+      AND status_socio = 'activo';
+
+    IF SQL%ROWCOUNT = 0 THEN
+        raise_application_error(-20045, 'El lector indicado no es un socio activo de este club.');
+    END IF;
+
+    -- 2. Retirarlo del grupo si pertenece a alguno
+    UPDATE MEA_HISTORICO_GRUPOS
+    SET fech_f_hist_grupo = SYSDATE
+    WHERE id_lector = p_id_lector 
+      AND fech_f_hist_grupo IS NULL;
+
+    DBMS_OUTPUT.PUT_LINE('----------------------------------------');
+    DBMS_OUTPUT.PUT_LINE('Se ha retirado al miembro exitosamente.');
+    DBMS_OUTPUT.PUT_LINE('----------------------------------------');
+    COMMIT;
+END;
+/
+
+
+
+-- PROCEDURE: ASIGNAR LIBROS FAVORITOS
+-- Propósito: Actualiza o inserta el Top 3 de libros favoritos de un lector.
+CREATE OR REPLACE PROCEDURE MEA_asignar_favoritos(
+    p_id_lector IN NUMBER,
+    p_isbn_fav1 IN NUMBER,
+    p_isbn_fav2 IN NUMBER,
+    p_isbn_fav3 IN NUMBER
+) IS
+BEGIN
+    DELETE FROM MEA_FAVORITOS WHERE id_lector = p_id_lector;
+    
+    IF p_isbn_fav1 IS NOT NULL THEN
+        INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) VALUES (p_id_lector, p_isbn_fav1, 1);
+    END IF;
+    IF p_isbn_fav2 IS NOT NULL THEN
+        INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) VALUES (p_id_lector, p_isbn_fav2, 2);
+    END IF;
+    IF p_isbn_fav3 IS NOT NULL THEN
+        INSERT INTO MEA_FAVORITOS (id_lector, isbn, orden) VALUES (p_id_lector, p_isbn_fav3, 3);
+    END IF;
+    
+    DBMS_OUTPUT.PUT_LINE('Libros favoritos actualizados correctamente.');
+END;
+/
+
+
+
+-- PROCEDURE: CREAR CLUB
+-- Propósito: Crea un nuevo club validando las reglas de institución y cuotas.
+CREATE OR REPLACE PROCEDURE MEA_crear_club(
+    p_nombre IN VARCHAR2,
+    p_direccion IN VARCHAR2,
+    p_codigo_postal IN VARCHAR2,
+    p_id_pais IN NUMBER,
+    p_id_ciudad IN NUMBER,
+    p_id_inst IN NUMBER,
+    p_cuota IN NUMBER
+) IS
+    v_id_club NUMBER;
+BEGIN
+    -- Validacion de regla de negocio: Si depende de institucion, no puede tener cuota
+    IF p_id_inst IS NOT NULL AND p_cuota IS NOT NULL THEN
+        RAISE_APPLICATION_ERROR(-20080, 'ERROR: Los clubes que dependen de una institución no pueden tener cuota de membresía.');
+    END IF;
+
+    -- Obtener el siguiente ID para el club
+    v_id_club := MEA_seq_clubes.NEXTVAL;
+
+    INSERT INTO MEA_CLUBES (
+        id_club, nombre_club, fech_creacion, direccion, codigo_postal, 
+        id_pais, id_ciudad, cuota_membresia, id_inst
+    ) VALUES (
+        v_id_club, p_nombre, SYSDATE, p_direccion, p_codigo_postal, 
+        p_id_pais, p_id_ciudad, p_cuota, p_id_inst
+    );
+
+    DBMS_OUTPUT.PUT_LINE('----------------------------------------');
+    DBMS_OUTPUT.PUT_LINE('Club "' || p_nombre || '" creado exitosamente con ID: ' || v_id_club);
+    DBMS_OUTPUT.PUT_LINE('----------------------------------------');
     COMMIT;
 END;
 /
