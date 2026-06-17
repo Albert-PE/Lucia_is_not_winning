@@ -9,11 +9,12 @@ PROMPT 4. Volver al menú principal
 PROMPT
 
 COLUMN script_to_run NEW_VALUE v_script_reunion
-SELECT CASE '&opcion_gestion_reuniones'
-    WHEN '1' THEN 'accion_gen_reuniones.sql'
-    WHEN '2' THEN 'accion_realizar_reunion.sql'
-    WHEN '3' THEN 'accion_cerrar_calendario.sql'
-    WHEN '4' THEN '..\menu_principal.sql'
+SELECT CASE 
+    WHEN '&opcion_gestion_reuniones' = '1' THEN 'accion_gen_reuniones.sql'
+    WHEN '&opcion_gestion_reuniones' = '2' THEN 'accion_realizar_reunion.sql'
+    WHEN '&opcion_gestion_reuniones' = '3' THEN 'accion_cerrar_calendario.sql'
+    WHEN '&opcion_gestion_reuniones' = '4' THEN '..\menu_principal.sql'
+    WHEN '&opcion_gestion_reuniones' IS NULL THEN '..\salir.sql'
     ELSE 'menu_reuniones.sql'
 END AS script_to_run FROM DUAL;
 

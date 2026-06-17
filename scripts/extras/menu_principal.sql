@@ -18,12 +18,13 @@ DEFINE v_script_principal = 'menu_principal.sql'
 
 COLUMN script_to_run NEW_VALUE v_script_principal
 -- Usamos & directo para que SQL Developer abra el popup automáticamente
-SELECT CASE '&opcion_menu_principal'
-    WHEN '1' THEN 'clubes\menu_clubes.sql'
-    WHEN '2' THEN 'grupos\menu_grupos.sql'
-    WHEN '3' THEN 'reuniones\menu_reuniones.sql'
-    WHEN '4' THEN 'miembros\menu_miembros.sql'
-    WHEN '5' THEN 'salir.sql'
+SELECT CASE 
+    WHEN '&opcion_menu_principal' = '1' THEN 'clubes\menu_clubes.sql'
+    WHEN '&opcion_menu_principal' = '2' THEN 'grupos\menu_grupos.sql'
+    WHEN '&opcion_menu_principal' = '3' THEN 'reuniones\menu_reuniones.sql'
+    WHEN '&opcion_menu_principal' = '4' THEN 'miembros\menu_miembros.sql'
+    WHEN '&opcion_menu_principal' = '5' THEN 'salir.sql'
+    WHEN '&opcion_menu_principal' IS NULL THEN 'salir.sql'
     ELSE 'menu_principal.sql'
 END AS script_to_run FROM DUAL;
 

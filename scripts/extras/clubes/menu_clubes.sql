@@ -12,9 +12,10 @@ PROMPT
 ACCEPT v_opc_club PROMPT '>> Seleccione una opcion (1-2): '
 
 COLUMN script_to_run NEW_VALUE v_script_club
-SELECT CASE '&v_opc_club'
-    WHEN '1' THEN 'accion_crear_club.sql'
-    WHEN '2' THEN '..\menu_principal.sql'
+SELECT CASE 
+    WHEN '&v_opc_club' = '1' THEN 'accion_crear_club.sql'
+    WHEN '&v_opc_club' = '2' THEN '..\menu_principal.sql'
+    WHEN '&v_opc_club' IS NULL THEN '..\salir.sql'
     ELSE 'menu_clubes.sql'
 END AS script_to_run FROM DUAL;
 
