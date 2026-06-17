@@ -15,6 +15,7 @@ CREATE OR REPLACE TYPE MEA_conversion_row AS OBJECT (
 CREATE OR REPLACE TYPE MEA_conversion_table AS TABLE OF MEA_conversion_row;
 /
 
+commit;
 --=====================================================================
 --                            SECUENCIAS
 --=====================================================================
@@ -34,7 +35,7 @@ CREATE SEQUENCE MEA_seq_grupos START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE MEA_seq_id_orden START WITH 1 INCREMENT BY 1;
 CREATE SEQUENCE MEA_seq_favoritos START WITH 1 INCREMENT BY 1;
 
-
+commit;
 --=====================================================================
 --                      TABLAS INDEPENDIENTES
 --=====================================================================
@@ -66,7 +67,7 @@ CREATE TABLE MEA_AUTORES (
     s_apellido varchar2(15)
 );
 
-
+commit;
 --=====================================================================
 --                      TABLAS DEPENDIENTES
 --=====================================================================
@@ -317,7 +318,7 @@ CREATE TABLE MEA_FAVORITOS (
     CONSTRAINT MEA_pk_favoritos PRIMARY KEY (id_lector, isbn, orden)
 );
 
-
+commit;
 --=====================================================================
 --                            ÍNDICES
 --=====================================================================
@@ -333,7 +334,7 @@ CREATE INDEX MEA_idx_fk_obras_club ON MEA_OBRAS(id_club);
 CREATE INDEX MEA_idx_fk_libros_pais ON MEA_LIBROS(id_pais);
 CREATE INDEX MEA_idx_fk_libros_anterior ON MEA_LIBROS(isbn_lib_anterior);
 
-
+commit;
 --=====================================================================
 --                             VISTAS
 --=====================================================================
@@ -398,10 +399,11 @@ CREATE OR REPLACE VIEW MEA_v_clubes_asociados AS
 SELECT c1.nombre_club AS club_principal, c2.nombre_club AS club_asociado
 FROM MEA_ASOCIACIONES a JOIN MEA_CLUBES c1 ON a.id_club1 = c1.id_club JOIN MEA_CLUBES c2 ON a.id_club2 = c2.id_club;
 
-
+commit;
 --=====================================================================
 --                            FUNCIONES
 --=====================================================================
+
 
 CREATE OR REPLACE FUNCTION MEA_conversion_monetaria(
     p_id_pais     IN NUMBER,
@@ -515,6 +517,109 @@ BEGIN
 END;
 /
 
+CREATE OR REPLACE FUNCTION MEA_obtener_valoracion_libro(p_isbn IN NUMBER) 
+RETURN NUMBER IS
+    v_promedio NUMBER;
+BEGIN
+    SELECT ROUND(AVG(valoracion), 1) 
+    INTO v_promedio
+    FROM MEA_REUNIONES_CALENDARIO
+    WHERE isbn = p_isbn
+      AND valoracion IS NOT NULL;
+
+    RETURN NVL(v_promedio, 0); 
+END;
+/
+
+CREATE OR REPLACE FUNCTION MEA_obtener_tasa_cambio(p_moneda VARCHAR2) 
+RETURN NUMBER IS
+BEGIN
+    CASE UPPER(p_moneda)
+        WHEN 'USD' THEN RETURN 1;
+        WHEN 'EUR' THEN RETURN 1.08;
+        WHEN 'GBP' THEN RETURN 1.25;
+        WHEN 'MXN' THEN RETURN 0.06;
+        WHEN 'COP' THEN RETURN 0.00025;
+        WHEN 'ARS' THEN RETURN 0.001;
+        WHEN 'CLP' THEN RETURN 0.0011;
+        WHEN 'PEN' THEN RETURN 0.27;
+        WHEN 'VEF' THEN RETURN 0.00003;
+        ELSE RETURN 1; -- Fallback por defecto
+    END CASE;
+END;
+/
+
+
+CREATE OR REPLACE FUNCTION MEA_ingresos_usd_club_anio(p_id_club IN NUMBER, p_anio IN NUMBER)
+RETURN NUMBER IS
+    v_total_local NUMBER := 0;
+    v_moneda VARCHAR2(3);
+BEGIN
+    -- Sumamos todos los pagos de membresía (Cantidad de pagos x Cuota del club)
+    SELECT NVL(COUNT(p.id_pago_membresia) * MAX(c.cuota_membresia), 0)
+    INTO v_total_local
+    FROM MEA_PAGOS_MEMBRESIAS p
+    JOIN MEA_CLUBES c ON p.id_club = c.id_club
+    WHERE p.id_club = p_id_club
+      AND EXTRACT(YEAR FROM p.fech_emision) = p_anio;
+
+    IF v_total_local = 0 THEN RETURN 0; END IF;
+
+    -- Buscamos la moneda local del país al que pertenece el club
+    SELECT p.moneda INTO v_moneda
+    FROM MEA_CLUBES c
+    JOIN MEA_PAISES p ON c.id_pais = p.id_pais
+    WHERE c.id_club = p_id_club;
+
+    -- Retornamos el valor convertido a dólares
+    RETURN v_total_local * MEA_obtener_tasa_cambio(v_moneda);
+END;
+/
+
+CREATE OR REPLACE FUNCTION MEA_crecimiento_econ_club(p_id_club IN NUMBER, p_anio IN NUMBER)
+RETURN NUMBER IS
+    v_ant NUMBER;
+    v_act NUMBER;
+BEGIN
+    v_ant := MEA_ingresos_usd_club_anio(p_id_club, p_anio - 1);
+    v_act := MEA_ingresos_usd_club_anio(p_id_club, p_anio);
+
+    IF v_ant = 0 THEN
+        IF v_act > 0 THEN RETURN 100; ELSE RETURN 0; END IF;
+    END IF;
+
+    RETURN ROUND(((v_act - v_ant) / v_ant) * 100, 2);
+END;
+/
+
+CREATE OR REPLACE FUNCTION MEA_crecimiento_miembros_club(p_id_club IN NUMBER, p_anio IN NUMBER)
+RETURN NUMBER IS
+    v_ant NUMBER := 0;
+    v_act NUMBER := 0;
+BEGIN
+    -- Activos al final del año anterior
+    SELECT COUNT(DISTINCT id_lector) INTO v_ant
+    FROM MEA_SOCIOS
+    WHERE id_club = p_id_club
+      AND EXTRACT(YEAR FROM fech_i_socio) <= (p_anio - 1)
+      AND (fech_f_socio IS NULL OR EXTRACT(YEAR FROM fech_f_socio) > (p_anio - 1));
+
+    -- Activos al final del año actual
+    SELECT COUNT(DISTINCT id_lector) INTO v_act
+    FROM MEA_SOCIOS
+    WHERE id_club = p_id_club
+      AND EXTRACT(YEAR FROM fech_i_socio) <= p_anio
+      AND (fech_f_socio IS NULL OR EXTRACT(YEAR FROM fech_f_socio) > p_anio);
+
+    IF v_ant = 0 THEN
+        IF v_act > 0 THEN RETURN 100; ELSE RETURN 0; END IF;
+    END IF;
+
+    RETURN ROUND(((v_act - v_ant) / v_ant) * 100, 2);
+END;
+/
+
+commit;
 --=====================================================================
 --                            PROCEDIMIENTOS
 --=====================================================================
@@ -621,7 +726,7 @@ BEGIN
 END;
 /
 
-
+commit;
 -- =============================================================================
 --                                TRIGGERS
 -- =============================================================================
@@ -730,3 +835,4 @@ FOR INSERT OR UPDATE ON MEA_FAVORITOS COMPOUND TRIGGER
     END AFTER STATEMENT;
 END MEA_TRG_FAVORITOS_LIMITE;
 /
+commit;
