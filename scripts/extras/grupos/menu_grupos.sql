@@ -16,7 +16,7 @@ COLUMN script_to_run NEW_VALUE v_script_grupo
 SELECT CASE '&v_opc_grupo'
     WHEN '1' THEN 'accion_crear_grupo.sql'
     WHEN '2' THEN 'accion_split_grupo.sql'
-    WHEN '3' THEN 'menu_principal.sql'
+    WHEN '3' THEN '..\menu_principal.sql'
     ELSE 'menu_grupos.sql'
 END AS script_to_run FROM DUAL;
 

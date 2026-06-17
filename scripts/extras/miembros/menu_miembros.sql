@@ -22,7 +22,7 @@ SELECT CASE '&v_opc_miembro'
     WHEN '3' THEN 'accion_consultar_asistencias.sql'
     WHEN '4' THEN 'accion_retirar_miembro.sql'
     WHEN '5' THEN 'accion_modificar_favoritos.sql'
-    WHEN '6' THEN 'menu_principal.sql'
+    WHEN '6' THEN '..\menu_principal.sql'
     ELSE 'menu_miembros.sql'
 END AS script_to_run FROM DUAL;
 
