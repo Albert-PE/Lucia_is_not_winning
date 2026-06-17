@@ -41,6 +41,10 @@ DROP FUNCTION MEA_edad_miembro;
 DROP FUNCTION MEA_antiguedad_miembro;
 DROP FUNCTION MEA_participacion_bimestre_miembro;
 DROP FUNCTION MEA_antiguedad_en_club_miembro;
+DROP FUNCTION MEA_obtener_tasa_cambio;
+DROP FUNCTION MEA_ingresos_usd_club_anio;
+DROP FUNCTION MEA_crecimiento_econ_club;
+DROP FUNCTION MEA_crecimiento_miembros_club;
 
 PROMPT >>> ELIMINANDO TABLAS (ORDEN INVERSO DE DEPENDENCIAS)...
 DROP TABLE MEA_FAVORITOS CASCADE CONSTRAINTS;

@@ -338,6 +338,17 @@ commit;
 --=====================================================================
 --                             VISTAS
 --=====================================================================
+CREATE OR REPLACE VIEW MEA_V_GRUPOS_CLUB AS
+SELECT 
+    c.nombre_club,
+    g.id_club,
+    g.id_grupo,
+    g.tipo,
+    g.dia_reunion
+FROM 
+    MEA_GRUPOS g
+JOIN 
+    MEA_CLUBES c ON g.id_club = c.id_club;
 
 CREATE OR REPLACE VIEW MEA_v_detalle_lectores AS
 SELECT l.id_lector, l.p_nombre || ' ' || l.p_apellido AS nombre_lector, l.email, r.p_nombre || ' ' || r.p_apellido AS nombre_representante
@@ -710,10 +721,20 @@ BEGIN
 END;
 /
 
-CREATE OR REPLACE PROCEDURE MEA_retirar_miembro(p_id_club IN NUMBER, p_id_lector IN NUMBER, p_motivo IN VARCHAR2) IS
+CREATE OR REPLACE PROCEDURE MEA_retirar_miembro(p_id_lector IN NUMBER, p_motivo IN VARCHAR2) IS
+    v_id_club NUMBER;
 BEGIN
-    UPDATE MEA_SOCIOS SET status_socio = 'inactivo', fech_f_socio = SYSDATE, motivo_retiro = LOWER(p_motivo) WHERE id_club = p_id_club AND id_lector = p_id_lector AND status_socio = 'activo';
-    UPDATE MEA_HISTORICO_GRUPOS SET fech_f_hist_grupo = SYSDATE WHERE id_lector = p_id_lector AND fech_f_hist_grupo IS NULL;
+    SELECT id_club INTO v_id_club 
+    FROM MEA_SOCIOS 
+    WHERE id_lector = p_id_lector AND status_socio = 'activo';
+
+    UPDATE MEA_SOCIOS 
+    SET status_socio = 'inactivo', fech_f_socio = SYSDATE, motivo_retiro = LOWER(p_motivo) 
+    WHERE id_club = v_id_club AND id_lector = p_id_lector AND status_socio = 'activo';
+    
+    UPDATE MEA_HISTORICO_GRUPOS 
+    SET fech_f_hist_grupo = SYSDATE 
+    WHERE id_lector = p_id_lector AND fech_f_hist_grupo IS NULL;
 END;
 /
 
