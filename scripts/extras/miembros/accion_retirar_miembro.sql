@@ -25,7 +25,7 @@ ORDER BY l.id_lector;
 
 PROMPT ---------------------------------------------------------
 
--- 3. Pedir el id_lector y el motivo
+-- 1. Pedir el id_lector y el motivo
 ACCEPT v_id_lector NUMBER FORMAT '99999' PROMPT 'Ingrese el ID del Lector a retirar: '
 PROMPT Opciones de motivo: deuda, inasistencia, otro
 ACCEPT v_motivo CHAR FORMAT 'A15' PROMPT 'Ingrese el motivo del retiro: '
@@ -36,7 +36,6 @@ PROMPT ---------------------------------------------------------
 
 BEGIN
     MEA_retirar_miembro(
-        p_id_club => &v_id_club,
         p_id_lector => &v_id_lector,
         p_motivo => '&v_motivo'
     );
