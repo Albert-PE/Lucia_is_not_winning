@@ -416,4 +416,79 @@ INSERT INTO MEA_PAGOS_MEMBRESIAS VALUES (4, 8, TO_DATE('11-01-2004','DD-MM-YYYY'
 INSERT INTO MEA_INASISTENTES VALUES (2, 1, 9788432219764, TO_DATE('16-06-2026','DD-MM-YYYY'), 2, 1, 2, 4, TO_DATE('11-01-2004','DD-MM-YYYY'), TO_DATE('11-01-2004','DD-MM-YYYY'));
 INSERT INTO MEA_INASISTENTES VALUES (1, 3, 9788420633114, TO_DATE('17-06-2026','DD-MM-YYYY'), 1, 3, 1, 2, TO_DATE('10-01-2024','DD-MM-YYYY'), TO_DATE('10-01-2024','DD-MM-YYYY'));
 
+
+PROMPT >>> POBLANDO GRUPO: CLUB 1, GRUPO 4 (ADULTO)...
+
+-- 1. LECTORES ADULTOS PARA EL GRUPO 1-4
+INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email)
+VALUES (9001, 10009001, 'Carlos', 'Alberto', 'Gomez', 'Perez', TO_DATE('15-05-1985','DD-MM-YYYY'), 'carlos@email.com');
+
+INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email)
+VALUES (9002, 10009002, 'Maria', 'Elena', 'Rodriguez', 'Sosa', TO_DATE('20-10-1990','DD-MM-YYYY'), 'maria@email.com');
+
+INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email)
+VALUES (9003, 10009003, 'Juan', 'Jose', 'Lopez', 'Garcia', TO_DATE('05-02-1978','DD-MM-YYYY'), 'juan@email.com');
+
+-- SOCIOS
+INSERT INTO MEA_SOCIOS (id_club, id_lector, fech_i_socio, status_socio) VALUES (1, 9001, TO_DATE('01-01-2024','DD-MM-YYYY'), 'activo');
+INSERT INTO MEA_SOCIOS (id_club, id_lector, fech_i_socio, status_socio) VALUES (1, 9002, TO_DATE('01-01-2024','DD-MM-YYYY'), 'activo');
+INSERT INTO MEA_SOCIOS (id_club, id_lector, fech_i_socio, status_socio) VALUES (1, 9003, TO_DATE('01-01-2024','DD-MM-YYYY'), 'activo');
+
+-- HISTORICO GRUPOS (ASIGNACIÓN AL GRUPO 1-4)
+INSERT INTO MEA_HISTORICO_GRUPOS (id_club_grupo, id_grupo, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo)
+VALUES (1, 4, 1, 9001, TO_DATE('01-01-2024','DD-MM-YYYY'), TO_DATE('01-01-2024','DD-MM-YYYY'));
+
+INSERT INTO MEA_HISTORICO_GRUPOS (id_club_grupo, id_grupo, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo)
+VALUES (1, 4, 1, 9002, TO_DATE('01-01-2024','DD-MM-YYYY'), TO_DATE('01-01-2024','DD-MM-YYYY'));
+
+INSERT INTO MEA_HISTORICO_GRUPOS (id_club_grupo, id_grupo, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo)
+VALUES (1, 4, 1, 9003, TO_DATE('01-01-2024','DD-MM-YYYY'), TO_DATE('01-01-2024','DD-MM-YYYY'));
+
+
+PROMPT >>> POBLANDO GRUPO: CLUB 1, GRUPO 3 (INFANTIL)...
+
+-- LECTORES NIÑOS (Edad 6-12)
+INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email, id_lector_repre)
+VALUES (9010, 10009010, 'Pedrito', 'Javier', 'Martinez', 'Ramos', TO_DATE('12-06-2016','DD-MM-YYYY'), 'padre_pedrito@email.com', 9001);
+
+INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email, id_lector_repre)
+VALUES (9011, 10009011, 'Anita', 'Lucia', 'Vargas', 'Diaz', TO_DATE('25-08-2015','DD-MM-YYYY'), 'padre_anita@email.com', 9002);
+
+-- SOCIOS
+INSERT INTO MEA_SOCIOS (id_club, id_lector, fech_i_socio, status_socio) VALUES (1, 9010, TO_DATE('01-03-2024','DD-MM-YYYY'), 'activo');
+INSERT INTO MEA_SOCIOS (id_club, id_lector, fech_i_socio, status_socio) VALUES (1, 9011, TO_DATE('01-03-2024','DD-MM-YYYY'), 'activo');
+
+-- HISTORICO GRUPOS (ASIGNACIÓN AL GRUPO 1-3)
+INSERT INTO MEA_HISTORICO_GRUPOS (id_club_grupo, id_grupo, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo)
+VALUES (1, 3, 1, 9010, TO_DATE('01-03-2024','DD-MM-YYYY'), TO_DATE('01-03-2024','DD-MM-YYYY'));
+
+INSERT INTO MEA_HISTORICO_GRUPOS (id_club_grupo, id_grupo, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo)
+VALUES (1, 3, 1, 9011, TO_DATE('01-03-2024','DD-MM-YYYY'), TO_DATE('01-03-2024','DD-MM-YYYY'));
+
+
+PROMPT >>> POBLANDO GRUPO: CLUB 1, GRUPO 5 (JOVEN)...
+
+-- LECTORES JÓVENES (Edad 13-24)
+INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email)
+VALUES (9020, 10009020, 'Kevin', 'Maelo', 'Hernandez', 'Urbina', TO_DATE('01-01-2008','DD-MM-YYYY'), 'kevin@email.com');
+
+INSERT INTO MEA_LECTORES (id_lector, doc_identidad, p_nombre, s_nombre, p_apellido, s_apellido, f_nacimiento, email)
+VALUES (9021, 10009021, 'Sofia', 'Valentina', 'Castillo', 'Blanco', TO_DATE('14-02-2005','DD-MM-YYYY'), 'sofia@email.com');
+
+-- SOCIOS
+INSERT INTO MEA_SOCIOS (id_club, id_lector, fech_i_socio, status_socio) VALUES (1, 9020, TO_DATE('01-05-2024','DD-MM-YYYY'), 'activo');
+INSERT INTO MEA_SOCIOS (id_club, id_lector, fech_i_socio, status_socio) VALUES (1, 9021, TO_DATE('01-05-2024','DD-MM-YYYY'), 'activo');
+
+-- HISTORICO GRUPOS (ASIGNACIÓN AL GRUPO 1-5)
+INSERT INTO MEA_HISTORICO_GRUPOS (id_club_grupo, id_grupo, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo)
+VALUES (1, 5, 1, 9020, TO_DATE('01-05-2024','DD-MM-YYYY'), TO_DATE('01-05-2024','DD-MM-YYYY'));
+
+INSERT INTO MEA_HISTORICO_GRUPOS (id_club_grupo, id_grupo, id_club_soc, id_lector, fech_i_socio, fech_i_hist_grupo)
+VALUES (1, 5, 1, 9021, TO_DATE('01-05-2024','DD-MM-YYYY'), TO_DATE('01-05-2024','DD-MM-YYYY'));
+
+COMMIT;
+
+PROMPT >>> POBLADO ADICIONAL COMPLETADO CON ÉXITO.
+
+
 COMMIT;

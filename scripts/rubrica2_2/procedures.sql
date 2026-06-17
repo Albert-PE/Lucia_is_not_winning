@@ -242,7 +242,26 @@ CREATE OR REPLACE PROCEDURE MEA_generar_calendario(
     v_id_club_soc   NUMBER;
     v_fech_i_socio  DATE;
     v_fech_i_hist   DATE;
+    v_dummy         NUMBER;
 BEGIN
+    -- 1. Validar existencia del Club y Grupo
+    BEGIN
+        SELECT 1 INTO v_dummy FROM MEA_GRUPOS 
+        WHERE id_club = p_id_club AND id_grupo = p_id_grupo;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            raise_application_error(-20044, 'ERROR: El grupo '||p_id_grupo||' en el club '||p_id_club||' no existe.');
+    END;
+
+    -- 2. Validar existencia del Libro (ISBN)
+    BEGIN
+        SELECT 1 INTO v_dummy FROM MEA_LIBROS WHERE isbn = p_isbn;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            raise_application_error(-20045, 'ERROR: El libro con ISBN '||p_isbn||' no está registrado en el sistema.');
+    END;
+
+    -- 3. Validar existencia y estado del Moderador
     BEGIN
         SELECT id_club_soc, fech_i_socio, fech_i_hist_grupo
         INTO v_id_club_soc, v_fech_i_socio, v_fech_i_hist
@@ -251,9 +270,10 @@ BEGIN
           AND fech_f_hist_grupo IS NULL; -- Moderador activo
     EXCEPTION
         WHEN NO_DATA_FOUND THEN
-            raise_application_error(-20040, 'El moderador seleccionado no tiene un historial activo.');
+            raise_application_error(-20040, 'ERROR: El moderador (ID: '||p_id_lector||') no existe o no tiene un historial activo en ningún grupo.');
     END;
 
+    -- 4. Generación iterativa
     FOR i IN 0..(p_cant_reun - 1) LOOP
         v_fecha_iterada := p_fecha_inicio + (i * 7);
         
@@ -268,7 +288,9 @@ BEGIN
         );
     END LOOP;
 
+    DBMS_OUTPUT.PUT_LINE('--------------------------------------------------');
     DBMS_OUTPUT.PUT_LINE('Se generaron ' || p_cant_reun || ' reuniones exitosamente.');
+    DBMS_OUTPUT.PUT_LINE('--------------------------------------------------');
     COMMIT;
 END;
 /
@@ -290,7 +312,7 @@ BEGIN
       AND isbn = p_isbn AND fech_reunion = p_fecha;
       
     IF SQL%ROWCOUNT = 0 THEN
-        raise_application_error(-20041, 'No se encontró la reunión especificada.');
+        raise_application_error(-20041, 'ERROR: No se encontró la reunión para el club '||p_id_club||', grupo '||p_id_grupo||', libro '||p_isbn||' en la fecha '||TO_CHAR(p_fecha, 'DD/MM/YYYY')||'.');
     END IF;
     
     DBMS_OUTPUT.PUT_LINE('Reunión marcada como REALIZADA.');
@@ -321,7 +343,7 @@ BEGIN
       AND isbn = p_isbn AND fech_reunion = p_fecha_cierre;
 
     IF SQL%ROWCOUNT = 0 THEN
-        raise_application_error(-20042, 'No se encontró la reunión para realizar el cierre.');
+        raise_application_error(-20042, 'ERROR: No se pudo realizar el cierre. Verifique que el ID de club, grupo, ISBN y fecha sean correctos.');
     END IF;
 
     -- 2. Limpieza: Borrar reuniones futuras que quedaron "en el aire"
@@ -329,7 +351,9 @@ BEGIN
     WHERE id_club = p_id_club AND id_grupo = p_id_grupo 
       AND isbn = p_isbn AND fech_reunion > p_fecha_cierre;
 
+    DBMS_OUTPUT.PUT_LINE('--------------------------------------------------');
     DBMS_OUTPUT.PUT_LINE('Calendario cerrado exitosamente. Se eliminaron las reuniones futuras sobrantes.');
+    DBMS_OUTPUT.PUT_LINE('--------------------------------------------------');
     COMMIT;
 END;
 /
