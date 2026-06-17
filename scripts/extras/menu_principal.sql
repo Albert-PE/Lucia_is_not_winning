@@ -12,20 +12,6 @@ PROMPT 3. Gestionar Reuniones
 PROMPT 4. Gestionar Miembros
 PROMPT 5. Salir del Sistema
 PROMPT
-SET DEFINE ON
-SET SERVEROUTPUT ON
-SET FEEDBACK OFF
-
-PROMPT ######################################################################
-PROMPT #                     SISTEMA CLUB DE LECTURA                        #
-PROMPT ######################################################################
-PROMPT
-PROMPT 1. Gestionar Clubes
-PROMPT 2. Gestionar Grupos
-PROMPT 3. Gestionar Reuniones
-PROMPT 4. Gestionar Miembros
-PROMPT 5. Salir del Sistema
-PROMPT
 
 -- Pre-definimos la variable para evitar que SQL Developer muestre un popup pidiendo su valor
 DEFINE v_script_principal = 'menu_principal.sql'
