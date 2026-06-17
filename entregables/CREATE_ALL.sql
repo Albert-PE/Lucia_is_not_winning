@@ -402,18 +402,6 @@ FROM MEA_ASOCIACIONES a JOIN MEA_CLUBES c1 ON a.id_club1 = c1.id_club JOIN MEA_C
 --=====================================================================
 --                            FUNCIONES
 --=====================================================================
-CREATE OR REPLACE TYPE MEA_conversion_row AS OBJECT (
-    id_pais       NUMBER,
-    nom_pais      VARCHAR2(20),
-    moneda        VARCHAR2(3),
-    monto_origen  NUMBER,
-    tasa_cambio   VARCHAR2(50),
-    monto_usd     VARCHAR2(30)
-);
-/
-
-CREATE OR REPLACE TYPE MEA_conversion_table AS TABLE OF MEA_conversion_row;
-/
 
 CREATE OR REPLACE FUNCTION MEA_conversion_monetaria(
     p_id_pais     IN NUMBER,
