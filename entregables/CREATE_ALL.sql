@@ -747,6 +747,46 @@ BEGIN
 END;
 /
 
+
+CREATE OR REPLACE PROCEDURE MEA_crear_grupo(
+    p_id_club IN NUMBER,
+    p_tipo IN VARCHAR2
+) IS
+    v_id_grupo NUMBER;
+    v_dia NUMBER;
+    v_hora NUMBER;
+    v_existe_club NUMBER;
+BEGIN
+    
+    SELECT COUNT(*) INTO v_existe_club FROM MEA_CLUBES WHERE id_club = p_id_club;
+    IF v_existe_club = 0 THEN
+        RAISE_APPLICATION_ERROR(-20086, 'ERROR: El club con ID ' || p_id_club || ' no existe.');
+    END IF;
+
+    
+    IF p_tipo NOT IN ('joven', 'adulto', 'infantil') THEN
+        RAISE_APPLICATION_ERROR(-20085, 'ERROR: El tipo de grupo debe ser joven, adulto o infantil.');
+    END IF;
+
+    v_id_grupo := MEA_seq_grupos.NEXTVAL;
+
+    v_dia := ROUND(DBMS_RANDOM.VALUE(2, 6));
+    v_hora := ROUND(DBMS_RANDOM.VALUE(17, 19));
+
+    INSERT INTO MEA_GRUPOS (
+        id_club, id_grupo, fech_creacion, tipo, dia_reunion, hora_i_reunion
+    ) VALUES (
+        p_id_club, v_id_grupo, TRUNC(SYSDATE), p_tipo, v_dia, v_hora
+    );
+
+    DBMS_OUTPUT.PUT_LINE('----------------------------------------');
+    DBMS_OUTPUT.PUT_LINE('Grupo ID ' || v_id_grupo || ' de tipo "' || UPPER(p_tipo) || '" creado exitosamente.');
+    DBMS_OUTPUT.PUT_LINE('Horario asignado automaticamente: Dia ' || v_dia || ' a las ' || v_hora || ':00 hrs.');
+    DBMS_OUTPUT.PUT_LINE('----------------------------------------');
+    COMMIT;
+END;
+/
+
 commit;
 -- =============================================================================
 --                                TRIGGERS

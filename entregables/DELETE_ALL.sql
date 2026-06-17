@@ -33,6 +33,7 @@ DROP PROCEDURE MEA_cerrar_calendario;
 DROP PROCEDURE MEA_retirar_miembro;
 DROP PROCEDURE MEA_asignar_favoritos;
 DROP PROCEDURE MEA_crear_club;
+DROP PROCEDURE MEA_crear_grupo;
 
 PROMPT >>> ELIMINANDO FUNCIONES...
 DROP FUNCTION MEA_conversion_monetaria;
